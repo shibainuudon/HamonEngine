@@ -57,6 +57,8 @@ public:
 		return true;
 	}
 
+	::HWND GetNativeHandle(void) const { return m_hwnd; }
+
 private:
 
 	static int GetUniqueNumber(void)
