@@ -59,6 +59,20 @@ public:
 
 	::HWND GetNativeHandle(void) const { return m_hwnd; }
 
+	std::uint32_t GetClientWidth(void) const
+	{
+		::RECT rect;
+		::GetClientRect(m_hwnd, &rect);
+		return rect.right;
+	}
+
+	std::uint32_t GetClientHeight(void) const
+	{
+		::RECT rect;
+		::GetClientRect(m_hwnd, &rect);
+		return rect.bottom;
+	}
+
 private:
 
 	static int GetUniqueNumber(void)

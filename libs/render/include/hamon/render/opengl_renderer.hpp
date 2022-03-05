@@ -7,6 +7,7 @@
 #ifndef HAMON_RENDER_OPENGL_RENDERER_HPP
 #define HAMON_RENDER_OPENGL_RENDERER_HPP
 
+#include <hamon/render/renderer.hpp>
 #include <hamon/render/opengl/gl.hpp>
 #include <memory>
 
@@ -23,14 +24,14 @@ namespace gl
 class Context;
 }
 
-class OpenGLRenderer
+class OpenGLRenderer : public Renderer
 {
 public:
 	explicit OpenGLRenderer(Window const& window);
 	~OpenGLRenderer();
 
-	void Begin(void);
-	void End(void);
+	void Begin(void) override;
+	void End(void) override;
 
 private:
 	static void APIENTRY DebugCallback(
