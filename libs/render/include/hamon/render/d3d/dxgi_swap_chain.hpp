@@ -57,6 +57,18 @@ public:
 		m_swap_chain->GetBuffer(buffer, riid, surface);
 	}
 
+	::UINT GetCurrentBackBufferIndex(void) const
+	{
+		return m_swap_chain->GetCurrentBackBufferIndex();
+	}
+
+	::UINT GetBufferCount(void) const
+	{
+		::DXGI_SWAP_CHAIN_DESC1 desc {};
+		m_swap_chain->GetDesc1(&desc);
+		return desc.BufferCount;
+	}
+
 private:
 	ComPtr<IDXGISwapChain4>	m_swap_chain;
 };

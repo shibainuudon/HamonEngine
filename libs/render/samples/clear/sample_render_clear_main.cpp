@@ -11,18 +11,27 @@
 
 int main()
 {
+	std::uint32_t width = 1280;
+	std::uint32_t height = 960;
+
 	std::vector<std::unique_ptr<hamon::Window>> windows;
 	std::vector<std::unique_ptr<hamon::Renderer>> renderers;
 
 	{
-		auto window = std::make_unique<hamon::Window>(1280, 960, "sample_render_clear OpenGL");
+		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_clear OpenGL");
 		auto renderer = std::make_unique<hamon::OpenGLRenderer>(*window);
 		windows.push_back(std::move(window));
 		renderers.push_back(std::move(renderer));
 	}
 	{
-		auto window = std::make_unique<hamon::Window>(1280, 960, "sample_render_clear D3D11");
+		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_clear D3D11");
 		auto renderer = std::make_unique<hamon::D3D11Renderer>(*window);
+		windows.push_back(std::move(window));
+		renderers.push_back(std::move(renderer));
+	}
+	{
+		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_clear D3D12");
+		auto renderer = std::make_unique<hamon::D3D12Renderer>(*window);
 		windows.push_back(std::move(window));
 		renderers.push_back(std::move(renderer));
 	}
