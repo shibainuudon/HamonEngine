@@ -27,4 +27,10 @@ find_package(OpenGL)
 if (OPENGL_FOUND)
 	target_link_libraries(${TARGET_NAME} INTERFACE OpenGL::GL)
 endif()
+
+find_package(Vulkan)
+if (Vulkan_FOUND)
+	target_link_libraries(${TARGET_NAME} INTERFACE Vulkan::Vulkan)
+endif()
+
 add_subdirectory(samples)

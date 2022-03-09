@@ -1,0 +1,92 @@
+﻿/**
+ *	@file	command_buffer.hpp
+ *
+ *	@brief	CommandBuffer
+ */
+
+#ifndef HAMON_RENDER_VULKAN_COMMAND_BUFFER_HPP
+#define HAMON_RENDER_VULKAN_COMMAND_BUFFER_HPP
+
+namespace hamon
+{
+
+inline namespace render
+{
+
+namespace vulkan
+{
+
+class CommandBuffer
+{
+public:
+	CommandBuffer(vulkan::CommandPool* command_pool)
+		: m_command_pool(command_pool)
+	{
+		m_command_buffer = m_command_pool->AllocateCommandBuffers(
+			VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1)[0];
+	}
+
+	~CommandBuffer()
+	{
+		m_command_pool->FreeCommandBuffers({m_command_buffer});
+	}
+
+	void Begin(void)
+	{
+		VkCommandBufferBeginInfo cmd_buf_info = {};
+		cmd_buf_info.sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		cmd_buf_info.pNext            = nullptr;
+		cmd_buf_info.flags            = 0;
+		cmd_buf_info.pInheritanceInfo = nullptr;
+		auto res = vkBeginCommandBuffer(m_command_buffer, &cmd_buf_info);
+	}
+
+	void End(void)
+	{
+		auto res = vkEndCommandBuffer(m_command_buffer);
+	}
+
+	void BeginRenderPass(
+		VkRenderPass render_pass,
+		VkFramebuffer framebuffer,
+		VkExtent2D const& extent)
+	{
+		VkClearValue clear_values[2];
+		clear_values[0].color.float32[0] = 0.4f;
+		clear_values[0].color.float32[1] = 0.4f;
+		clear_values[0].color.float32[2] = 0.4f;
+		clear_values[0].color.float32[3] = 0.4f;
+		clear_values[1].depthStencil.depth = 1.0f;
+		clear_values[1].depthStencil.stencil = 0;
+
+		VkRenderPassBeginInfo info;
+		info.sType             = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+		info.pNext             = nullptr;
+		info.renderPass        = render_pass;
+		info.framebuffer       = framebuffer;
+		info.renderArea.offset = {0, 0};
+		info.renderArea.extent = extent;
+		info.clearValueCount   = 2;
+		info.pClearValues      = clear_values;
+		vkCmdBeginRenderPass(m_command_buffer, &info, VK_SUBPASS_CONTENTS_INLINE);
+	}
+
+	void EndRenderPass(void)
+	{
+		vkCmdEndRenderPass(m_command_buffer);
+	}
+
+	VkCommandBuffer const& Get(void) const { return m_command_buffer; }
+
+private:
+	VkCommandBuffer m_command_buffer;
+	vulkan::CommandPool* m_command_pool;
+};
+
+}	// namespace vulkan
+
+}	// inline namespace render
+
+}	// namespace hamon
+
+#endif // HAMON_RENDER_VULKAN_COMMAND_BUFFER_HPP
