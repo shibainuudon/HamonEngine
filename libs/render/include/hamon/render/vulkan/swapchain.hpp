@@ -7,9 +7,12 @@
 #ifndef HAMON_RENDER_VULKAN_swapchain_HPP
 #define HAMON_RENDER_VULKAN_swapchain_HPP
 
+#include <hamon/render/vulkan/vulkan.hpp>
 #include <hamon/render/vulkan/device.hpp>
 #include <hamon/render/vulkan/physical_device.hpp>
 #include <hamon/render/vulkan/surface.hpp>
+#include <cstdint>
+#include <vector>
 
 namespace hamon
 {

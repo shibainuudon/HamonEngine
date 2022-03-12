@@ -7,6 +7,10 @@
 #ifndef HAMON_RENDER_VULKAN_FRAMEBUFFER_HPP
 #define HAMON_RENDER_VULKAN_FRAMEBUFFER_HPP
 
+#include <hamon/render/vulkan/vulkan.hpp>
+#include <hamon/render/vulkan/device.hpp>
+#include <vector>
+
 namespace hamon
 {
 

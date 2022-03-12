@@ -7,6 +7,10 @@
 #ifndef HAMON_RENDER_VULKAN_COMMAND_BUFFER_HPP
 #define HAMON_RENDER_VULKAN_COMMAND_BUFFER_HPP
 
+#include <hamon/render/vulkan/vulkan.hpp>
+#include <hamon/render/vulkan/command_pool.hpp>
+#include <hamon/render/clear_value.hpp>
+
 namespace hamon
 {
 

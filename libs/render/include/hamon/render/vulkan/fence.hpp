@@ -7,6 +7,9 @@
 #ifndef HAMON_RENDER_VULKAN_fence_HPP
 #define HAMON_RENDER_VULKAN_fence_HPP
 
+#include <hamon/render/vulkan/vulkan.hpp>
+#include <hamon/render/vulkan/device.hpp>
+
 namespace hamon
 {
 

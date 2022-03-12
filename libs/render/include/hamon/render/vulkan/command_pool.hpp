@@ -7,6 +7,11 @@
 #ifndef HAMON_RENDER_VULKAN_COMMAND_POOL_HPP
 #define HAMON_RENDER_VULKAN_COMMAND_POOL_HPP
 
+#include <hamon/render/vulkan/vulkan.hpp>
+#include <hamon/render/vulkan/device.hpp>
+#include <cstdint>
+#include <vector>
+
 namespace hamon
 {
 

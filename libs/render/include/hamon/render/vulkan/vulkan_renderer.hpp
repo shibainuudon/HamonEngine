@@ -7,9 +7,6 @@
 #ifndef HAMON_RENDER_VULKAN_VULKAN_RENDERER_HPP
 #define HAMON_RENDER_VULKAN_VULKAN_RENDERER_HPP
 
-#define VK_USE_PLATFORM_WIN32_KHR
-#include <vulkan/vulkan.h>
-
 #include <hamon/render/vulkan/instance.hpp>
 #include <hamon/render/vulkan/debug_report_callback.hpp>
 #include <hamon/render/vulkan/surface.hpp>
@@ -24,25 +21,7 @@
 #include <hamon/render/vulkan/render_pass.hpp>
 #include <hamon/render/vulkan/framebuffer.hpp>
 #include <hamon/render/vulkan/queue.hpp>
-
-inline VkResult vkCreateDebugReportCallbackEXT(
-	VkInstance                                  instance,
-	const VkDebugReportCallbackCreateInfoEXT* pCreateInfo,
-	const VkAllocationCallbacks* pAllocator,
-	VkDebugReportCallbackEXT* pCallback)
-{
-	static auto func = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT");
-	return func(instance, pCreateInfo, pAllocator, pCallback);
-}
-
-inline void VKAPI_CALL vkDestroyDebugReportCallbackEXT(
-	VkInstance                                  instance,
-	VkDebugReportCallbackEXT                    callback,
-	const VkAllocationCallbacks* pAllocator)
-{
-	static auto func = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT");
-	return func(instance, callback, pAllocator);
-}
+#include <hamon/render/vulkan/vulkan.hpp>
 
 namespace hamon
 {

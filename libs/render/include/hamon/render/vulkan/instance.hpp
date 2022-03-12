@@ -7,6 +7,11 @@
 #ifndef HAMON_RENDER_VULKAN_INSTANCE_HPP
 #define HAMON_RENDER_VULKAN_INSTANCE_HPP
 
+#include <hamon/render/vulkan/vulkan.hpp>
+#include <hamon/render/vulkan/vulkan_ext.hpp>
+#include <vector>
+#include <cstdint>
+
 namespace hamon
 {
 
@@ -66,14 +71,14 @@ public:
 		VkDebugReportCallbackCreateInfoEXT const& info)
 	{
 		VkDebugReportCallbackEXT callback;
-		auto res = vkCreateDebugReportCallbackEXT(m_instance, &info, nullptr, &callback);
+		auto res = vulkan::vkCreateDebugReportCallbackEXT(m_instance, &info, nullptr, &callback);
 		(void)res;	// TODO
 		return callback;
 	}
 	
 	void DestroyDebugReportCallback(VkDebugReportCallbackEXT const& callback)
 	{
-		vkDestroyDebugReportCallbackEXT(m_instance, callback, nullptr);
+		vulkan::vkDestroyDebugReportCallbackEXT(m_instance, callback, nullptr);
 	}
 
 #if defined(VK_USE_PLATFORM_WIN32_KHR)

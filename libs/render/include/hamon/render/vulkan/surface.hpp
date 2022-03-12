@@ -7,6 +7,9 @@
 #ifndef HAMON_RENDER_VULKAN_SURFACE_HPP
 #define HAMON_RENDER_VULKAN_SURFACE_HPP
 
+#include <hamon/render/vulkan/vulkan.hpp>
+#include <hamon/render/vulkan/instance.hpp>
+
 namespace hamon
 {
 

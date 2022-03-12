@@ -7,6 +7,9 @@
 #ifndef HAMON_RENDER_VULKAN_IMAGE_VIEW_HPP
 #define HAMON_RENDER_VULKAN_IMAGE_VIEW_HPP
 
+#include <hamon/render/vulkan/vulkan.hpp>
+#include <hamon/render/vulkan/device.hpp>
+
 namespace hamon
 {
 

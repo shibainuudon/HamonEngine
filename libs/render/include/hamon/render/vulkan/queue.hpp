@@ -7,6 +7,9 @@
 #ifndef HAMON_RENDER_VULKAN_QUEUE_HPP
 #define HAMON_RENDER_VULKAN_QUEUE_HPP
 
+#include <hamon/render/vulkan/vulkan.hpp>
+#include <cstdint>
+
 namespace hamon
 {
 

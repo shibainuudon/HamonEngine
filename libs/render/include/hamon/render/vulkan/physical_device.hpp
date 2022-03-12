@@ -7,6 +7,10 @@
 #ifndef HAMON_RENDER_VULKAN_PHYSICAL_DEVICE_HPP
 #define HAMON_RENDER_VULKAN_PHYSICAL_DEVICE_HPP
 
+#include <hamon/render/vulkan/vulkan.hpp>
+#include <vector>
+#include <cstdint>
+
 namespace hamon
 {
 
