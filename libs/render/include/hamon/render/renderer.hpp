@@ -20,6 +20,9 @@ public:
 
 	virtual void Begin(void) = 0;
 	virtual void End(void) = 0;
+
+	virtual void BeginRenderPass(ClearValue const& clear_value) = 0;
+	virtual void EndRenderPass(void) = 0;
 };
 
 }	// inline namespace render

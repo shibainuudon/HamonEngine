@@ -9,6 +9,71 @@
 #include <memory>
 #include <vector>
 
+namespace
+{
+
+struct HSV
+{
+	float h;
+	float s;
+	float v;
+};
+
+struct RGB
+{
+	float r;
+	float g;
+	float b;
+};
+
+inline RGB HSVtoRGB(HSV const& hsv)
+{
+	float h = hsv.h;
+	float s = hsv.s;
+	float v = hsv.v;
+
+	float r = v;
+	float g = v;
+	float b = v;
+	if (s > 0.0f)
+	{
+		h *= 6.0f;
+		const int i = (int)h;
+		const float f = h - (float)i;
+		switch (i)
+		{
+		default:
+		case 0:
+			g *= 1 - s * (1 - f);
+			b *= 1 - s;
+			break;
+		case 1:
+			r *= 1 - s * f;
+			b *= 1 - s;
+			break;
+		case 2:
+			r *= 1 - s;
+			b *= 1 - s * (1 - f);
+			break;
+		case 3:
+			r *= 1 - s;
+			g *= 1 - s * f;
+			break;
+		case 4:
+			r *= 1 - s * (1 - f);
+			g *= 1 - s;
+			break;
+		case 5:
+			g *= 1 - s;
+			b *= 1 - s * f;
+			break;
+		}
+	}
+	return {r, g, b};
+}
+
+}
+
 int main()
 {
 	std::uint32_t const width  = 800;
@@ -42,6 +107,11 @@ int main()
 		renderers.push_back(std::move(renderer));
 	}
 
+	HSV hsv;
+	hsv.h = 0;
+	hsv.s = 1;
+	hsv.v = 1;
+
 	for (;;)
 	{
 		for (auto& window : windows)
@@ -52,10 +122,28 @@ int main()
 			}
 		}
 
+		auto rgb = HSVtoRGB(hsv);
+
+		hamon::ClearValue clear_value;
+		clear_value.r = rgb.r;
+		clear_value.g = rgb.g;
+		clear_value.b = rgb.b;
+		clear_value.a = 1.0f;
+		clear_value.depth = 0.0f;
+		clear_value.stencil = 0;
+
 		for (auto& renderer : renderers)
 		{
 			renderer->Begin();
+			renderer->BeginRenderPass(clear_value);
+			renderer->EndRenderPass();
 			renderer->End();
+		}
+
+		hsv.h += 0.01f;
+		if (hsv.h > 1.0f)
+		{
+			hsv.h = 0;
 		}
 	}
 

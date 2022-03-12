@@ -55,7 +55,7 @@ inline namespace render
 
 class VulkanRenderer : public Renderer
 {
-public:
+private:
 	static VKAPI_ATTR VkBool32 VKAPI_CALL
 	DebugCallback(
 		VkDebugReportFlagsEXT                       flags,
@@ -71,6 +71,7 @@ public:
 		return VK_FALSE;
 	}
 	
+public:
 	explicit VulkanRenderer(Window const& window)
 	{
 		VkResult res;
@@ -236,16 +237,10 @@ public:
 			VK_NULL_HANDLE);
 
 		m_command_buffers[0]->Begin();
-		m_command_buffers[0]->BeginRenderPass(
-			m_render_pass->Get(),
-			m_framebuffers[m_frame_index]->Get(),
-			m_swapchain->GetExtent());
 	}
 
 	void End(void) override
 	{
-		m_command_buffers[0]->EndRenderPass();
-
 		m_command_buffers[0]->End();
 
 		m_graphics_queue->Submit(
@@ -259,6 +254,20 @@ public:
 		} while (res == VK_TIMEOUT);
 
 		m_present_queue->Present(m_swapchain->Get(), m_frame_index);
+	}
+
+	void BeginRenderPass(ClearValue const& clear_value) override
+	{
+		m_command_buffers[0]->BeginRenderPass(
+			m_render_pass->Get(),
+			m_framebuffers[m_frame_index]->Get(),
+			m_swapchain->GetExtent(),
+			clear_value);
+	}
+
+	void EndRenderPass(void) override
+	{
+		m_command_buffers[0]->EndRenderPass();
 	}
 
 private:
