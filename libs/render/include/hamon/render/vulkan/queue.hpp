@@ -44,6 +44,7 @@ public:
 		info.signalSemaphoreCount = 0;
 		info.pSignalSemaphores    = nullptr;
 		auto res = vkQueueSubmit(m_queue, 1, &info, fence);
+		(void)res;	// TODO
 	}
 
 	void Present(VkSwapchainKHR swapchain, std::uint32_t image_index)
@@ -58,6 +59,7 @@ public:
 		info.waitSemaphoreCount = 0;
 		info.pResults           = nullptr;
 		auto res = vkQueuePresentKHR(m_queue, &info);
+		(void)res;	// TODO
 	}
 
 private:

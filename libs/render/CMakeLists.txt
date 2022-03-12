@@ -23,6 +23,15 @@ target_include_directories(${TARGET_NAME} INTERFACE ${PROJECT_SOURCE_DIR}/../../
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../window ${CMAKE_CURRENT_BINARY_DIR}/window)
 target_link_libraries(${TARGET_NAME} INTERFACE Hamon::window)
 
+if (MSVC)
+	target_compile_options(${TARGET_NAME} INTERFACE /W4)
+	target_compile_options(${TARGET_NAME} INTERFACE /WX)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+	target_compile_options(${TARGET_NAME} INTERFACE -Wall -Wextra -Werror)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	target_compile_options(${TARGET_NAME} INTERFACE -Wall -Wextra -Werror)
+endif()
+
 find_package(OpenGL)
 if (OPENGL_FOUND)
 	target_link_libraries(${TARGET_NAME} INTERFACE OpenGL::GL)

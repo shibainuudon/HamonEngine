@@ -36,12 +36,13 @@ public:
 		info.pNext                   = nullptr;
 		info.queueCreateInfoCount    = 1;
 		info.pQueueCreateInfos       = &queue_info;
-		info.enabledExtensionCount   = extension_names.size();
+		info.enabledExtensionCount   = static_cast<std::uint32_t>(extension_names.size());
 		info.ppEnabledExtensionNames = extension_names.empty() ? nullptr : extension_names.data();
-		info.enabledLayerCount       = layer_names.size();
+		info.enabledLayerCount       = static_cast<std::uint32_t>(layer_names.size());
 		info.ppEnabledLayerNames     = layer_names.empty() ? nullptr : layer_names.data();
 		info.pEnabledFeatures        = nullptr;
 		auto res = vkCreateDevice(phycical_device, &info, nullptr, &m_device);
+		(void)res;	// TODO
 	}
 
 	~Device()
@@ -53,6 +54,7 @@ public:
 	{
 		VkCommandPool command_pool;
 		auto res = vkCreateCommandPool(m_device, &info, nullptr, &command_pool);
+		(void)res;	// TODO
 		return command_pool;
 	}
 
@@ -64,8 +66,10 @@ public:
 	std::vector<VkCommandBuffer> AllocateCommandBuffers(
 		VkCommandBufferAllocateInfo const& info)
 	{
+		// TODO info.commandBufferCount が０のときどうするか
 		std::vector<VkCommandBuffer> command_buffers(info.commandBufferCount);
 		auto res = vkAllocateCommandBuffers(m_device, &info, command_buffers.data());
+		(void)res;	// TODO
 		return command_buffers;
 	}
 
@@ -73,7 +77,11 @@ public:
 		VkCommandPool command_pool,
 		std::vector<VkCommandBuffer> const& command_buffers)
 	{
-		vkFreeCommandBuffers(m_device, command_pool, command_buffers.size(), command_buffers.data());
+		vkFreeCommandBuffers(
+			m_device,
+			command_pool,
+			static_cast<std::uint32_t>(command_buffers.size()),
+			command_buffers.empty() ? nullptr : command_buffers.data());
 	}
 
 	VkQueue GetDeviceQueue(std::uint32_t queue_family_index, std::uint32_t queue_index)
@@ -87,6 +95,7 @@ public:
 	{
 		VkSwapchainKHR swapchain;
 		auto res = vkCreateSwapchainKHR(m_device, &info, nullptr, &swapchain);
+		(void)res;	// TODO
 		return swapchain;
 	}
 
@@ -109,6 +118,7 @@ public:
 	{
 		VkImageView image_view;
 		auto res = vkCreateImageView(m_device, &info, nullptr, &image_view);
+		(void)res;	// TODO
 		return image_view;
 	}
 
@@ -121,6 +131,7 @@ public:
 	{
 		VkSemaphore semaphore;
 		auto res = vkCreateSemaphore(m_device, &info, nullptr, &semaphore);
+		(void)res;	// TODO
 		return semaphore;
 	}
 
@@ -133,6 +144,7 @@ public:
 	{
 		VkRenderPass render_pass;
 		auto res = vkCreateRenderPass(m_device, &info, nullptr, &render_pass);
+		(void)res;	// TODO
 		return render_pass;
 	}
 
@@ -145,6 +157,7 @@ public:
 	{
 		VkFramebuffer framebuffer;
 		auto res = vkCreateFramebuffer(m_device, &info, nullptr, &framebuffer);
+		(void)res;	// TODO
 		return framebuffer;
 	}
 
@@ -157,6 +170,7 @@ public:
 	{
 		VkFence fence;
 		auto res = vkCreateFence(m_device, &info, nullptr, &fence);
+		(void)res;	// TODO
 		return fence;
 	}
 	
@@ -179,6 +193,7 @@ public:
 			semaphore,
 			fence,
 			&image_index);
+		(void)res;	// TODO
 		return image_index;
 	}
 

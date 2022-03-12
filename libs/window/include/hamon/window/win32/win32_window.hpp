@@ -82,16 +82,16 @@ private:
 	}
 
 	template <typename CharT>
-	static std::basic_string<CharT> GetUniqueClassName(void);
+	std::basic_string<CharT> GetUniqueClassName(void);
 
 	template <>
-	static std::basic_string<char> GetUniqueClassName(void)
+	std::basic_string<char> GetUniqueClassName(void)
 	{
 		return "HamonWindow" + std::to_string(GetUniqueNumber());
 	}
 
 	template <>
-	static std::basic_string<wchar_t> GetUniqueClassName(void)
+	std::basic_string<wchar_t> GetUniqueClassName(void)
 	{
 		return L"HamonWindow" + std::to_wstring(GetUniqueNumber());
 	}

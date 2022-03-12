@@ -58,14 +58,14 @@ class VulkanRenderer : public Renderer
 private:
 	static VKAPI_ATTR VkBool32 VKAPI_CALL
 	DebugCallback(
-		VkDebugReportFlagsEXT                       flags,
-		VkDebugReportObjectTypeEXT                  objectType,
-		uint64_t                                    object,
-		size_t                                      location,
-		int32_t                                     messageCode,
-		const char* pLayerPrefix,
-		const char* pMessage,
-		void* pUserData)
+		VkDebugReportFlagsEXT      /*flags*/,
+		VkDebugReportObjectTypeEXT /*objectType*/,
+		std::uint64_t              /*object*/,
+		std::size_t                /*location*/,
+		std::int32_t               /*messageCode*/,
+		const char*                /*pLayerPrefix*/,
+		const char*                pMessage,
+		void*                      /*pUserData*/)
 	{
 		std::printf("%s", pMessage);
 		return VK_FALSE;
@@ -74,7 +74,6 @@ private:
 public:
 	explicit VulkanRenderer(Window const& window)
 	{
-		VkResult res;
 		const char* app_name = "HamonEngine";
 		
 		std::vector<const char*> instance_layer_name;
@@ -180,7 +179,7 @@ public:
 			{
 				if (supports_present[i] == VK_TRUE)
 				{
-					present_queue_family_index = i;
+					present_queue_family_index = static_cast<std::uint32_t>(i);
 					break;
 				}
 			}

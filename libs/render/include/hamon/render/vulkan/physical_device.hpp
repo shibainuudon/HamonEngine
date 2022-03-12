@@ -51,6 +51,7 @@ public:
 	{
 		VkSurfaceCapabilitiesKHR capabilities;
 		auto res = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_physical_device, surface, &capabilities);
+		(void)res;	// TODO
 		return capabilities;
 	}
 
@@ -69,6 +70,7 @@ public:
 		VkBool32 supported;
 		auto res = vkGetPhysicalDeviceSurfaceSupportKHR(
 			m_physical_device, queue_family_index, surface, &supported);
+		(void)res;	// TODO
 		return supported;
 	}
 

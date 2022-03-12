@@ -38,12 +38,13 @@ public:
 		inst_info.pNext                   = nullptr;
 		inst_info.flags                   = 0;
 		inst_info.pApplicationInfo        = &app_info;
-		inst_info.enabledExtensionCount   = extension_names.size();
+		inst_info.enabledExtensionCount   = static_cast<std::uint32_t>(extension_names.size());
 		inst_info.ppEnabledExtensionNames = extension_names.empty() ? nullptr : extension_names.data();
-		inst_info.enabledLayerCount       = layer_names.size();
+		inst_info.enabledLayerCount       = static_cast<std::uint32_t>(layer_names.size());
 		inst_info.ppEnabledLayerNames     = layer_names.empty() ? nullptr : layer_names.data();
 
 		auto res = vkCreateInstance(&inst_info, nullptr, &m_instance);
+		(void)res;	// TODO
 	}
 
 	~Instance()
@@ -66,6 +67,7 @@ public:
 	{
 		VkDebugReportCallbackEXT callback;
 		auto res = vkCreateDebugReportCallbackEXT(m_instance, &info, nullptr, &callback);
+		(void)res;	// TODO
 		return callback;
 	}
 	
@@ -79,6 +81,7 @@ public:
 	{
 		VkSurfaceKHR surface;
 		auto res = vkCreateWin32SurfaceKHR(m_instance, &info, nullptr, &surface);
+		(void)res;	// TODO
 		return surface;
 	}
 #endif

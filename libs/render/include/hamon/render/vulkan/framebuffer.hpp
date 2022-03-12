@@ -30,8 +30,8 @@ public:
 		info.sType           = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		info.pNext           = nullptr;
 		info.renderPass      = render_pass;
-		info.attachmentCount = image_views.size();
-		info.pAttachments    = image_views.data();
+		info.attachmentCount = static_cast<std::uint32_t>(image_views.size());
+		info.pAttachments    = image_views.empty() ? nullptr : image_views.data();
 		info.width           = extent.width;
 		info.height          = extent.height;
 		info.layers          = 1;

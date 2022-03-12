@@ -39,11 +39,13 @@ public:
 		cmd_buf_info.flags            = 0;
 		cmd_buf_info.pInheritanceInfo = nullptr;
 		auto res = vkBeginCommandBuffer(m_command_buffer, &cmd_buf_info);
+		(void)res;	// TODO
 	}
 
 	void End(void)
 	{
 		auto res = vkEndCommandBuffer(m_command_buffer);
+		(void)res;	// TODO
 	}
 
 	void BeginRenderPass(
