@@ -163,19 +163,22 @@ private:
 		DWORD const window_style_ex = WS_EX_OVERLAPPEDWINDOW;
 		DWORD const window_style = WS_OVERLAPPEDWINDOW;
 
+		RECT rect{0, 0, static_cast<LONG>(width), static_cast<LONG>(height)};
+		AdjustWindowRectEx(&rect, window_style, FALSE, window_style_ex);
+
 		return win32::CreateWindowEx(
-			   window_style_ex,
-			   class_name.c_str(),
-			   title.data(),
-			   window_style,
-			   0,	// x
-			   0,	// y
-			   width,
-			   height,
-			   0,	// parent
-			   0,	// menu
-			   ::GetModuleHandleW(nullptr),
-			   this);
+			window_style_ex,
+			class_name.c_str(),
+			title.data(),
+			window_style,
+			0,	// x
+			0,	// y
+			rect.right - rect.left,
+			rect.bottom - rect.top,
+			0,	// parent
+			0,	// menu
+			::GetModuleHandleW(nullptr),
+			this);
 	}
 
 	void Destroy(void)
