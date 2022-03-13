@@ -19,4 +19,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 target_include_directories(${TARGET_NAME} INTERFACE ${PROJECT_SOURCE_DIR}/include)
 
+find_package(X11)
+if (X11_FOUND)
+	target_link_libraries(${TARGET_NAME} INTERFACE X11::X11)
+endif()
+
 add_subdirectory(samples)

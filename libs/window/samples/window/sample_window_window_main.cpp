@@ -8,7 +8,7 @@
 
 int main()
 {
-	hamon::Window window(800, 600, L"サンプルウィンドウ");
+	hamon::Window window(800, 600, "サンプルウィンドウ");
 
 	while (window.Update())
 	{
