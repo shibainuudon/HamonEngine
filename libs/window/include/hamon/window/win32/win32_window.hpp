@@ -35,6 +35,10 @@ public:
 		::ShowWindow(m_hwnd, SW_SHOW);
 	}
 
+	// コピー不可
+	Window(Window const&) = delete;
+	Window& operator=(Window const&) = delete;
+
 	~Window()
 	{
 		Destroy();
