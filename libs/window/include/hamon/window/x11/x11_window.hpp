@@ -105,6 +105,9 @@ public:
 	//	return rect.bottom;
 	//}
 
+	Display* GetDisplay(void) const { return m_display; }
+	::Window GetWindow(void) const { return m_window; }
+
 private:
 	Display*	m_display;
 	::Window	m_window;

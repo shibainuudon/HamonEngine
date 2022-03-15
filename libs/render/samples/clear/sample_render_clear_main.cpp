@@ -82,30 +82,38 @@ int main()
 	std::vector<std::unique_ptr<hamon::Window>> windows;
 	std::vector<std::unique_ptr<hamon::Renderer>> renderers;
 
+#if defined(HAMON_HAS_OPEN_GL)
 	{
 		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_clear OpenGL");
 		auto renderer = std::make_unique<hamon::OpenGLRenderer>(*window);
 		windows.push_back(std::move(window));
 		renderers.push_back(std::move(renderer));
 	}
+#endif
+#if defined(HAMON_HAS_D3D11)
 	{
 		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_clear D3D11");
 		auto renderer = std::make_unique<hamon::D3D11Renderer>(*window);
 		windows.push_back(std::move(window));
 		renderers.push_back(std::move(renderer));
 	}
+#endif
+#if defined(HAMON_HAS_D3D12)
 	{
 		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_clear D3D12");
 		auto renderer = std::make_unique<hamon::D3D12Renderer>(*window);
 		windows.push_back(std::move(window));
 		renderers.push_back(std::move(renderer));
 	}
+#endif
+#if defined(HAMON_HAS_VULKAN)
 	{
 		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_clear Vulkan");
 		auto renderer = std::make_unique<hamon::VulkanRenderer>(*window);
 		windows.push_back(std::move(window));
 		renderers.push_back(std::move(renderer));
 	}
+#endif
 
 	HSV hsv;
 	hsv.h = 0;

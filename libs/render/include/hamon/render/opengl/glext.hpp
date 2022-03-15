@@ -18,9 +18,15 @@ inline namespace render
 namespace gl
 {
 
+#if defined(_WIN32)
+#define GET_PROC_ADDRESS(name)	wglGetProcAddress((LPCSTR)name)
+#elif defined(__linux)
+#define GET_PROC_ADDRESS(name)	(*glXGetProcAddressARB)((const GLubyte*)name)
+#endif
+
 inline void APIENTRY glDebugMessageCallback (GLDEBUGPROC callback, const void *userParam)
 {
-	static auto func = (PFNGLDEBUGMESSAGECALLBACKPROC)::wglGetProcAddress("glDebugMessageCallback");
+	static auto func = (PFNGLDEBUGMESSAGECALLBACKPROC)GET_PROC_ADDRESS("glDebugMessageCallback");
 	return func(callback, userParam);
 }
 

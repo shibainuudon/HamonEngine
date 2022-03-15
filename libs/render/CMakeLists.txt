@@ -32,14 +32,21 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	target_compile_options(${TARGET_NAME} INTERFACE -Wall -Wextra -Werror)
 endif()
 
+if (WIN32)
+	target_compile_definitions(${TARGET_NAME} INTERFACE HAMON_HAS_D3D11)
+	target_compile_definitions(${TARGET_NAME} INTERFACE HAMON_HAS_D3D12)
+endif()
+
 find_package(OpenGL)
 if (OPENGL_FOUND)
 	target_link_libraries(${TARGET_NAME} INTERFACE OpenGL::GL)
+	target_compile_definitions(${TARGET_NAME} INTERFACE HAMON_HAS_OPEN_GL)
 endif()
 
 find_package(Vulkan)
 if (Vulkan_FOUND)
 	target_link_libraries(${TARGET_NAME} INTERFACE Vulkan::Vulkan)
+	target_compile_definitions(${TARGET_NAME} INTERFACE HAMON_HAS_VULKAN)
 endif()
 
 add_subdirectory(samples)
