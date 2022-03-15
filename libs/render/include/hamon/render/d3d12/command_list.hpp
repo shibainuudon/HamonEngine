@@ -10,6 +10,7 @@
 #include <hamon/render/d3d/d3d12.hpp>
 #include <hamon/render/d3d12/device.hpp>
 #include <hamon/render/d3d12/command_allocator.hpp>
+#include <hamon/render/d3d/throw_if_failed.hpp>
 
 namespace hamon
 {
@@ -31,12 +32,12 @@ public:
 
 	void Close(void)
 	{
-		m_command_list->Close();
+		ThrowIfFailed(m_command_list->Close());
 	}
 
 	void Reset(CommandAllocator* command_allocator)
 	{
-		m_command_list->Reset(command_allocator->Get(), nullptr);
+		ThrowIfFailed(m_command_list->Reset(command_allocator->Get(), nullptr));
 	}
 
 	void ResourceBarrier(

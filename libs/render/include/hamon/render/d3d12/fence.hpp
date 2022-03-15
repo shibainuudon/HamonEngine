@@ -8,6 +8,7 @@
 #define HAMON_RENDER_D3D12_FENCE_HPP
 
 #include <hamon/render/d3d/d3d12.hpp>
+#include <hamon/render/d3d/throw_if_failed.hpp>
 #include <hamon/render/d3d12/device.hpp>
 #include <hamon/render/d3d12/command_queue.hpp>
 #include <vector>
@@ -36,7 +37,7 @@ public:
 	{
 		command_queue->Signal(m_fence.Get(), m_values[frame_index]);
 
-		m_fence->SetEventOnCompletion(m_values[frame_index], m_event);
+		ThrowIfFailed(m_fence->SetEventOnCompletion(m_values[frame_index], m_event));
 		WaitForSingleObjectEx(m_event, INFINITE, FALSE);
 
 		m_values[frame_index]++;
@@ -56,7 +57,7 @@ public:
 
 		if (m_fence->GetCompletedValue() < m_values[next_index])
 		{
-			m_fence->SetEventOnCompletion(m_values[next_index], m_event);
+			ThrowIfFailed(m_fence->SetEventOnCompletion(m_values[next_index], m_event));
 			WaitForSingleObjectEx(m_event, INFINITE, FALSE);
 		}
 

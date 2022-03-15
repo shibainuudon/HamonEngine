@@ -8,6 +8,7 @@
 #define HAMON_RENDER_D3D12_DEVICE_HPP
 
 #include <hamon/render/d3d/d3d12.hpp>
+#include <hamon/render/d3d/throw_if_failed.hpp>
 #include <vector>
 
 namespace hamon
@@ -32,11 +33,12 @@ public:
 			::D3D_FEATURE_LEVEL_11_0,
 		};
 
+		::HRESULT hr = S_OK;
 		for (auto const& adapter : adapters)
 		{
 			for (auto feature_level : feature_levels)
 			{
-				auto const hr = ::D3D12CreateDevice(
+				hr = ::D3D12CreateDevice(
 					adapter.Get(),
 					feature_level,
 					IID_PPV_ARGS(&m_device));
@@ -47,13 +49,14 @@ public:
 				}
 			}
 		}
+		ThrowIfFailed(hr);
 	}
 
 	ComPtr<::ID3D12CommandQueue>
 	CreateCommandQueue(::D3D12_COMMAND_QUEUE_DESC const& desc)
 	{
 		ComPtr<::ID3D12CommandQueue> command_queue;
-		m_device->CreateCommandQueue(&desc, IID_PPV_ARGS(&command_queue));
+		ThrowIfFailed(m_device->CreateCommandQueue(&desc, IID_PPV_ARGS(&command_queue)));
 		return command_queue;
 	}
 
@@ -61,7 +64,7 @@ public:
 	CreateCommandAllocator(::D3D12_COMMAND_LIST_TYPE type)
 	{
 		ComPtr<::ID3D12CommandAllocator> command_allocator;
-		m_device->CreateCommandAllocator(type, IID_PPV_ARGS(&command_allocator));
+		ThrowIfFailed(m_device->CreateCommandAllocator(type, IID_PPV_ARGS(&command_allocator)));
 		return command_allocator;
 	}
 
@@ -69,12 +72,12 @@ public:
 	CreateGraphicsCommandList(::D3D12_COMMAND_LIST_TYPE type, ::ID3D12CommandAllocator* command_allocator)
 	{
 		ComPtr<::ID3D12GraphicsCommandList6> command_list;
-		m_device->CreateCommandList(
+		ThrowIfFailed(m_device->CreateCommandList(
 			0,	// nodeMask
 			type,
 			command_allocator,
 			nullptr,
-			IID_PPV_ARGS(&command_list));
+			IID_PPV_ARGS(&command_list)));
 		return command_list;
 	}
 
@@ -82,7 +85,7 @@ public:
 	CreateFence(::UINT64 initial_value, ::D3D12_FENCE_FLAGS flags)
 	{
 		ComPtr<::ID3D12Fence1> fence;
-		m_device->CreateFence(initial_value, flags, IID_PPV_ARGS(&fence));
+		ThrowIfFailed(m_device->CreateFence(initial_value, flags, IID_PPV_ARGS(&fence)));
 		return fence;
 	}
 
@@ -90,7 +93,7 @@ public:
 	CreateDescriptorHeap(::D3D12_DESCRIPTOR_HEAP_DESC const& desc)
 	{
 		ComPtr<::ID3D12DescriptorHeap> descriptor_heap;
-		m_device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&descriptor_heap));
+		ThrowIfFailed(m_device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&descriptor_heap)));
 		return descriptor_heap;
 	}
 

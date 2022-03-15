@@ -10,6 +10,7 @@
 #include <hamon/render/d3d/d3d12.hpp>
 #include <hamon/render/d3d12/device.hpp>
 #include <hamon/render/d3d12/command_list.hpp>
+#include <hamon/render/d3d/throw_if_failed.hpp>
 
 namespace hamon
 {
@@ -34,7 +35,7 @@ public:
 
 	void Signal(::ID3D12Fence* fence, ::UINT64 value)
 	{
-		m_command_queue->Signal(fence, value);
+		ThrowIfFailed(m_command_queue->Signal(fence, value));
 	}
 
 	void ExecuteCommandList(CommandList* command_list)

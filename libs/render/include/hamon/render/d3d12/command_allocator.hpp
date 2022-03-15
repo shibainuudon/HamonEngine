@@ -9,6 +9,7 @@
 
 #include <hamon/render/d3d/d3d12.hpp>
 #include <hamon/render/d3d12/device.hpp>
+#include <hamon/render/d3d/throw_if_failed.hpp>
 
 namespace hamon
 {
@@ -29,7 +30,7 @@ public:
 
 	void Reset()
 	{
-		m_command_allocator->Reset();
+		ThrowIfFailed(m_command_allocator->Reset());
 	}
 
 	::ID3D12CommandAllocator* Get(void) const { return m_command_allocator.Get(); }

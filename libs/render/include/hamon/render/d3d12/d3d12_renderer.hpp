@@ -32,18 +32,30 @@ class D3D12Renderer : public Renderer
 public:
 	explicit D3D12Renderer(Window const& window)
 	{
+#if defined(_DEBUG)
+		// Enable the debug layer (requires the Graphics Tools "optional feature").
+		// NOTE: Enabling the debug layer after device creation will invalidate the active device.
+		{
+			ComPtr<::ID3D12Debug> debug;
+			if (SUCCEEDED(::D3D12GetDebugInterface(IID_PPV_ARGS(&debug))))
+			{
+				debug->EnableDebugLayer();
+			}
+		}
+#endif
+
 		::UINT const buffer_count = 2;	// TODO
 		::UINT const width  = window.GetClientWidth();
 		::UINT const height = window.GetClientHeight();
 		::HWND const hwnd   = window.GetNativeHandle();
 
-		m_factory = std::make_unique<DXGIFactory>();
-		m_device = std::make_unique<d3d12::Device>(m_factory->EnumAdapters());
-		m_command_queue = std::make_unique<d3d12::CommandQueue>(m_device.get());
+		m_factory           = std::make_unique<DXGIFactory>();
+		m_device            = std::make_unique<d3d12::Device>(m_factory->EnumAdapters());
+		m_command_queue     = std::make_unique<d3d12::CommandQueue>(m_device.get());
 		m_command_allocator = std::make_unique<d3d12::CommandAllocator>(m_device.get());
-		m_command_list = std::make_unique<d3d12::CommandList>(m_device.get(), m_command_allocator.get());
+		m_command_list      = std::make_unique<d3d12::CommandList>(m_device.get(), m_command_allocator.get());
 		m_command_list->Close();
-		m_fence = std::make_unique<d3d12::Fence>(m_device.get(), buffer_count);
+		m_fence             = std::make_unique<d3d12::Fence>(m_device.get(), buffer_count);
 
 		m_swap_chain = std::make_unique<DXGISwapChain>(
 			m_factory.get(), m_command_queue->Get(), buffer_count, width, height, hwnd);
