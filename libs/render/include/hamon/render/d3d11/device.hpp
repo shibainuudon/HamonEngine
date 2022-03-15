@@ -8,6 +8,7 @@
 #define HAMON_RENDER_D3D11_DEVICE_HPP
 
 #include <hamon/render/d3d/d3d11.hpp>
+#include <hamon/render/d3d/throw_if_failed.hpp>
 #include <vector>
 
 namespace hamon
@@ -37,10 +38,11 @@ public:
 			::D3D_FEATURE_LEVEL_10_0,
 		};
 
+		::HRESULT hr = S_OK;
 		for (auto const& adapter : adapters)
 		{
 			ComPtr<::ID3D11Device> device;
-			auto const hr = ::D3D11CreateDevice(
+			hr = ::D3D11CreateDevice(
 				adapter.Get(),
 				D3D_DRIVER_TYPE_UNKNOWN,
 				nullptr,
@@ -54,10 +56,12 @@ public:
 
 			if (SUCCEEDED(hr))
 			{
-				device.As(&m_device);
+				ThrowIfFailed(device.As(&m_device));
 				break;
 			}
 		}
+
+		ThrowIfFailed(hr);
 	}
 
 	ComPtr<ID3D11DeviceContext4>
@@ -67,7 +71,7 @@ public:
 		m_device->GetImmediateContext(&device_context);
 
 		ComPtr<ID3D11DeviceContext4> device_context4;
-		device_context.As(&device_context4);
+		ThrowIfFailed(device_context.As(&device_context4));
 
 		return device_context4;
 	}
@@ -76,7 +80,7 @@ public:
 	CreateRenderTargetView(::ID3D11Resource* resource, ::D3D11_RENDER_TARGET_VIEW_DESC1 const* desc)
 	{
 		ComPtr<::ID3D11RenderTargetView1> rtv1;
-		m_device->CreateRenderTargetView1(resource, desc, &rtv1);
+		ThrowIfFailed(m_device->CreateRenderTargetView1(resource, desc, &rtv1));
 		return rtv1;
 	}
 
