@@ -9,6 +9,7 @@
 
 #include <hamon/render/vulkan/vulkan.hpp>
 #include <hamon/render/vulkan/vulkan_ext.hpp>
+#include <hamon/render/vulkan/throw_if_failed.hpp>
 #include <vector>
 #include <cstdint>
 
@@ -48,8 +49,7 @@ public:
 		inst_info.enabledLayerCount       = static_cast<std::uint32_t>(layer_names.size());
 		inst_info.ppEnabledLayerNames     = layer_names.empty() ? nullptr : layer_names.data();
 
-		auto res = vkCreateInstance(&inst_info, nullptr, &m_instance);
-		(void)res;	// TODO
+		ThrowIfFailed(vkCreateInstance(&inst_info, nullptr, &m_instance));
 	}
 
 	~Instance()
@@ -59,11 +59,10 @@ public:
 
 	std::vector<VkPhysicalDevice> EnumeratePhysicalDevices()
 	{
-		VkResult res;
 		std::uint32_t gpu_count;
-		res = vkEnumeratePhysicalDevices(m_instance, &gpu_count, nullptr);
+		ThrowIfFailed(vkEnumeratePhysicalDevices(m_instance, &gpu_count, nullptr));
 		std::vector<VkPhysicalDevice> gpus(gpu_count);
-		res = vkEnumeratePhysicalDevices(m_instance, &gpu_count, gpus.data());
+		ThrowIfFailed(vkEnumeratePhysicalDevices(m_instance, &gpu_count, gpus.data()));
 		return gpus;
 	}
 
@@ -71,8 +70,7 @@ public:
 		VkDebugReportCallbackCreateInfoEXT const& info)
 	{
 		VkDebugReportCallbackEXT callback;
-		auto res = vulkan::vkCreateDebugReportCallbackEXT(m_instance, &info, nullptr, &callback);
-		(void)res;	// TODO
+		ThrowIfFailed(vulkan::vkCreateDebugReportCallbackEXT(m_instance, &info, nullptr, &callback));
 		return callback;
 	}
 	
@@ -85,8 +83,7 @@ public:
 	VkSurfaceKHR CreateSurface(VkWin32SurfaceCreateInfoKHR const& info)
 	{
 		VkSurfaceKHR surface;
-		auto res = vkCreateWin32SurfaceKHR(m_instance, &info, nullptr, &surface);
-		(void)res;	// TODO
+		ThrowIfFailed(vkCreateWin32SurfaceKHR(m_instance, &info, nullptr, &surface));
 		return surface;
 	}
 #endif

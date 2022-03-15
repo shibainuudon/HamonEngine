@@ -8,6 +8,7 @@
 #define HAMON_RENDER_VULKAN_QUEUE_HPP
 
 #include <hamon/render/vulkan/vulkan.hpp>
+#include <hamon/render/vulkan/throw_if_failed.hpp>
 #include <cstdint>
 
 namespace hamon
@@ -46,8 +47,7 @@ public:
 		info.pCommandBuffers      = &command_buffer;
 		info.signalSemaphoreCount = 0;
 		info.pSignalSemaphores    = nullptr;
-		auto res = vkQueueSubmit(m_queue, 1, &info, fence);
-		(void)res;	// TODO
+		ThrowIfFailed(vkQueueSubmit(m_queue, 1, &info, fence));
 	}
 
 	void Present(VkSwapchainKHR swapchain, std::uint32_t image_index)
@@ -61,8 +61,7 @@ public:
 		info.pWaitSemaphores    = nullptr;
 		info.waitSemaphoreCount = 0;
 		info.pResults           = nullptr;
-		auto res = vkQueuePresentKHR(m_queue, &info);
-		(void)res;	// TODO
+		ThrowIfFailed(vkQueuePresentKHR(m_queue, &info));
 	}
 
 private:

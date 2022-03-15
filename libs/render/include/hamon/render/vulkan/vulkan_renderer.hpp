@@ -35,9 +35,34 @@ inline namespace render
 class VulkanRenderer : public Renderer
 {
 private:
+	static const char* GetReportBitString(VkDebugReportFlagsEXT flags)
+	{
+		if ((flags & VK_DEBUG_REPORT_INFORMATION_BIT_EXT) != 0)
+		{
+			return "INFO";
+		}
+		if ((flags & VK_DEBUG_REPORT_WARNING_BIT_EXT) != 0)
+		{
+			return "WARNING";
+		}
+		if ((flags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT) != 0)
+		{
+			return "PERFORMANCE_WARNING";
+		}
+		if ((flags & VK_DEBUG_REPORT_ERROR_BIT_EXT) != 0)
+		{
+			return "ERROR";
+		}
+		if ((flags & VK_DEBUG_REPORT_DEBUG_BIT_EXT) != 0)
+		{
+			return "DEBUG";
+		}
+		return "";
+	}
+
 	static VKAPI_ATTR VkBool32 VKAPI_CALL
 	DebugCallback(
-		VkDebugReportFlagsEXT      /*flags*/,
+		VkDebugReportFlagsEXT      flags,
 		VkDebugReportObjectTypeEXT /*objectType*/,
 		std::uint64_t              /*object*/,
 		std::size_t                /*location*/,
@@ -46,7 +71,7 @@ private:
 		const char*                pMessage,
 		void*                      /*pUserData*/)
 	{
-		std::printf("%s", pMessage);
+		std::printf("[%s]: %s\n", GetReportBitString(flags), pMessage);
 		return VK_FALSE;
 	}
 	
@@ -55,7 +80,12 @@ public:
 	{
 		const char* app_name = "HamonEngine";
 		
-		std::vector<const char*> instance_layer_name;
+		std::vector<const char*> instance_layer_name =
+		{
+#if defined(_DEBUG)
+			"VK_LAYER_KHRONOS_validation",
+#endif
+		};
 
 		std::vector<const char*> instance_extension_names;
 		instance_extension_names.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
@@ -101,7 +131,12 @@ public:
 			}
 		}
 
-		std::vector<const char*> device_layer_names;
+		std::vector<const char*> device_layer_names =
+		{
+#if defined(_DEBUG)
+			"VK_LAYER_KHRONOS_validation",
+#endif
+		};
 
 		std::vector<const char*> device_extension_names;
 		device_extension_names.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
@@ -228,8 +263,10 @@ public:
 		
 		VkResult res;
 		do {
-			res = m_device->WaitForFences(1, &m_draw_fence->Get(), VK_TRUE, FENCE_TIMEOUT);
+			res = m_draw_fence->Wait(VK_TRUE, FENCE_TIMEOUT);
 		} while (res == VK_TIMEOUT);
+
+		m_draw_fence->Reset();
 
 		m_present_queue->Present(m_swapchain->Get(), m_frame_index);
 	}

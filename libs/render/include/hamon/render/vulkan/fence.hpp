@@ -37,6 +37,16 @@ public:
 		m_device->DestroyFence(m_fence);
 	}
 
+	VkResult Wait(VkBool32 wait_all, std::uint64_t timeout)
+	{
+		return m_device->WaitForFences(1, &m_fence, wait_all, timeout);
+	}
+
+	void Reset()
+	{
+		m_device->ResetFences(1, &m_fence);
+	}
+
 	VkFence const& Get(void) const { return m_fence; }
 
 private:

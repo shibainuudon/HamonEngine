@@ -8,6 +8,7 @@
 #define HAMON_RENDER_VULKAN_DEVICE_HPP
 
 #include <hamon/render/vulkan/vulkan.hpp>
+#include <hamon/render/vulkan/throw_if_failed.hpp>
 #include <vector>
 #include <cstdint>
 
@@ -45,8 +46,7 @@ public:
 		info.enabledLayerCount       = static_cast<std::uint32_t>(layer_names.size());
 		info.ppEnabledLayerNames     = layer_names.empty() ? nullptr : layer_names.data();
 		info.pEnabledFeatures        = nullptr;
-		auto res = vkCreateDevice(phycical_device, &info, nullptr, &m_device);
-		(void)res;	// TODO
+		ThrowIfFailed(vkCreateDevice(phycical_device, &info, nullptr, &m_device));
 	}
 
 	~Device()
@@ -57,8 +57,7 @@ public:
 	VkCommandPool CreateCommandPool(VkCommandPoolCreateInfo const& info)
 	{
 		VkCommandPool command_pool;
-		auto res = vkCreateCommandPool(m_device, &info, nullptr, &command_pool);
-		(void)res;	// TODO
+		ThrowIfFailed(vkCreateCommandPool(m_device, &info, nullptr, &command_pool));
 		return command_pool;
 	}
 
@@ -72,8 +71,7 @@ public:
 	{
 		// TODO info.commandBufferCount が０のときどうするか
 		std::vector<VkCommandBuffer> command_buffers(info.commandBufferCount);
-		auto res = vkAllocateCommandBuffers(m_device, &info, command_buffers.data());
-		(void)res;	// TODO
+		ThrowIfFailed(vkAllocateCommandBuffers(m_device, &info, command_buffers.data()));
 		return command_buffers;
 	}
 
@@ -98,8 +96,7 @@ public:
 	VkSwapchainKHR CreateSwapchain(VkSwapchainCreateInfoKHR const& info)
 	{
 		VkSwapchainKHR swapchain;
-		auto res = vkCreateSwapchainKHR(m_device, &info, nullptr, &swapchain);
-		(void)res;	// TODO
+		ThrowIfFailed(vkCreateSwapchainKHR(m_device, &info, nullptr, &swapchain));
 		return swapchain;
 	}
 
@@ -110,19 +107,17 @@ public:
 
 	std::vector<VkImage> GetSwapchainImages(VkSwapchainKHR swapchain) const
 	{
-		VkResult res;
 		std::uint32_t image_count;
-		res = vkGetSwapchainImagesKHR(m_device, swapchain, &image_count, nullptr);
+		ThrowIfFailed(vkGetSwapchainImagesKHR(m_device, swapchain, &image_count, nullptr));
 		std::vector<VkImage> swapchain_images(image_count);
-		res = vkGetSwapchainImagesKHR(m_device, swapchain, &image_count, swapchain_images.data());
+		ThrowIfFailed(vkGetSwapchainImagesKHR(m_device, swapchain, &image_count, swapchain_images.data()));
 		return swapchain_images;
 	}
 
 	VkImageView CreateImageView(VkImageViewCreateInfo const& info)
 	{
 		VkImageView image_view;
-		auto res = vkCreateImageView(m_device, &info, nullptr, &image_view);
-		(void)res;	// TODO
+		ThrowIfFailed(vkCreateImageView(m_device, &info, nullptr, &image_view));
 		return image_view;
 	}
 
@@ -134,8 +129,7 @@ public:
 	VkSemaphore CreateSemaphore(VkSemaphoreCreateInfo const& info)
 	{
 		VkSemaphore semaphore;
-		auto res = vkCreateSemaphore(m_device, &info, nullptr, &semaphore);
-		(void)res;	// TODO
+		ThrowIfFailed(vkCreateSemaphore(m_device, &info, nullptr, &semaphore));
 		return semaphore;
 	}
 
@@ -147,8 +141,7 @@ public:
 	VkRenderPass CreateRenderPass(VkRenderPassCreateInfo const& info)
 	{
 		VkRenderPass render_pass;
-		auto res = vkCreateRenderPass(m_device, &info, nullptr, &render_pass);
-		(void)res;	// TODO
+		ThrowIfFailed(vkCreateRenderPass(m_device, &info, nullptr, &render_pass));
 		return render_pass;
 	}
 
@@ -160,8 +153,7 @@ public:
 	VkFramebuffer CreateFramebuffer(VkFramebufferCreateInfo const& info)
 	{
 		VkFramebuffer framebuffer;
-		auto res = vkCreateFramebuffer(m_device, &info, nullptr, &framebuffer);
-		(void)res;	// TODO
+		ThrowIfFailed(vkCreateFramebuffer(m_device, &info, nullptr, &framebuffer));
 		return framebuffer;
 	}
 
@@ -173,8 +165,7 @@ public:
 	VkFence CreateFence(VkFenceCreateInfo const& info)
 	{
 		VkFence fence;
-		auto res = vkCreateFence(m_device, &info, nullptr, &fence);
-		(void)res;	// TODO
+		ThrowIfFailed(vkCreateFence(m_device, &info, nullptr, &fence));
 		return fence;
 	}
 	
@@ -190,14 +181,13 @@ public:
 		VkFence fence)
 	{
 		std::uint32_t image_index;
-		auto res = vkAcquireNextImageKHR(
+		ThrowIfFailed(vkAcquireNextImageKHR(
 			m_device,
 			swapchain,
 			timeout,
 			semaphore,
 			fence,
-			&image_index);
-		(void)res;	// TODO
+			&image_index));
 		return image_index;
 	}
 
@@ -207,8 +197,14 @@ public:
 		VkBool32       wait_all,
 		uint64_t       timeout)
 	{
-		auto res = vkWaitForFences(m_device, fence_count, fences, wait_all, timeout);
-		return res;
+		return ThrowIfFailed(vkWaitForFences(m_device, fence_count, fences, wait_all, timeout));
+	}
+	
+	VkResult ResetFences(
+		uint32_t       fence_count,
+		const VkFence* fences)
+	{
+		return ThrowIfFailed(vkResetFences(m_device, fence_count, fences));
 	}
 
 private:

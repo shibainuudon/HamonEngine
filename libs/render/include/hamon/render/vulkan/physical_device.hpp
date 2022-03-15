@@ -8,6 +8,7 @@
 #define HAMON_RENDER_VULKAN_PHYSICAL_DEVICE_HPP
 
 #include <hamon/render/vulkan/vulkan.hpp>
+#include <hamon/render/vulkan/throw_if_failed.hpp>
 #include <vector>
 #include <cstdint>
 
@@ -43,38 +44,34 @@ public:
 
 	std::vector<VkSurfaceFormatKHR> GetSurfaceFormats(VkSurfaceKHR surface) const
 	{
-		VkResult res;
 		std::uint32_t count;
-		res = vkGetPhysicalDeviceSurfaceFormatsKHR(m_physical_device, surface, &count, nullptr);
+		ThrowIfFailed(vkGetPhysicalDeviceSurfaceFormatsKHR(m_physical_device, surface, &count, nullptr));
 		std::vector<VkSurfaceFormatKHR> formats(count);
-		res = vkGetPhysicalDeviceSurfaceFormatsKHR(m_physical_device, surface, &count, formats.data());
+		ThrowIfFailed(vkGetPhysicalDeviceSurfaceFormatsKHR(m_physical_device, surface, &count, formats.data()));
 		return formats;
 	}
 
 	VkSurfaceCapabilitiesKHR GetSurfaceCapabilities(VkSurfaceKHR surface) const
 	{
 		VkSurfaceCapabilitiesKHR capabilities;
-		auto res = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_physical_device, surface, &capabilities);
-		(void)res;	// TODO
+		ThrowIfFailed(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_physical_device, surface, &capabilities));
 		return capabilities;
 	}
 
 	std::vector<VkPresentModeKHR> GetSurfacePresentModes(VkSurfaceKHR surface) const
 	{
-		VkResult res;
 		std::uint32_t count;
-		res = vkGetPhysicalDeviceSurfacePresentModesKHR(m_physical_device, surface, &count, nullptr);
+		ThrowIfFailed(vkGetPhysicalDeviceSurfacePresentModesKHR(m_physical_device, surface, &count, nullptr));
 		std::vector<VkPresentModeKHR> present_modes(count);
-		res = vkGetPhysicalDeviceSurfacePresentModesKHR(m_physical_device, surface, &count, present_modes.data());
+		ThrowIfFailed(vkGetPhysicalDeviceSurfacePresentModesKHR(m_physical_device, surface, &count, present_modes.data()));
 		return present_modes;
 	}
 
 	VkBool32 GetSurfaceSupport(std::uint32_t queue_family_index, VkSurfaceKHR surface) const
 	{
 		VkBool32 supported;
-		auto res = vkGetPhysicalDeviceSurfaceSupportKHR(
-			m_physical_device, queue_family_index, surface, &supported);
-		(void)res;	// TODO
+		ThrowIfFailed(vkGetPhysicalDeviceSurfaceSupportKHR(
+			m_physical_device, queue_family_index, surface, &supported));
 		return supported;
 	}
 

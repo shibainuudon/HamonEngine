@@ -31,7 +31,7 @@ public:
 		info.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 		info.pNext            = nullptr;
 		info.queueFamilyIndex = queue_family_index;
-		info.flags            = 0;
+		info.flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 		m_command_pool = m_device->CreateCommandPool(info);
 	}
 

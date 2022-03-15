@@ -9,6 +9,7 @@
 
 #include <hamon/render/vulkan/vulkan.hpp>
 #include <hamon/render/vulkan/command_pool.hpp>
+#include <hamon/render/vulkan/throw_if_failed.hpp>
 #include <hamon/render/clear_value.hpp>
 
 namespace hamon
@@ -42,14 +43,12 @@ public:
 		cmd_buf_info.pNext            = nullptr;
 		cmd_buf_info.flags            = 0;
 		cmd_buf_info.pInheritanceInfo = nullptr;
-		auto res = vkBeginCommandBuffer(m_command_buffer, &cmd_buf_info);
-		(void)res;	// TODO
+		ThrowIfFailed(vkBeginCommandBuffer(m_command_buffer, &cmd_buf_info));
 	}
 
 	void End(void)
 	{
-		auto res = vkEndCommandBuffer(m_command_buffer);
-		(void)res;	// TODO
+		ThrowIfFailed(vkEndCommandBuffer(m_command_buffer));
 	}
 
 	void BeginRenderPass(
