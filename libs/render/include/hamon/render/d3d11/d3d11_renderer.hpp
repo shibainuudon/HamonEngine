@@ -81,6 +81,12 @@ public:
 	{
 	}
 
+	void Render(Geometry const& geometry, std::vector<Shader> const& shaders) override
+	{
+		(void)geometry;
+		(void)shaders;
+	}
+
 private:
 	std::unique_ptr<DXGIFactory>				m_factory;
 	std::unique_ptr<DXGISwapChain>				m_swap_chain;

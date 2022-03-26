@@ -7,11 +7,16 @@
 #ifndef HAMON_RENDER_RENDERER_HPP
 #define HAMON_RENDER_RENDERER_HPP
 
+#include <vector>
+
 namespace hamon
 {
 
 inline namespace render
 {
+
+class Geometry;
+class Shader;
 
 class Renderer
 {
@@ -23,6 +28,8 @@ public:
 
 	virtual void BeginRenderPass(ClearValue const& clear_value) = 0;
 	virtual void EndRenderPass(void) = 0;
+
+	virtual void Render(Geometry const& geometry, std::vector<Shader> const& shaders) = 0;
 };
 
 }	// inline namespace render

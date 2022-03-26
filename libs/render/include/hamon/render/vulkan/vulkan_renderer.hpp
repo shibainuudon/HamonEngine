@@ -285,6 +285,12 @@ public:
 		m_command_buffers[0]->EndRenderPass();
 	}
 
+	void Render(Geometry const& geometry, std::vector<Shader> const& shaders) override
+	{
+		(void)geometry;
+		(void)shaders;
+	}
+
 private:
 	std::unique_ptr<vulkan::Instance>					m_instance;
 	std::unique_ptr<vulkan::DebugReportCallback>		m_callback;

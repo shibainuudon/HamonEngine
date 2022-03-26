@@ -10,6 +10,8 @@
 #include <hamon/render/opengl/context.hpp>
 #include <hamon/render/opengl/glext.hpp>
 #include <hamon/render/opengl/gl.hpp>
+#include <hamon/render/opengl/geometry.hpp>
+#include <hamon/render/opengl/program.hpp>
 #include <hamon/render/renderer.hpp>
 #include <memory>
 #include <cstdio>
@@ -28,7 +30,17 @@ public:
 	explicit OpenGLRenderer(Window const& window)
 		: m_context(new gl::Context(window))
 	{
+		// NOTIFICATION レベルの報告を無効化
+		gl::glDebugMessageControl(
+			GL_DONT_CARE,
+			GL_DONT_CARE,
+			GL_DEBUG_SEVERITY_NOTIFICATION,
+			0,
+			nullptr,
+			GL_FALSE);
+		// コールバック関数を指定
 		gl::glDebugMessageCallback(DebugCallback, nullptr);
+		// DebugOutputを有効化
 		::glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	}
 
@@ -60,6 +72,16 @@ public:
 
 	void EndRenderPass(void) override
 	{
+	}
+
+	void Render(Geometry const& geometry, std::vector<Shader> const& shaders) override
+	{
+		gl::Program gl_program(shaders);
+		gl::Geometry gl_geometry(geometry);
+
+		gl_program.Use();
+		gl_geometry.Draw();
+		gl_program.Unuse();
 	}
 
 private:
