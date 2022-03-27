@@ -12,72 +12,9 @@
 namespace
 {
 
-
-}
-
-int main()
+std::vector<hamon::Shader> GetGLSLShaders(void)
 {
-	std::uint32_t const width  = 800;
-	std::uint32_t const height = 600;
-
-	std::vector<std::unique_ptr<hamon::Window>> windows;
-	std::vector<std::unique_ptr<hamon::Renderer>> renderers;
-
-#if defined(HAMON_HAS_OPEN_GL)
-	{
-		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_triangle OpenGL");
-		auto renderer = std::make_unique<hamon::OpenGLRenderer>(*window);
-		windows.push_back(std::move(window));
-		renderers.push_back(std::move(renderer));
-	}
-#endif
-#if 0//defined(HAMON_HAS_D3D11)
-	{
-		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_triangle D3D11");
-		auto renderer = std::make_unique<hamon::D3D11Renderer>(*window);
-		windows.push_back(std::move(window));
-		renderers.push_back(std::move(renderer));
-	}
-#endif
-#if 0//defined(HAMON_HAS_D3D12)
-	{
-		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_triangle D3D12");
-		auto renderer = std::make_unique<hamon::D3D12Renderer>(*window);
-		windows.push_back(std::move(window));
-		renderers.push_back(std::move(renderer));
-	}
-#endif
-#if 0//defined(HAMON_HAS_VULKAN)
-	{
-		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_triangle Vulkan");
-		auto renderer = std::make_unique<hamon::VulkanRenderer>(*window);
-		windows.push_back(std::move(window));
-		renderers.push_back(std::move(renderer));
-	}
-#endif
-
-	hamon::VertexLayout const vertex_layout
-	{
-		28,
-		{
-			{ hamon::Semantic::Position, hamon::Type::Float, 3, 0 },
-			{ hamon::Semantic::Color,    hamon::Type::Float, 4, 12 },
-		},
-	};
-
-	std::vector<float> const vertices
-	{
-		 0.0f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f, 1.0f,
-		-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, 1.0f,
-		 0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f, 1.0f,
-	};
-
-	hamon::Geometry const geometry
-	{
-		hamon::PrimitiveTopology::Triangles, vertex_layout, vertices
-	};
-
-	std::vector<hamon::Shader> const shaders
+	return
 	{
 		{
 			hamon::ShaderLanguage::GLSL,
@@ -112,6 +49,122 @@ int main()
 			)"
 		},
 	};
+}
+
+std::vector<hamon::Shader> GetHLSLShaders(void)
+{
+	return
+	{
+		{
+			hamon::ShaderLanguage::HLSL,
+			hamon::ShaderStage::Vertex,
+			R"(
+				struct VS_INPUT
+				{
+					float3 pos   : POSITION;
+					float4 color : COLOR;
+				};
+
+				struct VS_OUTPUT
+				{
+					float4 pos   : SV_POSITION;
+					float4 color : COLOR;
+				};
+
+				VS_OUTPUT main(VS_INPUT input)
+				{
+					VS_OUTPUT output;
+					output.pos = float4(input.pos, 1.0);
+					output.color = input.color;
+					return output;
+				}
+			)"
+		},
+		{
+			hamon::ShaderLanguage::HLSL,
+			hamon::ShaderStage::Fragment,
+			R"(
+				struct PS_INPUT
+				{
+					float4 pos   : SV_POSITION;
+					float4 color : COLOR;
+				};
+
+				float4 main(PS_INPUT input) : SV_Target
+				{
+					return input.color;
+				}
+			)"
+		},
+	};
+}
+
+}
+
+int main()
+{
+	std::uint32_t const width  = 800;
+	std::uint32_t const height = 600;
+
+	std::vector<std::unique_ptr<hamon::Window>> windows;
+	std::vector<std::unique_ptr<hamon::Renderer>> renderers;
+	std::vector<std::vector<hamon::Shader>> shaders;
+
+#if defined(HAMON_HAS_OPEN_GL)
+	{
+		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_triangle OpenGL");
+		auto renderer = std::make_unique<hamon::OpenGLRenderer>(*window);
+		windows.push_back(std::move(window));
+		renderers.push_back(std::move(renderer));
+		shaders.push_back(GetGLSLShaders());
+	}
+#endif
+#if defined(HAMON_HAS_D3D11)
+	{
+		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_triangle D3D11");
+		auto renderer = std::make_unique<hamon::D3D11Renderer>(*window);
+		windows.push_back(std::move(window));
+		renderers.push_back(std::move(renderer));
+		shaders.push_back(GetHLSLShaders());
+	}
+#endif
+#if 0//defined(HAMON_HAS_D3D12)
+	{
+		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_triangle D3D12");
+		auto renderer = std::make_unique<hamon::D3D12Renderer>(*window);
+		windows.push_back(std::move(window));
+		renderers.push_back(std::move(renderer));
+	}
+#endif
+#if 0//defined(HAMON_HAS_VULKAN)
+	{
+		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_triangle Vulkan");
+		auto renderer = std::make_unique<hamon::VulkanRenderer>(*window);
+		windows.push_back(std::move(window));
+		renderers.push_back(std::move(renderer));
+	}
+#endif
+
+	hamon::VertexLayout const vertex_layout
+	{
+		28,
+		{
+			{ hamon::Semantic::Position, hamon::Type::Float, 3, 0 },
+			{ hamon::Semantic::Color,    hamon::Type::Float, 4, 12 },
+		},
+	};
+
+	std::vector<float> const vertices
+	{
+		 0.0f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+		 0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, 1.0f,
+		-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f, 1.0f,
+	};
+
+	hamon::Geometry const geometry
+	{
+		hamon::PrimitiveTopology::Triangles, vertex_layout, vertices
+	};
 
 	for (;;)
 	{
@@ -131,15 +184,17 @@ int main()
 		clear_value.depth = 0.0f;
 		clear_value.stencil = 0;
 
+		int i = 0;
 		for (auto& renderer : renderers)
 		{
 			renderer->Begin();
 			renderer->BeginRenderPass(clear_value);
 
-			renderer->Render(geometry, shaders);
+			renderer->Render(geometry, shaders[i]);
 
 			renderer->EndRenderPass();
 			renderer->End();
+			++i;
 		}
 	}
 

@@ -39,6 +39,79 @@ public:
 		m_device_context->ClearRenderTargetView(render_target_view, color_rgba);
 	}
 
+	void IASetVertexBuffers(
+		::UINT         start_slot,
+		::UINT         num_buffers,
+		::ID3D11Buffer* const* vertex_buffers,
+		const ::UINT* strides,
+		const ::UINT* offsets)
+	{
+		m_device_context->IASetVertexBuffers(start_slot, num_buffers, vertex_buffers, strides, offsets);
+	}
+
+	void IASetPrimitiveTopology(
+		::D3D11_PRIMITIVE_TOPOLOGY topology)
+	{
+		m_device_context->IASetPrimitiveTopology(topology);
+	}
+
+	void IASetInputLayout(::ID3D11InputLayout* input_layout)
+	{
+		m_device_context->IASetInputLayout(input_layout);
+	}
+
+	void VSSetShader(::ID3D11VertexShader* vertex_shader)
+	{
+		m_device_context->VSSetShader(vertex_shader, nullptr, 0u);
+	}
+
+	void PSSetShader(::ID3D11PixelShader* pixel_shader)
+	{
+		m_device_context->PSSetShader(pixel_shader, nullptr, 0u);
+	}
+
+	void GSSetShader(::ID3D11GeometryShader* geometry_shader)
+	{
+		m_device_context->GSSetShader(geometry_shader, nullptr, 0u);
+	}
+
+	void HSSetShader(::ID3D11HullShader* hull_shader)
+	{
+		m_device_context->HSSetShader(hull_shader, nullptr, 0u);
+	}
+
+	void DSSetShader(::ID3D11DomainShader* domain_shader)
+	{
+		m_device_context->DSSetShader(domain_shader, nullptr, 0u);
+	}
+
+	void CSSetShader(::ID3D11ComputeShader* compute_shader)
+	{
+		m_device_context->CSSetShader(compute_shader, nullptr, 0u);
+	}
+
+	void RSSetViewports(
+		::UINT                  num_viewports,
+		::D3D11_VIEWPORT const* viewports)
+	{
+		m_device_context->RSSetViewports(num_viewports, viewports);
+	}
+
+	void OMSetRenderTargets(
+		::UINT                           num_views,
+		::ID3D11RenderTargetView* const* render_target_views,
+		::ID3D11DepthStencilView*        depth_stencil_view)
+	{
+		m_device_context->OMSetRenderTargets(num_views, render_target_views, depth_stencil_view);
+	}
+
+	void Draw(
+		::UINT vertex_count,
+		::UINT start_vertex_location)
+	{
+		m_device_context->Draw(vertex_count, start_vertex_location);
+	}
+
 private:
 	ComPtr<ID3D11DeviceContext4>	m_device_context;
 };

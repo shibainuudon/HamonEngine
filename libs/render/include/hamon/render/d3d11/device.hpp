@@ -84,6 +84,97 @@ public:
 		return rtv1;
 	}
 
+	ComPtr<::ID3D11Buffer>
+	CreateBuffer(
+		const D3D11_BUFFER_DESC* desc,
+		const D3D11_SUBRESOURCE_DATA* initial_data)
+	{
+		ComPtr<::ID3D11Buffer> buffer;
+		ThrowIfFailed(m_device->CreateBuffer(desc, initial_data, &buffer));
+		return buffer;
+	}
+	
+	ComPtr<::ID3D11InputLayout> CreateInputLayout(
+		const ::D3D11_INPUT_ELEMENT_DESC* input_element_descs,
+		::UINT num_elements,
+		::ID3DBlob* micro_code)
+	{
+		ComPtr<::ID3D11InputLayout> layout;
+		ThrowIfFailed(m_device->CreateInputLayout(
+			input_element_descs,
+			num_elements,
+			micro_code->GetBufferPointer(),
+			micro_code->GetBufferSize(),
+			&layout));
+		return layout;
+	}
+
+	ComPtr<::ID3D11VertexShader> CreateVertexShader(::ID3DBlob* micro_code)
+	{
+		ComPtr<::ID3D11VertexShader> shader;
+		ThrowIfFailed(m_device->CreateVertexShader(
+			micro_code->GetBufferPointer(),
+			micro_code->GetBufferSize(),
+			nullptr,
+			&shader));
+		return shader;
+	}
+
+	ComPtr<::ID3D11GeometryShader> CreateGeometryShader(::ID3DBlob* micro_code)
+	{
+		ComPtr<::ID3D11GeometryShader> shader;
+		ThrowIfFailed(m_device->CreateGeometryShader(
+			micro_code->GetBufferPointer(),
+			micro_code->GetBufferSize(),
+			nullptr,
+			&shader));
+		return shader;
+	}
+
+	ComPtr<::ID3D11PixelShader> CreatePixelShader(::ID3DBlob* micro_code)
+	{
+		ComPtr<::ID3D11PixelShader> shader;
+		ThrowIfFailed(m_device->CreatePixelShader(
+			micro_code->GetBufferPointer(),
+			micro_code->GetBufferSize(),
+			nullptr,
+			&shader));
+		return shader;
+	}
+
+	ComPtr<::ID3D11HullShader> CreateHullShader(::ID3DBlob* micro_code)
+	{
+		ComPtr<::ID3D11HullShader> shader;
+		ThrowIfFailed(m_device->CreateHullShader(
+			micro_code->GetBufferPointer(),
+			micro_code->GetBufferSize(),
+			nullptr,
+			&shader));
+		return shader;
+	}
+
+	ComPtr<::ID3D11DomainShader> CreateDomainShader(::ID3DBlob* micro_code)
+	{
+		ComPtr<::ID3D11DomainShader> shader;
+		ThrowIfFailed(m_device->CreateDomainShader(
+			micro_code->GetBufferPointer(),
+			micro_code->GetBufferSize(),
+			nullptr,
+			&shader));
+		return shader;
+	}
+
+	ComPtr<::ID3D11ComputeShader> CreateComputeShader(::ID3DBlob* micro_code)
+	{
+		ComPtr<::ID3D11ComputeShader> shader;
+		ThrowIfFailed(m_device->CreateComputeShader(
+			micro_code->GetBufferPointer(),
+			micro_code->GetBufferSize(),
+			nullptr,
+			&shader));
+		return shader;
+	}
+
 	::ID3D11Device5* Get(void) const { return m_device.Get(); }
 
 private:

@@ -8,12 +8,17 @@
 #define HAMON_RENDER_D3D11_D3D11_RENDERER_HPP
 
 #include <hamon/render/renderer.hpp>
+#include <hamon/render/geometry.hpp>
+#include <hamon/render/shader.hpp>
 #include <hamon/render/d3d/dxgi_factory.hpp>
 #include <hamon/render/d3d/dxgi_swap_chain.hpp>
 #include <hamon/render/d3d11/device.hpp>
 #include <hamon/render/d3d11/device_context.hpp>
 #include <hamon/render/d3d11/render_target_view.hpp>
+#include <hamon/render/d3d11/geometry.hpp>
+#include <hamon/render/d3d11/shader.hpp>
 #include <memory>
+#include <vector>
 
 namespace hamon
 {
@@ -65,6 +70,14 @@ public:
 
 	void BeginRenderPass(ClearValue const& clear_value) override
 	{
+		{
+			ID3D11RenderTargetView* rtv = m_render_target_view->Get();
+			m_device_context->OMSetRenderTargets(
+				1,
+				&rtv,
+				nullptr);
+		}
+
 		float const clear_color[] =
 		{
 			clear_value.r,
@@ -75,16 +88,56 @@ public:
 		m_device_context->ClearRenderTargetView(
 			m_render_target_view->Get(),
 			clear_color);
+
+		::D3D11_VIEWPORT viewport;
+		viewport.Width = 800;
+		viewport.Height = 600;
+		viewport.MinDepth = 0.0f;
+		viewport.MaxDepth = 1.0f;
+		viewport.TopLeftX = 0;
+		viewport.TopLeftY = 0;
+		m_device_context->RSSetViewports(1, &viewport);
 	}
 
 	void EndRenderPass(void) override
 	{
 	}
 
-	void Render(Geometry const& geometry, std::vector<Shader> const& shaders) override
+	void Render(Geometry const& geometry, std::vector<render::Shader> const& shaders) override
 	{
-		(void)geometry;
-		(void)shaders;
+		std::vector<std::unique_ptr<d3d11::Shader>> d3d11_shaders;
+		for (auto const& shader : shaders)
+		{
+			switch (shader.GetStage())
+			{
+			case render::ShaderStage::Compute:
+				d3d11_shaders.push_back(std::make_unique<d3d11::ComputeShader>(m_device.get(), shader));
+				break;
+			case render::ShaderStage::Vertex:
+				d3d11_shaders.push_back(std::make_unique<d3d11::VertexShader>(m_device.get(), shader));
+				break;
+			case render::ShaderStage::TessellationControl:
+				d3d11_shaders.push_back(std::make_unique<d3d11::HullShader>(m_device.get(), shader));
+				break;
+			case render::ShaderStage::TessellationEvaluation:
+				d3d11_shaders.push_back(std::make_unique<d3d11::DomainShader>(m_device.get(), shader));
+				break;
+			case render::ShaderStage::Geometry:
+				d3d11_shaders.push_back(std::make_unique<d3d11::GeometryShader>(m_device.get(), shader));
+				break;
+			case render::ShaderStage::Fragment:
+				d3d11_shaders.push_back(std::make_unique<d3d11::PixelShader>(m_device.get(), shader));
+				break;
+			}
+		}
+		d3d11::Geometry d3d11_geometry(m_device.get(), geometry);
+
+		for (auto const& shader : d3d11_shaders)
+		{
+			shader->Bind(m_device_context.get());
+		}
+
+		d3d11_geometry.Draw(m_device_context.get());
 	}
 
 private:
