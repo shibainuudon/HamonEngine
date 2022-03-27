@@ -157,8 +157,8 @@ int main()
 	std::vector<float> const vertices
 	{
 		 0.0f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f, 1.0f,
-		 0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, 1.0f,
-		-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f, 1.0f,
+		-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, 1.0f,
+		 0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f, 1.0f,
 	};
 
 	hamon::Geometry const geometry
@@ -184,11 +184,15 @@ int main()
 		clear_value.depth = 0.0f;
 		clear_value.stencil = 0;
 
+		hamon::Viewport viewport;
+		viewport.width  = width;
+		viewport.height = height;
+
 		int i = 0;
 		for (auto& renderer : renderers)
 		{
 			renderer->Begin();
-			renderer->BeginRenderPass(clear_value);
+			renderer->BeginRenderPass(clear_value, viewport);
 
 			renderer->Render(geometry, shaders[i]);
 

@@ -271,7 +271,7 @@ public:
 		m_present_queue->Present(m_swapchain->Get(), m_frame_index);
 	}
 
-	void BeginRenderPass(ClearValue const& clear_value) override
+	void BeginRenderPass(ClearValue const& clear_value, Viewport const& /*viewport*/) override
 	{
 		m_command_buffers[0]->BeginRenderPass(
 			m_render_pass->Get(),

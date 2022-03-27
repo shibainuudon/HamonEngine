@@ -17,6 +17,8 @@ inline namespace render
 
 class Geometry;
 class Shader;
+struct ClearValue;
+struct Viewport;
 
 class Renderer
 {
@@ -26,7 +28,7 @@ public:
 	virtual void Begin(void) = 0;
 	virtual void End(void) = 0;
 
-	virtual void BeginRenderPass(ClearValue const& clear_value) = 0;
+	virtual void BeginRenderPass(ClearValue const& clear_value, Viewport const& viewport) = 0;
 	virtual void EndRenderPass(void) = 0;
 
 	virtual void Render(Geometry const& geometry, std::vector<Shader> const& shaders) = 0;

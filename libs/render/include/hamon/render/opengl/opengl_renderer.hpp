@@ -57,8 +57,9 @@ public:
 		m_context->SwapBuffers();
 	}
 
-	void BeginRenderPass(ClearValue const& clear_value) override
+	void BeginRenderPass(ClearValue const& clear_value, Viewport const& viewport) override
 	{
+		// Clear
 		::glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 		::glDepthMask(GL_TRUE);
 		::glStencilMask(~0u);
@@ -68,6 +69,16 @@ public:
 			clear_value.b,
 			clear_value.a);
 		::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+		// Setup Viewport
+		::glViewport(
+			static_cast<::GLint>(viewport.left),
+			static_cast<::GLint>(viewport.top),
+			static_cast<::GLsizei>(viewport.width),
+			static_cast<::GLsizei>(viewport.height));
+		gl::glDepthRangef(
+			viewport.min_depth,
+			viewport.max_depth);
 	}
 
 	void EndRenderPass(void) override

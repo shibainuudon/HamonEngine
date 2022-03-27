@@ -10,6 +10,8 @@
 #include <hamon/render/renderer.hpp>
 #include <hamon/render/geometry.hpp>
 #include <hamon/render/shader.hpp>
+#include <hamon/render/clear_value.hpp>
+#include <hamon/render/viewport.hpp>
 #include <hamon/render/d3d/dxgi_factory.hpp>
 #include <hamon/render/d3d/dxgi_swap_chain.hpp>
 #include <hamon/render/d3d11/device.hpp>
@@ -68,7 +70,7 @@ public:
 		m_swap_chain->Present(1, 0);
 	}
 
-	void BeginRenderPass(ClearValue const& clear_value) override
+	void BeginRenderPass(ClearValue const& clear_value, Viewport const& viewport) override
 	{
 		{
 			ID3D11RenderTargetView* rtv = m_render_target_view->Get();
@@ -89,14 +91,14 @@ public:
 			m_render_target_view->Get(),
 			clear_color);
 
-		::D3D11_VIEWPORT viewport;
-		viewport.Width = 800;
-		viewport.Height = 600;
-		viewport.MinDepth = 0.0f;
-		viewport.MaxDepth = 1.0f;
-		viewport.TopLeftX = 0;
-		viewport.TopLeftY = 0;
-		m_device_context->RSSetViewports(1, &viewport);
+		::D3D11_VIEWPORT vp;
+		vp.Width    = viewport.width;
+		vp.Height   = viewport.height;
+		vp.MinDepth = viewport.min_depth;
+		vp.MaxDepth = viewport.max_depth;
+		vp.TopLeftX = viewport.left;
+		vp.TopLeftY = viewport.top;
+		m_device_context->RSSetViewports(1, &vp);
 	}
 
 	void EndRenderPass(void) override

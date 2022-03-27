@@ -143,7 +143,7 @@ int main()
 		for (auto& renderer : renderers)
 		{
 			renderer->Begin();
-			renderer->BeginRenderPass(clear_value);
+			renderer->BeginRenderPass(clear_value, {});
 			renderer->EndRenderPass();
 			renderer->End();
 		}

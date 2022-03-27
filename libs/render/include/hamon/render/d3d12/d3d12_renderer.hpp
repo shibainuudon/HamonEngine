@@ -106,7 +106,7 @@ public:
 		m_fence->MoveToNextFrame(m_command_queue.get(), m_frame_index);
 	}
 
-	void BeginRenderPass(ClearValue const& clear_value) override
+	void BeginRenderPass(ClearValue const& clear_value, Viewport const& /*viewport*/) override
 	{
 		auto const rtv_handle = m_render_target_view->GetHandle(m_frame_index);
 		m_command_list->OMSetRenderTargets(1, &rtv_handle, FALSE, nullptr);
