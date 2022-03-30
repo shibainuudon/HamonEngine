@@ -12,6 +12,7 @@
 #include <hamon/render/shader.hpp>
 #include <hamon/render/clear_value.hpp>
 #include <hamon/render/viewport.hpp>
+#include <hamon/render/rasterizer_state.hpp>
 #include <hamon/render/d3d/dxgi_factory.hpp>
 #include <hamon/render/d3d/dxgi_swap_chain.hpp>
 #include <hamon/render/d3d11/device.hpp>
@@ -105,8 +106,28 @@ public:
 	{
 	}
 
-	void Render(Geometry const& geometry, std::vector<render::Shader> const& shaders) override
+	void Render(
+		Geometry const& geometry,
+		std::vector<render::Shader> const& shaders,
+		RasterizerState const& rasterizer_state) override
 	{
+		{
+			::D3D11_RASTERIZER_DESC desc {};
+			desc.FillMode              = ToD3D11FillMode(rasterizer_state.fill_mode);
+			desc.CullMode              = ToD3D11CullMode(rasterizer_state.cull_mode);
+			desc.FrontCounterClockwise = (rasterizer_state.front_face == FrontFace::CounterClockwise);
+			desc.DepthBias             = D3D11_DEFAULT_DEPTH_BIAS;
+			desc.DepthBiasClamp        = D3D11_DEFAULT_DEPTH_BIAS_CLAMP;
+			desc.SlopeScaledDepthBias  = D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
+			desc.DepthClipEnable       = FALSE;
+			desc.ScissorEnable         = FALSE;
+			desc.MultisampleEnable     = FALSE;
+			desc.AntialiasedLineEnable = FALSE;
+
+			auto state = m_device->CreateRasterizerState(&desc);
+			m_device_context->RSSetState(state.Get());
+		}
+
 		std::vector<std::unique_ptr<d3d11::Shader>> d3d11_shaders;
 		for (auto const& shader : shaders)
 		{
@@ -140,6 +161,28 @@ public:
 		}
 
 		d3d11_geometry.Draw(m_device_context.get());
+	}
+
+private:
+	static ::D3D11_FILL_MODE ToD3D11FillMode(render::FillMode fill_mode)
+	{
+		switch (fill_mode)
+		{
+		case render::FillMode::Solid:     return D3D11_FILL_SOLID;
+		case render::FillMode::Wireframe: return D3D11_FILL_WIREFRAME;
+		}
+		return D3D11_FILL_SOLID;
+	}
+
+	static ::D3D11_CULL_MODE ToD3D11CullMode(render::CullMode cull_mode)
+	{
+		switch (cull_mode)
+		{
+		case render::CullMode::None:  return D3D11_CULL_NONE;
+		case render::CullMode::Front: return D3D11_CULL_FRONT;
+		case render::CullMode::Back:  return D3D11_CULL_BACK;
+		}
+		return D3D11_CULL_NONE;
 	}
 
 private:

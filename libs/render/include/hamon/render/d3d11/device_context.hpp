@@ -90,6 +90,11 @@ public:
 		m_device_context->CSSetShader(compute_shader, nullptr, 0u);
 	}
 
+	void RSSetState(::ID3D11RasterizerState* rasterizer_state)
+	{
+		m_device_context->RSSetState(rasterizer_state);
+	}
+
 	void RSSetViewports(
 		::UINT                  num_viewports,
 		::D3D11_VIEWPORT const* viewports)

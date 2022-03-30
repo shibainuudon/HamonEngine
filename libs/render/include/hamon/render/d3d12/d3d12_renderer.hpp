@@ -125,10 +125,14 @@ public:
 	{
 	}
 
-	void Render(Geometry const& geometry, std::vector<Shader> const& shaders) override
+	void Render(
+		Geometry const& geometry,
+		std::vector<Shader> const& shaders,
+		RasterizerState const& rasterizer_state) override
 	{
 		(void)geometry;
 		(void)shaders;
+		(void)rasterizer_state;
 	}
 
 private:

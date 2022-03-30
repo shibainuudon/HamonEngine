@@ -76,16 +76,16 @@ public:
 		return device_context4;
 	}
 
-	ComPtr<::ID3D11RenderTargetView1>
-	CreateRenderTargetView(::ID3D11Resource* resource, ::D3D11_RENDER_TARGET_VIEW_DESC1 const* desc)
+	ComPtr<::ID3D11RenderTargetView1> CreateRenderTargetView(
+		::ID3D11Resource* resource,
+		::D3D11_RENDER_TARGET_VIEW_DESC1 const* desc)
 	{
 		ComPtr<::ID3D11RenderTargetView1> rtv1;
 		ThrowIfFailed(m_device->CreateRenderTargetView1(resource, desc, &rtv1));
 		return rtv1;
 	}
 
-	ComPtr<::ID3D11Buffer>
-	CreateBuffer(
+	ComPtr<::ID3D11Buffer> CreateBuffer(
 		const D3D11_BUFFER_DESC* desc,
 		const D3D11_SUBRESOURCE_DATA* initial_data)
 	{
@@ -93,7 +93,15 @@ public:
 		ThrowIfFailed(m_device->CreateBuffer(desc, initial_data, &buffer));
 		return buffer;
 	}
-	
+
+	ComPtr<::ID3D11RasterizerState> CreateRasterizerState(
+		const ::D3D11_RASTERIZER_DESC* rasterizer_desc)
+	{
+		ComPtr<::ID3D11RasterizerState> state;
+		ThrowIfFailed(m_device->CreateRasterizerState(rasterizer_desc, &state));
+		return state;
+	}
+
 	ComPtr<::ID3D11InputLayout> CreateInputLayout(
 		const ::D3D11_INPUT_ELEMENT_DESC* input_element_descs,
 		::UINT num_elements,

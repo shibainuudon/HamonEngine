@@ -19,6 +19,7 @@ class Geometry;
 class Shader;
 struct ClearValue;
 struct Viewport;
+struct RasterizerState;
 
 class Renderer
 {
@@ -31,7 +32,10 @@ public:
 	virtual void BeginRenderPass(ClearValue const& clear_value, Viewport const& viewport) = 0;
 	virtual void EndRenderPass(void) = 0;
 
-	virtual void Render(Geometry const& geometry, std::vector<Shader> const& shaders) = 0;
+	virtual void Render(
+		Geometry const& geometry,
+		std::vector<Shader> const& shaders,
+		RasterizerState const& rasterizer_state) = 0;
 };
 
 }	// inline namespace render

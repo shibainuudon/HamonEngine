@@ -13,6 +13,9 @@
 #include <hamon/render/opengl/geometry.hpp>
 #include <hamon/render/opengl/program.hpp>
 #include <hamon/render/renderer.hpp>
+#include <hamon/render/rasterizer_state.hpp>
+#include <hamon/render/clear_value.hpp>
+#include <hamon/render/viewport.hpp>
 #include <memory>
 #include <cstdio>
 
@@ -85,8 +88,26 @@ public:
 	{
 	}
 
-	void Render(Geometry const& geometry, std::vector<Shader> const& shaders) override
+	void Render(
+		Geometry const& geometry,
+		std::vector<Shader> const& shaders,
+		RasterizerState const& rasterizer_state) override
 	{
+		// Set Cull Mode
+		if (rasterizer_state.cull_mode != render::CullMode::None)
+		{
+			::glEnable(GL_CULL_FACE);
+			::glCullFace(ToGlCullMode(rasterizer_state.cull_mode));
+		}
+		else
+		{
+			::glDisable(GL_CULL_FACE);
+		}
+
+		::glFrontFace(ToGlFrontFace(rasterizer_state.front_face));
+
+		::glPolygonMode(GL_FRONT_AND_BACK, ToGlFillMode(rasterizer_state.fill_mode));
+
 		gl::Program gl_program(shaders);
 		gl::Geometry gl_geometry(geometry);
 
@@ -96,6 +117,40 @@ public:
 	}
 
 private:
+	static GLenum ToGlCullMode(render::CullMode cull_mode)
+	{
+		switch (cull_mode)
+		{
+		case render::CullMode::Front:	return GL_FRONT;
+		case render::CullMode::Back:	return GL_BACK;
+		case render::CullMode::None:
+		default:
+			// glCullFaceにNONEは設定できないので、適当な値を返す
+			// glDisable(GL_CULL_FACE)を呼んでカリングを無効にすること
+			return GL_BACK;
+		}
+	}
+
+	static GLenum ToGlFrontFace(render::FrontFace front_face)
+	{
+		switch (front_face)
+		{
+		case render::FrontFace::CW:  return GL_CW;
+		case render::FrontFace::CCW: return GL_CCW;
+		}
+		return GL_CW;
+	}
+
+	static GLenum ToGlFillMode(render::FillMode fill_mode)
+	{
+		switch (fill_mode)
+		{
+		case render::FillMode::Solid:		return GL_FILL;
+		case render::FillMode::Wireframe:	return GL_LINE;
+		}
+		return GL_FILL;
+	}
+
 	static void APIENTRY DebugCallback(
 		::GLenum /*source*/,
 		::GLenum /*type*/,
