@@ -19,10 +19,14 @@ enum class ShaderStage : std::uint32_t
 {
 	Compute,
 	Vertex,
-	TessellationControl,
-	TessellationEvaluation,
+	Hull,
+	Domain,
 	Geometry,
-	Fragment,
+	Pixel,
+
+	TessellationControl = Hull,
+	TessellationEvaluation = Domain,
+	Fragment = Pixel,
 };
 
 }	// inline namespace render

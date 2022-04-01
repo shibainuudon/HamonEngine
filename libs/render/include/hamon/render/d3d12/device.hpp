@@ -8,7 +8,9 @@
 #define HAMON_RENDER_D3D12_DEVICE_HPP
 
 #include <hamon/render/d3d/d3d12.hpp>
+#include <hamon/render/d3d/com_ptr.hpp>
 #include <hamon/render/d3d/throw_if_failed.hpp>
+#include <hamon/render/d3d/dxgi.hpp>
 #include <vector>
 
 namespace hamon
@@ -23,7 +25,7 @@ namespace d3d12
 class Device
 {
 public:
-	explicit Device(std::vector<ComPtr<IDXGIAdapter4>> const& adapters)
+	explicit Device(std::vector<ComPtr<::IDXGIAdapter4>> const& adapters)
 	{
 		::D3D_FEATURE_LEVEL const feature_levels[] =
 		{
@@ -111,6 +113,48 @@ public:
 		m_device->CreateRenderTargetView(resource, desc, dest_descriptor);
 	}
 
+	ComPtr<::ID3D12RootSignature> CreateRootSignature(
+		::UINT       node_mask,
+		const void*  blob_with_root_signature,
+		::SIZE_T     blob_length_in_bytes)
+	{
+		ComPtr<::ID3D12RootSignature> root_signature;
+		ThrowIfFailed(m_device->CreateRootSignature(
+			node_mask,
+			blob_with_root_signature,
+			blob_length_in_bytes,
+			IID_PPV_ARGS(&root_signature)));
+		return root_signature;
+	}
+	
+	ComPtr<::ID3D12PipelineState> CreateGraphicsPipelineState(
+		const D3D12_GRAPHICS_PIPELINE_STATE_DESC* desc)
+	{
+		ComPtr<::ID3D12PipelineState> pipeline_state;
+		ThrowIfFailed(m_device->CreateGraphicsPipelineState(
+			desc,
+			IID_PPV_ARGS(&pipeline_state)));
+		return pipeline_state;
+	}
+
+	ComPtr<::ID3D12Resource1> CreateCommittedResource(
+		const ::D3D12_HEAP_PROPERTIES* heap_properties,
+		::D3D12_HEAP_FLAGS            heap_flags,
+		const ::D3D12_RESOURCE_DESC* desc,
+		::D3D12_RESOURCE_STATES       initial_resource_state,
+		const ::D3D12_CLEAR_VALUE* optimized_clear_value)
+	{
+		ComPtr<::ID3D12Resource1> resource;
+		ThrowIfFailed(m_device->CreateCommittedResource(
+			heap_properties,
+			heap_flags,
+			desc,
+			initial_resource_state,
+			optimized_clear_value,
+			IID_PPV_ARGS(&resource)));
+		return resource;
+	}
+		
 private:
 	ComPtr<::ID3D12Device8>	m_device;
 };

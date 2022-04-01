@@ -139,16 +139,16 @@ public:
 			case render::ShaderStage::Vertex:
 				d3d11_shaders.push_back(std::make_unique<d3d11::VertexShader>(m_device.get(), shader));
 				break;
-			case render::ShaderStage::TessellationControl:
+			case render::ShaderStage::Hull:
 				d3d11_shaders.push_back(std::make_unique<d3d11::HullShader>(m_device.get(), shader));
 				break;
-			case render::ShaderStage::TessellationEvaluation:
+			case render::ShaderStage::Domain:
 				d3d11_shaders.push_back(std::make_unique<d3d11::DomainShader>(m_device.get(), shader));
 				break;
 			case render::ShaderStage::Geometry:
 				d3d11_shaders.push_back(std::make_unique<d3d11::GeometryShader>(m_device.get(), shader));
 				break;
-			case render::ShaderStage::Fragment:
+			case render::ShaderStage::Pixel:
 				d3d11_shaders.push_back(std::make_unique<d3d11::PixelShader>(m_device.get(), shader));
 				break;
 			}

@@ -36,7 +36,7 @@ public:
 
 		for (::UINT i = 0; i < buffer_count; ++i)
 		{
-			ComPtr<::ID3D12Resource2> resource;
+			ComPtr<::ID3D12Resource1> resource;
 			swap_chain->GetBuffer(i, IID_PPV_ARGS(&resource));
 			device->CreateRenderTargetView(resource.Get(), nullptr, GetHandle(i));
 		}

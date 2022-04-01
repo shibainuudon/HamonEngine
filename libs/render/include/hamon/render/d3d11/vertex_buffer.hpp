@@ -40,12 +40,12 @@ private:
 public:
 	VertexBuffer(Device* device, render::Geometry const& geometry)
 		: m_topology(ToD3D11Topology(geometry.GetPrimitiveTopology()))
-		, m_stride(geometry.GetLayout().GetBytes())
+		, m_stride(static_cast<::UINT>(geometry.GetLayout().GetBytes()))
 		, m_count(3)//geometry.GetVertexArrayCount())
 	{
         ::D3D11_BUFFER_DESC desc{};
-        desc.ByteWidth = geometry.GetVertexArrayBytes();
-        desc.Usage = D3D11_USAGE_DEFAULT;
+        desc.ByteWidth = static_cast<::UINT>(geometry.GetVertexArrayBytes());
+        desc.Usage     = D3D11_USAGE_DEFAULT;
         desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
 		::D3D11_SUBRESOURCE_DATA subresource_data{};

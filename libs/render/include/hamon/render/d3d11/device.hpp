@@ -9,6 +9,7 @@
 
 #include <hamon/render/d3d/d3d11.hpp>
 #include <hamon/render/d3d/throw_if_failed.hpp>
+#include <hamon/render/d3d/dxgi.hpp>
 #include <vector>
 
 namespace hamon
@@ -23,7 +24,7 @@ namespace d3d11
 class Device
 {
 public:
-	explicit Device(std::vector<ComPtr<IDXGIAdapter4>> const& adapters)
+	explicit Device(std::vector<ComPtr<::IDXGIAdapter4>> const& adapters)
 	{
 		::UINT flags = 0;
 #if defined(_DEBUG)

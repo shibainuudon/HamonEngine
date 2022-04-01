@@ -21,6 +21,11 @@ enum class Semantic : std::uint32_t
 	Normal,
 	Color,
 	TexCoord,
+	Binormal,
+	BlendIndices,
+	BlendWeights,
+	PointSize,
+	Tangent,
 };
 
 }	// inline namespace render

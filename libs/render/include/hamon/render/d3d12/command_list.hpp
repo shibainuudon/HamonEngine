@@ -54,7 +54,47 @@ public:
 		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 		m_command_list->ResourceBarrier(1, &barrier);
 	}
-	
+	void IASetVertexBuffers(
+		::UINT                            start_slot,
+		::UINT                            num_views,
+		const ::D3D12_VERTEX_BUFFER_VIEW* views)
+	{
+		m_command_list->IASetVertexBuffers(start_slot, num_views, views);
+	}
+
+	void IASetPrimitiveTopology(
+		::D3D12_PRIMITIVE_TOPOLOGY primitive_topology)
+	{
+		m_command_list->IASetPrimitiveTopology(primitive_topology);
+	}
+
+	void DrawInstanced(
+		::UINT vertex_count_per_instance,
+		::UINT instance_count,
+		::UINT start_vertex_location,
+		::UINT start_instance_location)
+	{
+		m_command_list->DrawInstanced(
+			vertex_count_per_instance,
+			instance_count,
+			start_vertex_location,
+			start_instance_location);
+	}
+
+	void RSSetViewports(
+		::UINT                  num_viewports,
+		const ::D3D12_VIEWPORT* viewports)
+	{
+		m_command_list->RSSetViewports(num_viewports, viewports);
+	}
+
+	void RSSetScissorRects(
+		::UINT              num_rects,
+		const ::D3D12_RECT* rects)
+	{
+		m_command_list->RSSetScissorRects(num_rects, rects);
+	}
+
 	void OMSetRenderTargets(
 		::UINT                               num_render_target_descriptors,
 		::D3D12_CPU_DESCRIPTOR_HANDLE const* render_target_descriptors,
@@ -79,6 +119,18 @@ public:
 			color_rgba,
 			num_rects,
 			rects);
+	}
+
+	void SetGraphicsRootSignature(
+		::ID3D12RootSignature* root_signature)
+	{
+		m_command_list->SetGraphicsRootSignature(root_signature);
+	}
+
+	void SetPipelineState(
+		::ID3D12PipelineState* pipeline_state)
+	{
+		m_command_list->SetPipelineState(pipeline_state);
 	}
 
 	::ID3D12GraphicsCommandList6* Get(void) const { return m_command_list.Get(); }

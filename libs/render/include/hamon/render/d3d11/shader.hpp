@@ -111,7 +111,7 @@ private:
 
 		return device->CreateInputLayout(
 			input_element_descs.data(),
-			input_element_descs.size(),
+			static_cast<::UINT>(input_element_descs.size()),
 			micro_code);
 	}
 

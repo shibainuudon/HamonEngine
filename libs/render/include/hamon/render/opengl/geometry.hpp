@@ -39,7 +39,7 @@ public:
 		: m_vertex_buffer(geometry.GetVertexArrayBytes(), geometry.GetVertexArrayData(), GL_STATIC_DRAW)
 		, m_vertex_array(geometry.GetLayout(), m_vertex_buffer.GetId(), 0)
 		, m_topology(ToGlPrimitiveTopology(geometry.GetPrimitiveTopology()))
-		, m_vertex_count(geometry.GetVertexArrayCount())
+		, m_vertex_count(static_cast<::GLsizei>(geometry.GetVertexArrayCount()))
 	{
 	}
 

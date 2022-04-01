@@ -10,6 +10,7 @@
 #include <hamon/render/d3d/dxgi_factory.hpp>
 #include <hamon/render/d3d/dxgi.hpp>
 #include <hamon/render/d3d/com_ptr.hpp>
+#include <hamon/render/d3d/throw_if_failed.hpp>
 
 namespace hamon
 {
@@ -44,17 +45,17 @@ public:
 			nullptr,
 			nullptr);
 
-		swap_chain.As(&m_swap_chain);
+		ThrowIfFailed(swap_chain.As(&m_swap_chain));
 	}
 
 	void Present(::UINT sync_interval, ::UINT flags)
 	{
-		m_swap_chain->Present(sync_interval, flags);
+		ThrowIfFailed(m_swap_chain->Present(sync_interval, flags));
 	}
 
 	void GetBuffer(::UINT buffer, REFIID riid, void** surface) const
 	{
-		m_swap_chain->GetBuffer(buffer, riid, surface);
+		ThrowIfFailed(m_swap_chain->GetBuffer(buffer, riid, surface));
 	}
 
 	::UINT GetCurrentBackBufferIndex(void) const
@@ -65,12 +66,12 @@ public:
 	::UINT GetBufferCount(void) const
 	{
 		::DXGI_SWAP_CHAIN_DESC1 desc {};
-		m_swap_chain->GetDesc1(&desc);
+		ThrowIfFailed(m_swap_chain->GetDesc1(&desc));
 		return desc.BufferCount;
 	}
 
 private:
-	ComPtr<IDXGISwapChain4>	m_swap_chain;
+	ComPtr<::IDXGISwapChain4>	m_swap_chain;
 };
 
 }	// inline namespace render

@@ -53,13 +53,19 @@ public:
 
 			gl::glEnableVertexArrayAttrib(m_id, index);
 			gl::glVertexArrayAttribBinding(m_id, index, binding_index);
-			gl::glVertexArrayAttribFormat(m_id, index, size, type, normalized, offset);
+			gl::glVertexArrayAttribFormat(
+				m_id,
+				index,
+				static_cast<::GLint>(size),
+				type,
+				normalized,
+				static_cast<::GLuint>(offset));
 
 			++index;
 		}
 
 		auto const stride = layout.GetBytes();
-		gl::glVertexArrayVertexBuffer(m_id, binding_index, vertex_buffer, 0, stride);
+		gl::glVertexArrayVertexBuffer(m_id, binding_index, vertex_buffer, 0, static_cast<::GLsizei>(stride));
 		if (index_buffer != 0)
 		{
 			gl::glVertexArrayElementBuffer(m_id, index_buffer);

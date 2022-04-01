@@ -128,12 +128,13 @@ int main()
 		shaders.push_back(GetHLSLShaders());
 	}
 #endif
-#if 0//defined(HAMON_HAS_D3D12)
+#if defined(HAMON_HAS_D3D12)
 	{
 		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_triangle D3D12");
 		auto renderer = std::make_unique<hamon::D3D12Renderer>(*window);
 		windows.push_back(std::move(window));
 		renderers.push_back(std::move(renderer));
+		shaders.push_back(GetHLSLShaders());
 	}
 #endif
 #if 0//defined(HAMON_HAS_VULKAN)
