@@ -20,6 +20,7 @@
 #include <hamon/render/d3d11/render_target_view.hpp>
 #include <hamon/render/d3d11/geometry.hpp>
 #include <hamon/render/d3d11/shader.hpp>
+#include <hamon/render/d3d11/blend_state.hpp>
 #include <memory>
 #include <vector>
 
@@ -109,7 +110,8 @@ public:
 	void Render(
 		Geometry const& geometry,
 		std::vector<render::Shader> const& shaders,
-		RasterizerState const& rasterizer_state) override
+		RasterizerState const& rasterizer_state,
+		BlendState const& blend_state) override
 	{
 		{
 			::D3D11_RASTERIZER_DESC desc {};
@@ -126,6 +128,14 @@ public:
 
 			auto state = m_device->CreateRasterizerState(&desc);
 			m_device_context->RSSetState(state.Get());
+		}
+
+		{
+			auto state = m_device->CreateBlendState(
+				d3d11::BlendState(blend_state).Get());
+			float const blend_factor[4] {};
+			::UINT const sample_mask = 0xffffffff;
+			m_device_context->OMSetBlendState(state.Get(), blend_factor, sample_mask);
 		}
 
 		std::vector<std::unique_ptr<d3d11::Shader>> d3d11_shaders;

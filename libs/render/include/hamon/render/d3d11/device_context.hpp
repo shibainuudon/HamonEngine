@@ -110,6 +110,14 @@ public:
 		m_device_context->OMSetRenderTargets(num_views, render_target_views, depth_stencil_view);
 	}
 
+	void OMSetBlendState(
+		::ID3D11BlendState* blend_state,
+		const ::FLOAT       blend_factor[4],
+		::UINT              sample_mask)
+	{
+		m_device_context->OMSetBlendState(blend_state, blend_factor, sample_mask);
+	}
+
 	void Draw(
 		::UINT vertex_count,
 		::UINT start_vertex_location)

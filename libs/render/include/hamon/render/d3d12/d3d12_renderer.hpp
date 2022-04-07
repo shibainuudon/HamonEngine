@@ -158,7 +158,8 @@ public:
 	void Render(
 		Geometry const& geometry,
 		std::vector<Shader> const& shaders,
-		RasterizerState const& rasterizer_state) override
+		RasterizerState const& rasterizer_state,
+		BlendState const& blend_state) override
 	{
 		std::vector<d3d12::Shader*> d3d12_shaders;
 		for (auto const& shader : shaders)
@@ -176,7 +177,8 @@ public:
 			*m_root_signature.get(),
 			d3d12_shaders,
 			geometry.GetPrimitiveTopology(),
-			rasterizer_state);
+			rasterizer_state,
+			blend_state);
 		m_pipeline_states.push_back(pipeline);
 
 		m_command_list->SetGraphicsRootSignature(m_root_signature->Get());

@@ -30,6 +30,21 @@ inline void APIENTRY glDebugMessageCallback (GLDEBUGPROC callback, const void *u
 	return func(callback, userParam);
 }
 
+/* GL_VERSION_1_4 */
+inline void APIENTRY glBlendFuncSeparate(GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha)
+{
+	static auto func = (PFNGLBLENDFUNCSEPARATEPROC)GET_PROC_ADDRESS("glBlendFuncSeparate");
+	return func(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
+}
+//GLAPI void APIENTRY glMultiDrawArrays (GLenum mode, const GLint *first, const GLsizei *count, GLsizei drawcount);
+//GLAPI void APIENTRY glMultiDrawElements (GLenum mode, const GLsizei *count, GLenum type, const void *const*indices, GLsizei drawcount);
+//GLAPI void APIENTRY glPointParameterf (GLenum pname, GLfloat param);
+//GLAPI void APIENTRY glPointParameterfv (GLenum pname, const GLfloat *params);
+//GLAPI void APIENTRY glPointParameteri (GLenum pname, GLint param);
+//GLAPI void APIENTRY glPointParameteriv (GLenum pname, const GLint *params);
+//GLAPI void APIENTRY glBlendColor (GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
+//GLAPI void APIENTRY glBlendEquation (GLenum mode);
+
 /* GL_VERSION_1_5 */
 //GLAPI void APIENTRY glGenQueries(GLsizei n, GLuint* ids);
 //GLAPI void APIENTRY glDeleteQueries(GLsizei n, const GLuint* ids);
@@ -56,7 +71,11 @@ inline void APIENTRY glDeleteBuffers(GLsizei n, const GLuint* buffers)
 //GLAPI void APIENTRY glGetBufferPointerv(GLenum target, GLenum pname, void** params);
 
 /* GL_VERSION_2_0 */
-//GLAPI void APIENTRY glBlendEquationSeparate(GLenum modeRGB, GLenum modeAlpha);
+inline void APIENTRY glBlendEquationSeparate(GLenum modeRGB, GLenum modeAlpha)
+{
+	static auto func = (PFNGLBLENDEQUATIONSEPARATEPROC)GET_PROC_ADDRESS("glBlendEquationSeparate");
+	return func(modeRGB, modeAlpha);
+}
 //GLAPI void APIENTRY glDrawBuffers(GLsizei n, const GLenum* bufs);
 //GLAPI void APIENTRY glStencilOpSeparate(GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass);
 //GLAPI void APIENTRY glStencilFuncSeparate(GLenum face, GLenum func, GLint ref, GLuint mask);

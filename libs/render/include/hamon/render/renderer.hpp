@@ -20,6 +20,7 @@ class Shader;
 struct ClearValue;
 struct Viewport;
 struct RasterizerState;
+struct BlendState;
 
 class Renderer
 {
@@ -35,7 +36,8 @@ public:
 	virtual void Render(
 		Geometry const& geometry,
 		std::vector<Shader> const& shaders,
-		RasterizerState const& rasterizer_state) = 0;
+		RasterizerState const& rasterizer_state,
+		BlendState const& blend_state) = 0;
 };
 
 }	// inline namespace render

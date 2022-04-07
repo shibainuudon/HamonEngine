@@ -288,7 +288,8 @@ public:
 	void Render(
 		Geometry const& geometry,
 		std::vector<Shader> const& shaders,
-		RasterizerState const& rasterizer_state) override
+		RasterizerState const& rasterizer_state,
+		BlendState const& /*blend_state*/) override
 	{
 		(void)geometry;
 		(void)shaders;

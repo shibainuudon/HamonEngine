@@ -103,6 +103,14 @@ public:
 		return state;
 	}
 
+	ComPtr<::ID3D11BlendState1> CreateBlendState(
+		const ::D3D11_BLEND_DESC1& blend_state_desc)
+	{
+		ComPtr<::ID3D11BlendState1> state;
+		ThrowIfFailed(m_device->CreateBlendState1(&blend_state_desc, &state));
+		return state;
+	}
+
 	ComPtr<::ID3D11InputLayout> CreateInputLayout(
 		const ::D3D11_INPUT_ELEMENT_DESC* input_element_descs,
 		::UINT num_elements,

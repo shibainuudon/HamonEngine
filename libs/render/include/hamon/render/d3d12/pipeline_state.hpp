@@ -15,8 +15,10 @@
 #include <hamon/render/d3d12/root_signature.hpp>
 #include <hamon/render/d3d12/shader.hpp>
 #include <hamon/render/d3d12/rasterizer_state.hpp>
+#include <hamon/render/d3d12/blend_state.hpp>
 #include <hamon/render/primitive_topology.hpp>
 #include <hamon/render/rasterizer_state.hpp>
+#include <hamon/render/blend_state.hpp>
 #include <vector>
 
 namespace hamon
@@ -37,25 +39,9 @@ public:
 		d3d12::RootSignature const& root_signature,
 		std::vector<d3d12::Shader*>	shaders,
 		render::PrimitiveTopology primitive_topology,
-		render::RasterizerState const& rasterizer_state)
+		render::RasterizerState const& rasterizer_state,
+		render::BlendState const& blend_state)
 	{
-		::D3D12_BLEND_DESC blend_desc {};
-		blend_desc.AlphaToCoverageEnable  = FALSE;
-		blend_desc.IndependentBlendEnable = FALSE;
-		for (auto& rt : blend_desc.RenderTarget)
-		{
-			rt.BlendEnable = FALSE;
-			rt.LogicOpEnable = FALSE;
-			//rt.SrcBlend;
-			//rt.DestBlend;
-			//rt.BlendOp;
-			//rt.SrcBlendAlpha;
-			//rt.DestBlendAlpha;
-			//rt.BlendOpAlpha;
-			//rt.LogicOp;
-			rt.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-		}
-
 		::D3D12_DEPTH_STENCIL_DESC depth_stencil_desc {};
 		depth_stencil_desc.DepthEnable = FALSE;
 		//depth_stencil_desc.DepthWriteMask;
@@ -69,7 +55,7 @@ public:
 		::D3D12_GRAPHICS_PIPELINE_STATE_DESC desc{};
 		desc.pRootSignature        = root_signature.Get();
 //		desc.StreamOutput;
-		desc.BlendState            = blend_desc;
+		desc.BlendState            = d3d12::BlendState(blend_state).Get();
 		desc.SampleMask            = UINT_MAX;
 		desc.RasterizerState       = d3d12::RasterizerState(rasterizer_state).Get();
 		desc.DepthStencilState     = depth_stencil_desc;
