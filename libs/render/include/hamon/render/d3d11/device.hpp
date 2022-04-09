@@ -96,10 +96,10 @@ public:
 	}
 
 	ComPtr<::ID3D11RasterizerState> CreateRasterizerState(
-		const ::D3D11_RASTERIZER_DESC* rasterizer_desc)
+		const ::D3D11_RASTERIZER_DESC& rasterizer_desc)
 	{
 		ComPtr<::ID3D11RasterizerState> state;
-		ThrowIfFailed(m_device->CreateRasterizerState(rasterizer_desc, &state));
+		ThrowIfFailed(m_device->CreateRasterizerState(&rasterizer_desc, &state));
 		return state;
 	}
 
@@ -108,6 +108,14 @@ public:
 	{
 		ComPtr<::ID3D11BlendState1> state;
 		ThrowIfFailed(m_device->CreateBlendState1(&blend_state_desc, &state));
+		return state;
+	}
+	
+	ComPtr<::ID3D11DepthStencilState> CreateDepthStencilState(
+		const ::D3D11_DEPTH_STENCIL_DESC& depth_stencil_desc)
+	{
+		ComPtr<::ID3D11DepthStencilState> state;
+		ThrowIfFailed(m_device->CreateDepthStencilState(&depth_stencil_desc, &state));
 		return state;
 	}
 

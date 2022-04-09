@@ -195,7 +195,7 @@ int main()
 			renderer->Begin();
 			renderer->BeginRenderPass(clear_value, viewport);
 
-			renderer->Render(geometry, shaders[i], {}, {});
+			renderer->Render(geometry, shaders[i], {}, {}, {});
 
 			renderer->EndRenderPass();
 			renderer->End();

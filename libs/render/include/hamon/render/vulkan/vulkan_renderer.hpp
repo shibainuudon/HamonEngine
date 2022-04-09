@@ -289,11 +289,14 @@ public:
 		Geometry const& geometry,
 		std::vector<Shader> const& shaders,
 		RasterizerState const& rasterizer_state,
-		BlendState const& /*blend_state*/) override
+		BlendState const& blend_state,
+		DepthStencilState const& depth_stencil_state) override
 	{
 		(void)geometry;
 		(void)shaders;
 		(void)rasterizer_state;
+		(void)blend_state;
+		(void)depth_stencil_state;
 	}
 
 private:

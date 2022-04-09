@@ -16,9 +16,11 @@
 #include <hamon/render/d3d12/shader.hpp>
 #include <hamon/render/d3d12/rasterizer_state.hpp>
 #include <hamon/render/d3d12/blend_state.hpp>
+#include <hamon/render/d3d12/depth_stencil_state.hpp>
 #include <hamon/render/primitive_topology.hpp>
 #include <hamon/render/rasterizer_state.hpp>
 #include <hamon/render/blend_state.hpp>
+#include <hamon/render/depth_stencil_state.hpp>
 #include <vector>
 
 namespace hamon
@@ -40,25 +42,16 @@ public:
 		std::vector<d3d12::Shader*>	shaders,
 		render::PrimitiveTopology primitive_topology,
 		render::RasterizerState const& rasterizer_state,
-		render::BlendState const& blend_state)
+		render::BlendState const& blend_state,
+		render::DepthStencilState const& depth_stencil_state)
 	{
-		::D3D12_DEPTH_STENCIL_DESC depth_stencil_desc {};
-		depth_stencil_desc.DepthEnable = FALSE;
-		//depth_stencil_desc.DepthWriteMask;
-		//depth_stencil_desc.DepthFunc;
-		depth_stencil_desc.StencilEnable = FALSE;
-		//depth_stencil_desc.StencilReadMask;
-		//depth_stencil_desc.StencilWriteMask;
-		//depth_stencil_desc.FrontFace;
-		//depth_stencil_desc.BackFace;
-
 		::D3D12_GRAPHICS_PIPELINE_STATE_DESC desc{};
 		desc.pRootSignature        = root_signature.Get();
 //		desc.StreamOutput;
 		desc.BlendState            = d3d12::BlendState(blend_state).Get();
 		desc.SampleMask            = UINT_MAX;
 		desc.RasterizerState       = d3d12::RasterizerState(rasterizer_state).Get();
-		desc.DepthStencilState     = depth_stencil_desc;
+		desc.DepthStencilState     = d3d12::DepthStencilState(depth_stencil_state).Get();
 		desc.InputLayout           = input_layout.Get();
 //		desc.IBStripCutValue;
 		desc.PrimitiveTopologyType = ToD3D12PrimitiveTopologyType(primitive_topology);

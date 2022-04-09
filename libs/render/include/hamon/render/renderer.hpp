@@ -21,6 +21,7 @@ struct ClearValue;
 struct Viewport;
 struct RasterizerState;
 struct BlendState;
+struct DepthStencilState;
 
 class Renderer
 {
@@ -37,7 +38,8 @@ public:
 		Geometry const& geometry,
 		std::vector<Shader> const& shaders,
 		RasterizerState const& rasterizer_state,
-		BlendState const& blend_state) = 0;
+		BlendState const& blend_state,
+		DepthStencilState const& depth_stencil_state) = 0;
 };
 
 }	// inline namespace render

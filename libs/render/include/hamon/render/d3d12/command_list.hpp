@@ -108,6 +108,11 @@ public:
 			depth_stencil_descriptor);
 	}
 
+	void OMSetStencilRef(::UINT stencil_ref)
+	{
+		m_command_list->OMSetStencilRef(stencil_ref);
+	}
+
 	void ClearRenderTargetView(
 		::D3D12_CPU_DESCRIPTOR_HANDLE const& render_target_view,
 		::FLOAT const*                       color_rgba,

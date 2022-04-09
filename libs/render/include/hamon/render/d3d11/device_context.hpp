@@ -118,6 +118,13 @@ public:
 		m_device_context->OMSetBlendState(blend_state, blend_factor, sample_mask);
 	}
 
+	void OMSetDepthStencilState(
+		::ID3D11DepthStencilState* depth_stencil_state,
+		::UINT                     stencil_ref)
+	{
+		m_device_context->OMSetDepthStencilState(depth_stencil_state, stencil_ref);
+	}
+
 	void Draw(
 		::UINT vertex_count,
 		::UINT start_vertex_location)

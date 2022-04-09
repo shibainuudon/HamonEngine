@@ -159,7 +159,8 @@ public:
 		Geometry const& geometry,
 		std::vector<Shader> const& shaders,
 		RasterizerState const& rasterizer_state,
-		BlendState const& blend_state) override
+		BlendState const& blend_state,
+		DepthStencilState const& depth_stencil_state) override
 	{
 		std::vector<d3d12::Shader*> d3d12_shaders;
 		for (auto const& shader : shaders)
@@ -178,9 +179,11 @@ public:
 			d3d12_shaders,
 			geometry.GetPrimitiveTopology(),
 			rasterizer_state,
-			blend_state);
+			blend_state,
+			depth_stencil_state);
 		m_pipeline_states.push_back(pipeline);
 
+		m_command_list->OMSetStencilRef(depth_stencil_state.stencil.reference);
 		m_command_list->SetGraphicsRootSignature(m_root_signature->Get());
 		m_command_list->SetPipelineState(pipeline->Get());
 
