@@ -9,6 +9,7 @@
 
 #include <hamon/render/d3d/d3d12.hpp>
 #include <hamon/render/d3d12/vertex_buffer.hpp>
+#include <hamon/render/d3d12/primitive_topology.hpp>
 #include <hamon/render/geometry.hpp>
 #include <memory>
 
@@ -24,8 +25,8 @@ namespace d3d12
 class Geometry
 {
 public:
-	Geometry(Device* device, render::Geometry const& geometry)
-		: m_primitive_topology(ToD3D12PrimitiveTopology(geometry.GetPrimitiveTopology()))
+	explicit Geometry(Device* device, render::Geometry const& geometry)
+		: m_primitive_topology(d3d12::PrimitiveTopology(geometry.GetPrimitiveTopology()))
 		, m_vertex_buffer(new VertexBuffer(device, geometry))
 	{
 	}
@@ -34,19 +35,6 @@ public:
 	{
 		command_list->IASetPrimitiveTopology(m_primitive_topology);
 		m_vertex_buffer->Draw(command_list);
-	}
-
-private:
-	static ::D3D12_PRIMITIVE_TOPOLOGY
-	ToD3D12PrimitiveTopology(render::PrimitiveTopology primitive_topology)
-	{
-		switch (primitive_topology)
-		{
-		case render::PrimitiveTopology::Points:		return D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
-		case render::PrimitiveTopology::Lines:		return D3D_PRIMITIVE_TOPOLOGY_LINELIST;
-		case render::PrimitiveTopology::Triangles:	return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-		}
-		return D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
 	}
 
 private:

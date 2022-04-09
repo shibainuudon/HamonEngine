@@ -17,6 +17,7 @@
 #include <hamon/render/d3d12/rasterizer_state.hpp>
 #include <hamon/render/d3d12/blend_state.hpp>
 #include <hamon/render/d3d12/depth_stencil_state.hpp>
+#include <hamon/render/d3d12/primitive_topology_type.hpp>
 #include <hamon/render/primitive_topology.hpp>
 #include <hamon/render/rasterizer_state.hpp>
 #include <hamon/render/blend_state.hpp>
@@ -48,13 +49,13 @@ public:
 		::D3D12_GRAPHICS_PIPELINE_STATE_DESC desc{};
 		desc.pRootSignature        = root_signature.Get();
 //		desc.StreamOutput;
-		desc.BlendState            = d3d12::BlendState(blend_state).Get();
+		desc.BlendState            = d3d12::BlendState(blend_state);
 		desc.SampleMask            = UINT_MAX;
-		desc.RasterizerState       = d3d12::RasterizerState(rasterizer_state).Get();
-		desc.DepthStencilState     = d3d12::DepthStencilState(depth_stencil_state).Get();
+		desc.RasterizerState       = d3d12::RasterizerState(rasterizer_state);
+		desc.DepthStencilState     = d3d12::DepthStencilState(depth_stencil_state);
 		desc.InputLayout           = input_layout.Get();
 //		desc.IBStripCutValue;
-		desc.PrimitiveTopologyType = ToD3D12PrimitiveTopologyType(primitive_topology);
+		desc.PrimitiveTopologyType = d3d12::PrimitiveTopologyType(primitive_topology);
 		desc.NumRenderTargets      = 1;
 		desc.RTVFormats[0]         = DXGI_FORMAT_R8G8B8A8_UNORM;
 //		desc.DSVFormat;
@@ -80,19 +81,6 @@ public:
 	}
 	
 	::ID3D12PipelineState* Get(void) const { return m_pipeline_state.Get(); }
-
-private:
-	::D3D12_PRIMITIVE_TOPOLOGY_TYPE ToD3D12PrimitiveTopologyType(
-		render::PrimitiveTopology primitive_topology)
-	{
-		switch (primitive_topology)
-		{
-		case render::PrimitiveTopology::Points:		return D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
-		case render::PrimitiveTopology::Lines:		return D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
-		case render::PrimitiveTopology::Triangles:	return D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-		}
-		return D3D12_PRIMITIVE_TOPOLOGY_TYPE_UNDEFINED;
-	}
 
 private:
 	ComPtr<::ID3D12PipelineState>	m_pipeline_state;

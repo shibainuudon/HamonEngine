@@ -123,10 +123,10 @@ public:
 
 		float const clear_color[] =
 		{
-			clear_value.r,
-			clear_value.g,
-			clear_value.b,
-			clear_value.a,
+			clear_value.color.r,
+			clear_value.color.g,
+			clear_value.color.b,
+			clear_value.color.a,
 		};
 		m_command_list->ClearRenderTargetView(rtv_handle, clear_color, 0, nullptr);
 

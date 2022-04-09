@@ -8,6 +8,7 @@
 #define HAMON_RENDER_OPENGL_SHADER_HPP
 
 #include <hamon/render/shader.hpp>
+#include <hamon/render/opengl/shader_stage.hpp>
 #include <hamon/render/opengl/glext.hpp>
 #include <iostream>
 
@@ -22,25 +23,10 @@ namespace gl
 
 class Shader
 {
-private:
-	static GLenum ToGlShaderType(render::ShaderStage stage)
-	{
-		switch (stage)
-		{
-		case render::ShaderStage::Compute:	return GL_COMPUTE_SHADER;
-		case render::ShaderStage::Vertex:	return GL_VERTEX_SHADER;
-		case render::ShaderStage::TessellationControl:	return GL_TESS_CONTROL_SHADER;
-		case render::ShaderStage::TessellationEvaluation:	return GL_TESS_EVALUATION_SHADER;
-		case render::ShaderStage::Geometry:	return GL_GEOMETRY_SHADER;
-		case render::ShaderStage::Fragment:	return GL_FRAGMENT_SHADER;
-		}
-		return GL_VERTEX_SHADER;
-	}
-
 public:
-	Shader(::GLuint	program, render::Shader const& shader)
+	explicit Shader(::GLuint program, render::Shader const& shader)
 	{
-		m_id = gl::glCreateShader(ToGlShaderType(shader.GetStage()));
+		m_id = gl::glCreateShader(gl::ShaderStage(shader.GetStage()));
 
 		char const* src = shader.GetSource().c_str();
 		gl::glShaderSource(m_id, 1, &src, nullptr);

@@ -21,7 +21,7 @@ namespace gl
 class Buffer
 {
 public:
-	Buffer(::GLsizeiptr size, void const* data, ::GLenum usage)
+	explicit Buffer(::GLsizeiptr size, void const* data, ::GLenum usage)
 	{
 		gl::glCreateBuffers(1, &m_id);
 		gl::glNamedBufferData(m_id, size, data, usage);

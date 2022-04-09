@@ -10,6 +10,7 @@
 #include <hamon/render/shader_language.hpp>
 #include <hamon/render/shader_stage.hpp>
 #include <string>
+#include <utility>
 
 namespace hamon
 {
@@ -25,7 +26,7 @@ public:
 		std::string source)
 		: m_language(language)
 		, m_stage(stage)
-		, m_source(source)
+		, m_source(std::move(source))
 	{}
 
 	ShaderStage GetStage(void) const { return m_stage; }

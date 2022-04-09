@@ -133,10 +133,10 @@ int main()
 		auto rgb = HSVtoRGB(hsv);
 
 		hamon::ClearValue clear_value;
-		clear_value.r = rgb.r;
-		clear_value.g = rgb.g;
-		clear_value.b = rgb.b;
-		clear_value.a = 1.0f;
+		clear_value.color.r = rgb.r;
+		clear_value.color.g = rgb.g;
+		clear_value.color.b = rgb.b;
+		clear_value.color.a = 1.0f;
 		clear_value.depth = 0.0f;
 		clear_value.stencil = 0;
 

@@ -26,6 +26,7 @@ class VertexBuffer
 {
 public:
 	VertexBuffer(Device* device, render::Geometry const& geometry)
+		: m_count(static_cast<::UINT>(geometry.GetVertexArrayCount()))
 	{
 		auto const data = geometry.GetVertexArrayData();
 		auto const size = geometry.GetVertexArrayBytes();
@@ -72,12 +73,13 @@ public:
 	void Draw(CommandList* command_list)
 	{
 		command_list->IASetVertexBuffers(0, 1, &m_view);
-		command_list->DrawInstanced(3, 1, 0, 0);
+		command_list->DrawInstanced(m_count, 1, 0, 0);
 	}
 
 private:
 	ComPtr<::ID3D12Resource1>	m_resource;
 	::D3D12_VERTEX_BUFFER_VIEW	m_view;
+	::UINT						m_count{0};
 };
 
 }	// namespace d3d12

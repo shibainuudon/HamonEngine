@@ -58,10 +58,10 @@ public:
 		ClearValue const& clear_value)
 	{
 		VkClearValue clear_values[2];
-		clear_values[0].color.float32[0] = clear_value.r;
-		clear_values[0].color.float32[1] = clear_value.g;
-		clear_values[0].color.float32[2] = clear_value.b;
-		clear_values[0].color.float32[3] = clear_value.a;
+		clear_values[0].color.float32[0] = clear_value.color.r;
+		clear_values[0].color.float32[1] = clear_value.color.g;
+		clear_values[0].color.float32[2] = clear_value.color.b;
+		clear_values[0].color.float32[3] = clear_value.color.a;
 		clear_values[1].depthStencil.depth = 1.0f;
 		clear_values[1].depthStencil.stencil = 0;
 

@@ -10,6 +10,7 @@
 #include <hamon/render/geometry.hpp>
 #include <hamon/render/opengl/buffer.hpp>
 #include <hamon/render/opengl/vertex_array.hpp>
+#include <hamon/render/opengl/primitive_topology.hpp>
 #include <hamon/render/opengl/gl.hpp>
 
 namespace hamon
@@ -21,24 +22,13 @@ inline namespace render
 namespace gl
 {
 
-inline ::GLenum ToGlPrimitiveTopology(render::PrimitiveTopology topology)
-{
-	switch (topology)
-	{
-	case hamon::render::PrimitiveTopology::Points:		return GL_POINTS;
-	case hamon::render::PrimitiveTopology::Lines:		return GL_LINES;
-	case hamon::render::PrimitiveTopology::Triangles:	return GL_TRIANGLES;
-	default:											return GL_POINTS;
-	}
-}
-
 class Geometry
 {
 public:
-	Geometry(render::Geometry const& geometry)
+	explicit Geometry(render::Geometry const& geometry)
 		: m_vertex_buffer(geometry.GetVertexArrayBytes(), geometry.GetVertexArrayData(), GL_STATIC_DRAW)
 		, m_vertex_array(geometry.GetLayout(), m_vertex_buffer.GetId(), 0)
-		, m_topology(ToGlPrimitiveTopology(geometry.GetPrimitiveTopology()))
+		, m_topology(gl::PrimitiveTopology(geometry.GetPrimitiveTopology()))
 		, m_vertex_count(static_cast<::GLsizei>(geometry.GetVertexArrayCount()))
 	{
 	}

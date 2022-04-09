@@ -178,10 +178,10 @@ int main()
 		}
 
 		hamon::ClearValue clear_value;
-		clear_value.r = 0.4f;
-		clear_value.g = 0.4f;
-		clear_value.b = 0.4f;
-		clear_value.a = 1.0f;
+		clear_value.color.r = 0.4f;
+		clear_value.color.g = 0.4f;
+		clear_value.color.b = 0.4f;
+		clear_value.color.a = 1.0f;
 		clear_value.depth = 0.0f;
 		clear_value.stencil = 0;
 

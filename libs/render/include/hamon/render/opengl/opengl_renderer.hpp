@@ -15,6 +15,8 @@
 #include <hamon/render/opengl/rasterizer_state.hpp>
 #include <hamon/render/opengl/blend_state.hpp>
 #include <hamon/render/opengl/depth_stencil_state.hpp>
+#include <hamon/render/opengl/clear_value.hpp>
+#include <hamon/render/opengl/viewport.hpp>
 #include <hamon/render/renderer.hpp>
 #include <hamon/render/rasterizer_state.hpp>
 #include <hamon/render/clear_value.hpp>
@@ -65,26 +67,8 @@ public:
 
 	void BeginRenderPass(ClearValue const& clear_value, Viewport const& viewport) override
 	{
-		// Clear
-		::glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-		::glDepthMask(GL_TRUE);
-		::glStencilMask(~0u);
-		::glClearColor(
-			clear_value.r,
-			clear_value.g,
-			clear_value.b,
-			clear_value.a);
-		::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-		// Setup Viewport
-		::glViewport(
-			static_cast<::GLint>(viewport.left),
-			static_cast<::GLint>(viewport.top),
-			static_cast<::GLsizei>(viewport.width),
-			static_cast<::GLsizei>(viewport.height));
-		gl::glDepthRangef(
-			viewport.min_depth,
-			viewport.max_depth);
+		gl::ClearValue::Apply(clear_value);
+		gl::Viewport::Apply(viewport);
 	}
 
 	void EndRenderPass(void) override

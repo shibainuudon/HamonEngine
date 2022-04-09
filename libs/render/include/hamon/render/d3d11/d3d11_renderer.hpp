@@ -86,10 +86,10 @@ public:
 
 		float const clear_color[] =
 		{
-			clear_value.r,
-			clear_value.g,
-			clear_value.b,
-			clear_value.a,
+			clear_value.color.r,
+			clear_value.color.g,
+			clear_value.color.b,
+			clear_value.color.a,
 		};
 		m_device_context->ClearRenderTargetView(
 			m_render_target_view->Get(),
@@ -118,19 +118,19 @@ public:
 	{
 		{
 			auto state = m_device->CreateRasterizerState(
-				d3d11::RasterizerState(rasterizer_state).Get());
+				d3d11::RasterizerState(rasterizer_state));
 			m_device_context->RSSetState(state.Get());
 		}
 		{
 			auto state = m_device->CreateBlendState(
-				d3d11::BlendState(blend_state).Get());
+				d3d11::BlendState(blend_state));
 			float const blend_factor[4] {};
 			::UINT const sample_mask = 0xffffffff;
 			m_device_context->OMSetBlendState(state.Get(), blend_factor, sample_mask);
 		}
 		{
 			auto state = m_device->CreateDepthStencilState(
-				d3d11::DepthStencilState(depth_stencil_state).Get());
+				d3d11::DepthStencilState(depth_stencil_state));
 			m_device_context->OMSetDepthStencilState(
 				state.Get(), depth_stencil_state.stencil.reference);
 		}

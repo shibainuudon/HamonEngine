@@ -17,12 +17,15 @@ inline namespace render
 
 struct ClearValue
 {
-	float         r;
-	float         g;
-	float         b;
-	float         a;
-	float         depth;
-	std::uint32_t stencil;
+	struct
+	{
+		float         r;
+		float         g;
+		float         b;
+		float         a;
+	}				color{0, 0, 0, 0};
+	float			depth{1.0f};
+	std::uint8_t	stencil{0};
 };
 
 }	// inline namespace render

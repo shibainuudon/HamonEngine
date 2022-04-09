@@ -10,6 +10,7 @@
 #include <hamon/render/primitive_topology.hpp>
 #include <hamon/render/vertex_layout.hpp>
 #include <vector>
+#include <utility>
 
 namespace hamon
 {
@@ -24,18 +25,24 @@ public:
 		VertexLayout layout,
 		std::vector<float> vertices)
 		: m_topology(topology)
-		, m_layout(layout)
-		, m_vertices(vertices)
+		, m_layout(std::move(layout))
+		, m_vertices(std::move(vertices))
 	{
 	}
 
-	PrimitiveTopology	GetPrimitiveTopology(void) const { return m_topology; }
+	PrimitiveTopology	GetPrimitiveTopology(void) const
+	{
+		return m_topology;
+	}
 
-	VertexLayout const& GetLayout(void) const { return m_layout; }
+	VertexLayout const& GetLayout(void) const
+	{
+		return m_layout;
+	}
 
 	std::size_t GetVertexArrayCount(void) const
 	{
-		return m_vertices.size();
+		return GetVertexArrayBytes() / m_layout.GetBytes();
 	}
 
 	std::size_t GetVertexArrayBytes(void) const

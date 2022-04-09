@@ -7,6 +7,10 @@
 #ifndef HAMON_RENDER_BLEND_STATE_HPP
 #define HAMON_RENDER_BLEND_STATE_HPP
 
+#include <hamon/render/blend_factor.hpp>
+#include <hamon/render/blend_operation.hpp>
+#include <hamon/render/logic_operation.hpp>
+#include <hamon/render/color_write_mask.hpp>
 #include <cstdint>
 
 namespace hamon
@@ -14,65 +18,6 @@ namespace hamon
 
 inline namespace render
 {
-
-enum class BlendFactor : std::uint32_t
-{
-	Zero,
-	One,
-	SrcColor,
-	InvSrcColor,
-	SrcAlpha,
-	InvSrcAlpha,
-	DestAlpha,
-	InvDestAlpha,
-	DestColor,
-	InvDestColor,
-	SrcAlphaSat,
-	BlendFactor,
-	InvBlendFactor,
-	Src1Color,
-	InvSrc1Color,
-	Src1Alpha,
-	InvSrc1Alpha,
-};
-
-enum class BlendOperation : std::uint32_t
-{
-	Add,
-	Subtract,
-	ReverseSubtract,
-	Min,
-	Max,
-};
-
-enum class LogicOperation : std::uint32_t
-{
-	Clear,
-	Set,
-	Copy,
-	CopyInverted,
-	Noop,
-	Invert,
-	And,
-	Nand,
-	Or,
-	Nor,
-	Xor,
-	Equiv,
-	AndReverse,
-	AndInverted,
-	OrReverse,
-	OrInverted,
-};
-
-enum ColorWriteMask : std::uint32_t
-{
-	Red   = (1 << 0),
-	Green = (1 << 1),
-	Blue  = (1 << 2),
-	Alpha = (1 << 3),
-	All   = (Red | Green | Blue | Alpha),
-};
 
 struct BlendState
 {

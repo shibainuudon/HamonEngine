@@ -7,6 +7,8 @@
 #ifndef HAMON_RENDER_DEPTH_STENCIL_STATE_HPP
 #define HAMON_RENDER_DEPTH_STENCIL_STATE_HPP
 
+#include <hamon/render/comparison_func.hpp>
+#include <hamon/render/stencil_operation.hpp>
 #include <cstdint>
 
 namespace hamon
@@ -14,30 +16,6 @@ namespace hamon
 
 inline namespace render
 {
-
-enum class ComparisonFunc : std::uint32_t
-{
-	Never,
-	Less,
-	Equal,
-	LessEqual,
-	Greater,
-	NotEqual,
-	GreaterEqual,
-	Always,
-};
-
-enum class StencilOperation : std::uint32_t
-{
-	Keep,
-	Zero,
-	Replace,
-	IncrementSaturate,
-	DecrementSaturate,
-	Invert,
-	Increment,
-	Decrement,
-};
 
 struct DepthStencilState
 {

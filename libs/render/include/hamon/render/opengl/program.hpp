@@ -24,7 +24,7 @@ namespace gl
 class Program
 {
 public:
-	Program(std::vector<render::Shader> const& shaders)
+	explicit Program(std::vector<render::Shader> const& shaders)
 	{
 		m_id = gl::glCreateProgram();
 

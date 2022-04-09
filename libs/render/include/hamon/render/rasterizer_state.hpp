@@ -7,36 +7,15 @@
 #ifndef HAMON_RENDER_RASTERIZER_STATE_HPP
 #define HAMON_RENDER_RASTERIZER_STATE_HPP
 
-#include <cstdint>
+#include <hamon/render/fill_mode.hpp>
+#include <hamon/render/cull_mode.hpp>
+#include <hamon/render/front_face.hpp>
 
 namespace hamon
 {
 
 inline namespace render
 {
-
-enum class FillMode : std::uint32_t
-{
-	Solid,
-	Wireframe,
-};
-
-enum class CullMode : std::uint32_t
-{
-	None,
-	Front,
-	Back,
-};
-
-enum class FrontFace : std::uint32_t
-{
-	Clockwise,
-	CounterClockwise,
-
-	// alias
-	CW = Clockwise,
-	CCW = CounterClockwise,
-};
 
 struct RasterizerState
 {

@@ -7,8 +7,7 @@
 #ifndef HAMON_RENDER_VERTEX_LAYOUT_HPP
 #define HAMON_RENDER_VERTEX_LAYOUT_HPP
 
-#include <hamon/render/semantic.hpp>
-#include <hamon/render/type.hpp>
+#include <hamon/render/vertex_attribute.hpp>
 #include <cstddef>
 #include <vector>
 #include <initializer_list>
@@ -18,14 +17,6 @@ namespace hamon
 
 inline namespace render
 {
-
-struct VertexAttribute
-{
-	Semantic	semantic;
-	Type		type;
-	std::size_t	element_num;
-	std::size_t offset;
-};
 
 class VertexLayout
 {

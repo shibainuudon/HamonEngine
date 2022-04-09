@@ -12,6 +12,7 @@
 #include <hamon/render/d3d/com_ptr.hpp>
 #include <hamon/render/d3d11/device.hpp>
 #include <hamon/render/d3d11/device_context.hpp>
+#include <hamon/render/d3d11/primitive_topology.hpp>
 
 namespace hamon
 {
@@ -25,23 +26,12 @@ namespace d3d11
 class VertexBuffer
 {
 private:
-	static ::D3D11_PRIMITIVE_TOPOLOGY
-	ToD3D11Topology(render::PrimitiveTopology topology)
-	{
-		switch (topology)
-		{
-		case render::PrimitiveTopology::Points:    return D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
-		case render::PrimitiveTopology::Lines:     return D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
-		case render::PrimitiveTopology::Triangles: return D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-		default:                                   return D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
-		}
-	}
 
 public:
 	VertexBuffer(Device* device, render::Geometry const& geometry)
-		: m_topology(ToD3D11Topology(geometry.GetPrimitiveTopology()))
+		: m_topology(d3d11::PrimitiveTopology(geometry.GetPrimitiveTopology()))
 		, m_stride(static_cast<::UINT>(geometry.GetLayout().GetBytes()))
-		, m_count(3)//geometry.GetVertexArrayCount())
+		, m_count(static_cast<::UINT>(geometry.GetVertexArrayCount()))
 	{
         ::D3D11_BUFFER_DESC desc{};
         desc.ByteWidth = static_cast<::UINT>(geometry.GetVertexArrayBytes());
