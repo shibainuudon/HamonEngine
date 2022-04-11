@@ -33,6 +33,18 @@ public:
 	{
 	}
 
+	::VkDevice CreateDevice(::VkDeviceCreateInfo const& info)
+	{
+		::VkDevice device;
+		ThrowIfFailed(vkCreateDevice(m_physical_device, &info, nullptr, &device));
+		return device;
+	}
+
+	void DestroyDevice(::VkDevice device)
+	{
+		vkDestroyDevice(device, nullptr);
+	}
+
 	std::vector<VkQueueFamilyProperties> GetQueueFamilyProperties(void) const
 	{
 		std::uint32_t count;
@@ -73,6 +85,13 @@ public:
 		ThrowIfFailed(vkGetPhysicalDeviceSurfaceSupportKHR(
 			m_physical_device, queue_family_index, surface, &supported));
 		return supported;
+	}
+
+	::VkPhysicalDeviceMemoryProperties GetMemoryProperties(void) const
+	{
+		::VkPhysicalDeviceMemoryProperties memory_properties;
+		::vkGetPhysicalDeviceMemoryProperties(m_physical_device, &memory_properties);
+		return memory_properties;
 	}
 
 	VkPhysicalDevice const& Get(void) const { return m_physical_device; }

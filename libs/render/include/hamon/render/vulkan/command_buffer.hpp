@@ -82,6 +82,47 @@ public:
 		vkCmdEndRenderPass(m_command_buffer);
 	}
 
+	void BindVertexBuffers(
+		std::uint32_t         first_binding,
+		std::uint32_t         binding_count,
+		const ::VkBuffer*     buffers,
+		const ::VkDeviceSize* offsets)
+	{
+		::vkCmdBindVertexBuffers(m_command_buffer, first_binding, binding_count, buffers, offsets);
+	}
+
+	void BindPipeline(
+		::VkPipelineBindPoint pipeline_bind_point,
+		::VkPipeline          pipeline)
+	{
+		::vkCmdBindPipeline(m_command_buffer, pipeline_bind_point, pipeline);
+	}
+
+	void Draw(
+		std::uint32_t vertex_count,
+		std::uint32_t instance_count,
+		std::uint32_t first_vertex,
+		std::uint32_t first_instance)
+	{
+		::vkCmdDraw(m_command_buffer, vertex_count, instance_count, first_vertex, first_instance);
+	}
+	
+	void SetViewport(
+		std::uint32_t       first_viewport,
+		std::uint32_t       viewport_count,
+		::VkViewport const* viewports)
+	{
+		::vkCmdSetViewport(m_command_buffer, first_viewport, viewport_count, viewports);
+	}
+
+	void SetScissor(
+		std::uint32_t     first_scissor,
+		std::uint32_t     scissor_count,
+		::VkRect2D const* scissors)
+	{
+		::vkCmdSetScissor(m_command_buffer, first_scissor, scissor_count, scissors);
+	}
+
 	VkCommandBuffer const& Get(void) const { return m_command_buffer; }
 
 private:

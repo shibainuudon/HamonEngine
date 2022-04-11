@@ -7,6 +7,14 @@
 #ifndef HAMON_RENDER_D3D_COM_PTR_HPP
 #define HAMON_RENDER_D3D_COM_PTR_HPP
 
+#if !defined(WIN32_LEAN_AND_MEAN)
+#define WIN32_LEAN_AND_MEAN
+#endif
+
+#if !defined(NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <wrl/client.h>
 
 namespace hamon

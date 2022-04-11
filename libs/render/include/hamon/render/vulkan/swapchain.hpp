@@ -28,7 +28,6 @@ class Swapchain
 public:
 	Swapchain(
 		vulkan::Device* device,
-		vulkan::PhysicalDevice* physical_device,
 		vulkan::Surface* surface,
 		std::uint32_t width,
 		std::uint32_t height,
@@ -36,6 +35,8 @@ public:
 		std::uint32_t present_queue_family_index)
 		: m_device(device)
 	{
+		auto physical_device = device->GetPhysicalDevice();
+
 		auto const surface_capabilities = physical_device->GetSurfaceCapabilities(surface->Get());
 		
 		auto const surface_formats = physical_device->GetSurfaceFormats(surface->Get());

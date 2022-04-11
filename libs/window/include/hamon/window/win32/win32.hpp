@@ -7,6 +7,14 @@
 #ifndef HAMON_WINDOW_WIN32_WIN32_HPP
 #define HAMON_WINDOW_WIN32_WIN32_HPP
 
+#if !defined(WIN32_LEAN_AND_MEAN)
+#define WIN32_LEAN_AND_MEAN
+#endif
+
+#if !defined(NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <Windows.h>
 
 #undef CreateWindowEx

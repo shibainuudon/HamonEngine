@@ -21,6 +21,12 @@
 #include <hamon/render/vulkan/render_pass.hpp>
 #include <hamon/render/vulkan/framebuffer.hpp>
 #include <hamon/render/vulkan/queue.hpp>
+#include <hamon/render/vulkan/pipeline_layout.hpp>
+#include <hamon/render/vulkan/buffer.hpp>
+#include <hamon/render/vulkan/device_memory.hpp>
+#include <hamon/render/vulkan/geometry.hpp>
+#include <hamon/render/vulkan/shader.hpp>
+#include <hamon/render/vulkan/graphics_pipeline.hpp>
 #include <hamon/render/vulkan/vulkan.hpp>
 
 namespace hamon
@@ -117,9 +123,9 @@ public:
 
 		auto gpus = m_instance->EnumeratePhysicalDevices();
 
-		vulkan::PhysicalDevice physical_device(gpus[0]);	// TODO 一番良いPhysicalDeviceを選ぶ
+		m_physical_device = std::make_unique<vulkan::PhysicalDevice>(gpus[0]);	// TODO 一番良いPhysicalDeviceを選ぶ
 
-		auto const queue_props = physical_device.GetQueueFamilyProperties();
+		auto const queue_props = m_physical_device->GetQueueFamilyProperties();
 
 		std::uint32_t graphics_queue_family_index = 0;
 		for (std::uint32_t i = 0; i < queue_props.size(); ++i)
@@ -142,7 +148,7 @@ public:
 		device_extension_names.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
 		m_device = std::make_unique<vulkan::Device>(
-			physical_device.Get(),
+			m_physical_device.get(),
 			device_layer_names,
 			device_extension_names);
 
@@ -160,7 +166,7 @@ public:
 		for (std::uint32_t i = 0; i < queue_props.size(); i++)
 		{
 			supports_present.push_back(
-				physical_device.GetSurfaceSupport(i, m_surface->Get()));
+				m_physical_device->GetSurfaceSupport(i, m_surface->Get()));
 		}
 
 		// Graphics かつ Present な QueueFamily が見つかったら、
@@ -206,7 +212,6 @@ public:
 
 		m_swapchain = std::make_unique<vulkan::Swapchain>(
 			m_device.get(),
-			&physical_device,
 			m_surface.get(),
 			window.GetClientWidth(),
 			window.GetClientHeight(),
@@ -236,6 +241,8 @@ public:
 		}
 
 		m_draw_fence = std::make_unique<vulkan::Fence>(m_device.get());
+
+		m_pipeline_layout = std::make_unique<vulkan::PipelineLayout>(m_device.get());
 	}
 
 	~VulkanRenderer()
@@ -271,13 +278,31 @@ public:
 		m_present_queue->Present(m_swapchain->Get(), m_frame_index);
 	}
 
-	void BeginRenderPass(ClearValue const& clear_value, Viewport const& /*viewport*/) override
+	void BeginRenderPass(ClearValue const& clear_value, Viewport const& viewport) override
 	{
 		m_command_buffers[0]->BeginRenderPass(
 			m_render_pass->Get(),
 			m_framebuffers[m_frame_index]->Get(),
 			m_swapchain->GetExtent(),
 			clear_value);
+
+		{
+			::VkViewport vp;
+			vp.x        = viewport.left;
+			vp.y        = viewport.top + viewport.height;
+			vp.width    = viewport.width;
+			vp.height   = -viewport.height;
+			vp.minDepth = viewport.min_depth;
+			vp.maxDepth = viewport.max_depth;
+			m_command_buffers[0]->SetViewport(0, 1, &vp);
+		}
+		{
+			::VkRect2D scissor;
+			scissor.offset = {0, 0};
+			scissor.extent.width  = static_cast<std::uint32_t>(viewport.width);
+			scissor.extent.height = static_cast<std::uint32_t>(viewport.height);
+			m_command_buffers[0]->SetScissor(0, 1, &scissor);
+		}
 	}
 
 	void EndRenderPass(void) override
@@ -292,16 +317,54 @@ public:
 		BlendState const& blend_state,
 		DepthStencilState const& depth_stencil_state) override
 	{
-		(void)geometry;
-		(void)shaders;
 		(void)rasterizer_state;
 		(void)blend_state;
 		(void)depth_stencil_state;
+
+		if (!m_initialized)
+		{
+			std::vector<vulkan::Shader*> vulkan_shaders;
+			for (auto const& shader : shaders)
+			{
+				auto vulkan_shader = std::make_shared<vulkan::Shader>(m_device.get(), shader);
+				m_shaders.push_back(vulkan_shader);
+				vulkan_shaders.push_back(vulkan_shader.get());
+			}
+
+			auto vulkan_graphics_pipeline = std::make_shared<vulkan::GraphicsPipeline>(
+				m_device.get(),
+				m_pipeline_layout.get(),
+				m_render_pass.get(),
+				vulkan_shaders,
+				geometry,
+				rasterizer_state,
+				blend_state,
+				depth_stencil_state);
+			m_graphics_pipelines.push_back(vulkan_graphics_pipeline);
+
+			auto vulkan_geometry = std::make_shared<vulkan::Geometry>(m_device.get(), geometry);
+			m_geometries.push_back(vulkan_geometry);
+
+			m_initialized = true;
+		}
+
+		std::vector<vulkan::Shader*> vulkan_shaders;
+		for (auto const& shader : m_shaders)
+		{
+			vulkan_shaders.push_back(shader.get());
+		}
+
+		auto vulkan_graphics_pipeline = m_graphics_pipelines[0];
+		vulkan_graphics_pipeline->Bind(m_command_buffers[0].get());
+
+		auto vulkan_geometry = m_geometries[0];
+		vulkan_geometry->Draw(m_command_buffers[0].get());
 	}
 
 private:
 	std::unique_ptr<vulkan::Instance>					m_instance;
 	std::unique_ptr<vulkan::DebugReportCallback>		m_callback;
+	std::unique_ptr<vulkan::PhysicalDevice>				m_physical_device;
 	std::unique_ptr<vulkan::Device>						m_device;
 	std::unique_ptr<vulkan::CommandPool>				m_command_pool;
 	std::vector<std::unique_ptr<vulkan::CommandBuffer>>	m_command_buffers;
@@ -315,6 +378,13 @@ private:
 	std::unique_ptr<vulkan::Queue>						m_graphics_queue;
 	std::unique_ptr<vulkan::Queue>						m_present_queue;
 	std::uint32_t										m_frame_index;
+
+	std::unique_ptr<vulkan::PipelineLayout>				m_pipeline_layout;
+
+	std::vector<std::shared_ptr<vulkan::Shader>>			m_shaders;
+	std::vector<std::shared_ptr<vulkan::GraphicsPipeline>>	m_graphics_pipelines;
+	std::vector<std::shared_ptr<vulkan::Geometry>>			m_geometries;
+	bool m_initialized = false;
 };
 
 }	// inline namespace render

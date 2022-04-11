@@ -103,8 +103,8 @@ std::vector<hamon::Shader> GetHLSLShaders(void)
 
 int main()
 {
-	std::uint32_t const width  = 800;
-	std::uint32_t const height = 600;
+	std::uint32_t const width  = 640;
+	std::uint32_t const height = 480;
 
 	std::vector<std::unique_ptr<hamon::Window>> windows;
 	std::vector<std::unique_ptr<hamon::Renderer>> renderers;
@@ -137,12 +137,13 @@ int main()
 		shaders.push_back(GetHLSLShaders());
 	}
 #endif
-#if 0//defined(HAMON_HAS_VULKAN)
+#if defined(HAMON_HAS_VULKAN)
 	{
 		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_triangle Vulkan");
 		auto renderer = std::make_unique<hamon::VulkanRenderer>(*window);
 		windows.push_back(std::move(window));
 		renderers.push_back(std::move(renderer));
+		shaders.push_back(GetGLSLShaders());
 	}
 #endif
 

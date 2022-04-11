@@ -9,6 +9,7 @@
 
 #include <hamon/render/vulkan/vulkan.hpp>
 #include <hamon/render/vulkan/throw_if_failed.hpp>
+#include <hamon/render/vulkan/physical_device.hpp>
 #include <vector>
 #include <cstdint>
 
@@ -25,9 +26,10 @@ class Device
 {
 public:
 	Device(
-		VkPhysicalDevice phycical_device,
+		vulkan::PhysicalDevice* phycical_device,
 		std::vector<const char*> const& layer_names,
 		std::vector<const char*> const& extension_names)
+		: m_phycical_device(phycical_device)
 	{
 		float queue_priorities[1] = { 0.0 };
 		VkDeviceQueueCreateInfo queue_info = {};
@@ -46,12 +48,13 @@ public:
 		info.enabledLayerCount       = static_cast<std::uint32_t>(layer_names.size());
 		info.ppEnabledLayerNames     = layer_names.empty() ? nullptr : layer_names.data();
 		info.pEnabledFeatures        = nullptr;
-		ThrowIfFailed(vkCreateDevice(phycical_device, &info, nullptr, &m_device));
+		
+		m_device = m_phycical_device->CreateDevice(info);
 	}
 
 	~Device()
 	{
-		vkDestroyDevice(m_device, nullptr);
+		m_phycical_device->DestroyDevice(m_device);
 	}
 
 	VkCommandPool CreateCommandPool(VkCommandPoolCreateInfo const& info)
@@ -207,8 +210,110 @@ public:
 		return ThrowIfFailed(vkResetFences(m_device, fence_count, fences));
 	}
 
+	::VkPipelineLayout CreatePipelineLayout(::VkPipelineLayoutCreateInfo const& info)
+	{
+		::VkPipelineLayout pipeline_layout;
+		ThrowIfFailed(::vkCreatePipelineLayout(m_device, &info, nullptr, &pipeline_layout));
+		return pipeline_layout;
+	}
+	
+	void DestroyPipelineLayout(::VkPipelineLayout pipeline_layout)
+	{
+		::vkDestroyPipelineLayout(m_device, pipeline_layout, nullptr);
+	}
+
+	::VkBuffer CreateBuffer(::VkBufferCreateInfo const& info)
+	{
+		::VkBuffer buffer;
+		ThrowIfFailed(::vkCreateBuffer(m_device, &info, nullptr, &buffer));
+		return buffer;
+	}
+	
+	void DestroyBuffer(::VkBuffer buffer)
+	{
+		::vkDestroyBuffer(m_device, buffer, nullptr);
+	}
+
+	::VkDeviceMemory AllocateMemory(::VkMemoryAllocateInfo const& info)
+	{
+		::VkDeviceMemory device_memory;
+		ThrowIfFailed(::vkAllocateMemory(m_device, &info, nullptr, &device_memory));
+		return device_memory;
+	}
+	
+	void FreeMemory(::VkDeviceMemory device_memory)
+	{
+		::vkFreeMemory(m_device, device_memory, nullptr);
+	}
+
+	::VkMemoryRequirements GetBufferMemoryRequirements(::VkBuffer buffer)
+	{
+		::VkMemoryRequirements mem_reqs;
+		::vkGetBufferMemoryRequirements(m_device, buffer, &mem_reqs);
+		return mem_reqs;
+	}
+	
+	void* MapMemory(
+		::VkDeviceMemory   memory,
+		::VkDeviceSize     offset,
+		::VkDeviceSize     size,
+		::VkMemoryMapFlags flags)
+	{
+		void* p;
+		ThrowIfFailed(::vkMapMemory(m_device, memory, offset, size, flags, &p));
+		return p;
+	}
+
+	void UnmapMemory(::VkDeviceMemory memory)
+	{
+		::vkUnmapMemory(m_device, memory);
+	}
+
+	void BindBufferMemory(
+		::VkBuffer       buffer,
+		::VkDeviceMemory memory,
+		::VkDeviceSize   memory_offset)
+	{
+		ThrowIfFailed(::vkBindBufferMemory(m_device, buffer, memory, memory_offset));
+	}
+	
+	::VkShaderModule CreateShaderModule(::VkShaderModuleCreateInfo const& info)
+	{
+		::VkShaderModule shader_module;
+		ThrowIfFailed(::vkCreateShaderModule(m_device, &info, nullptr, &shader_module));
+		return shader_module;
+	}
+
+	void DestroyShaderModule(::VkShaderModule shader_module)
+	{
+		::vkDestroyShaderModule(m_device, shader_module, nullptr);
+	}
+
+	::VkPipeline CreateGraphicsPipeline(
+		::VkPipelineCache	                  pipeline_cache,
+		::VkGraphicsPipelineCreateInfo const& create_info)
+	{
+		::VkPipeline pipeline;
+		ThrowIfFailed(::vkCreateGraphicsPipelines(
+			m_device,
+			pipeline_cache,
+			1,
+			&create_info,
+			nullptr,
+			&pipeline));
+		return pipeline;
+	}
+
+	void DestroyPipeline(::VkPipeline pipeline)
+	{
+		::vkDestroyPipeline(m_device, pipeline, nullptr);
+	}
+
+	vulkan::PhysicalDevice* GetPhysicalDevice(void) const { return m_phycical_device; }
+
 private:
 	VkDevice m_device;
+	vulkan::PhysicalDevice* m_phycical_device;
 };
 
 }	// namespace vulkan
