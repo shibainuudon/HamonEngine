@@ -16,7 +16,7 @@ inline namespace render
 {
 
 class Geometry;
-class Shader;
+class Program;
 struct ClearValue;
 struct Viewport;
 struct RasterizerState;
@@ -36,7 +36,7 @@ public:
 
 	virtual void Render(
 		Geometry const& geometry,
-		std::vector<Shader> const& shaders,
+		Program const& program,
 		RasterizerState const& rasterizer_state,
 		BlendState const& blend_state,
 		DepthStencilState const& depth_stencil_state) = 0;

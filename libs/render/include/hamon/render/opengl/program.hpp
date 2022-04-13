@@ -8,6 +8,7 @@
 #define HAMON_RENDER_OPENGL_PROGRAM_HPP
 
 #include <hamon/render/shader.hpp>
+#include <hamon/render/program.hpp>
 #include <hamon/render/opengl/shader.hpp>
 #include <hamon/render/opengl/glext.hpp>
 #include <vector>
@@ -24,11 +25,11 @@ namespace gl
 class Program
 {
 public:
-	explicit Program(std::vector<render::Shader> const& shaders)
+	explicit Program(render::Program const& program)
 	{
 		m_id = gl::glCreateProgram();
 
-		for (auto&& shader : shaders)
+		for (auto&& shader : program.GetShaders())
 		{
 			m_shaders.emplace_back(m_id, shader);
 		}

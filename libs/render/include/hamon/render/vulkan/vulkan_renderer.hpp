@@ -26,6 +26,7 @@
 #include <hamon/render/vulkan/device_memory.hpp>
 #include <hamon/render/vulkan/geometry.hpp>
 #include <hamon/render/vulkan/shader.hpp>
+#include <hamon/render/vulkan/program.hpp>
 #include <hamon/render/vulkan/graphics_pipeline.hpp>
 #include <hamon/render/vulkan/vulkan.hpp>
 
@@ -312,30 +313,21 @@ public:
 
 	void Render(
 		Geometry const& geometry,
-		std::vector<Shader> const& shaders,
+		Program const& program,
 		RasterizerState const& rasterizer_state,
 		BlendState const& blend_state,
 		DepthStencilState const& depth_stencil_state) override
 	{
-		(void)rasterizer_state;
-		(void)blend_state;
-		(void)depth_stencil_state;
-
 		if (!m_initialized)
 		{
-			std::vector<vulkan::Shader*> vulkan_shaders;
-			for (auto const& shader : shaders)
-			{
-				auto vulkan_shader = std::make_shared<vulkan::Shader>(m_device.get(), shader);
-				m_shaders.push_back(vulkan_shader);
-				vulkan_shaders.push_back(vulkan_shader.get());
-			}
+			auto vulkan_program = std::make_shared<vulkan::Program>(m_device.get(), program);
+			m_programs.push_back(vulkan_program);
 
 			auto vulkan_graphics_pipeline = std::make_shared<vulkan::GraphicsPipeline>(
 				m_device.get(),
 				m_pipeline_layout.get(),
 				m_render_pass.get(),
-				vulkan_shaders,
+				*vulkan_program,
 				geometry,
 				rasterizer_state,
 				blend_state,
@@ -346,12 +338,6 @@ public:
 			m_geometries.push_back(vulkan_geometry);
 
 			m_initialized = true;
-		}
-
-		std::vector<vulkan::Shader*> vulkan_shaders;
-		for (auto const& shader : m_shaders)
-		{
-			vulkan_shaders.push_back(shader.get());
 		}
 
 		auto vulkan_graphics_pipeline = m_graphics_pipelines[0];
@@ -381,7 +367,7 @@ private:
 
 	std::unique_ptr<vulkan::PipelineLayout>				m_pipeline_layout;
 
-	std::vector<std::shared_ptr<vulkan::Shader>>			m_shaders;
+	std::vector<std::shared_ptr<vulkan::Program>>			m_programs;
 	std::vector<std::shared_ptr<vulkan::GraphicsPipeline>>	m_graphics_pipelines;
 	std::vector<std::shared_ptr<vulkan::Geometry>>			m_geometries;
 	bool m_initialized = false;

@@ -10,6 +10,7 @@
 #include <hamon/render/renderer.hpp>
 #include <hamon/render/geometry.hpp>
 #include <hamon/render/shader.hpp>
+#include <hamon/render/program.hpp>
 #include <hamon/render/clear_value.hpp>
 #include <hamon/render/viewport.hpp>
 #include <hamon/render/rasterizer_state.hpp>
@@ -20,6 +21,7 @@
 #include <hamon/render/d3d11/render_target_view.hpp>
 #include <hamon/render/d3d11/geometry.hpp>
 #include <hamon/render/d3d11/shader.hpp>
+#include <hamon/render/d3d11/program.hpp>
 #include <hamon/render/d3d11/rasterizer_state.hpp>
 #include <hamon/render/d3d11/blend_state.hpp>
 #include <hamon/render/d3d11/depth_stencil_state.hpp>
@@ -111,7 +113,7 @@ public:
 
 	void Render(
 		Geometry const& geometry,
-		std::vector<render::Shader> const& shaders,
+		Program const& program,
 		RasterizerState const& rasterizer_state,
 		BlendState const& blend_state,
 		DepthStencilState const& depth_stencil_state) override
@@ -135,38 +137,10 @@ public:
 				state.Get(), depth_stencil_state.stencil.reference);
 		}
 
-		std::vector<std::unique_ptr<d3d11::Shader>> d3d11_shaders;
-		for (auto const& shader : shaders)
-		{
-			switch (shader.GetStage())
-			{
-			case render::ShaderStage::Compute:
-				d3d11_shaders.push_back(std::make_unique<d3d11::ComputeShader>(m_device.get(), shader));
-				break;
-			case render::ShaderStage::Vertex:
-				d3d11_shaders.push_back(std::make_unique<d3d11::VertexShader>(m_device.get(), shader));
-				break;
-			case render::ShaderStage::Hull:
-				d3d11_shaders.push_back(std::make_unique<d3d11::HullShader>(m_device.get(), shader));
-				break;
-			case render::ShaderStage::Domain:
-				d3d11_shaders.push_back(std::make_unique<d3d11::DomainShader>(m_device.get(), shader));
-				break;
-			case render::ShaderStage::Geometry:
-				d3d11_shaders.push_back(std::make_unique<d3d11::GeometryShader>(m_device.get(), shader));
-				break;
-			case render::ShaderStage::Pixel:
-				d3d11_shaders.push_back(std::make_unique<d3d11::PixelShader>(m_device.get(), shader));
-				break;
-			}
-		}
+		d3d11::Program d3d11_program(m_device.get(), program);
 		d3d11::Geometry d3d11_geometry(m_device.get(), geometry);
 
-		for (auto const& shader : d3d11_shaders)
-		{
-			shader->Bind(m_device_context.get());
-		}
-
+		d3d11_program.Bind(m_device_context.get());
 		d3d11_geometry.Draw(m_device_context.get());
 	}
 

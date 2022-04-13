@@ -13,6 +13,7 @@
 #include <hamon/render/geometry.hpp>
 #include <hamon/render/opengl_renderer.hpp>
 #include <hamon/render/primitive_topology.hpp>
+#include <hamon/render/program.hpp>
 #include <hamon/render/renderer.hpp>
 #include <hamon/render/semantic.hpp>
 #include <hamon/render/shader.hpp>

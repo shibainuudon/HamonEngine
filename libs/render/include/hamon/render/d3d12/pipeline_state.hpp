@@ -14,6 +14,7 @@
 #include <hamon/render/d3d12/input_layout.hpp>
 #include <hamon/render/d3d12/root_signature.hpp>
 #include <hamon/render/d3d12/shader.hpp>
+#include <hamon/render/d3d12/program.hpp>
 #include <hamon/render/d3d12/rasterizer_state.hpp>
 #include <hamon/render/d3d12/blend_state.hpp>
 #include <hamon/render/d3d12/depth_stencil_state.hpp>
@@ -40,7 +41,7 @@ public:
 		d3d12::Device* device,
 		d3d12::InputLayout const& input_layout,
 		d3d12::RootSignature const& root_signature,
-		std::vector<d3d12::Shader*>	shaders,
+		d3d12::Program const& program,
 		render::PrimitiveTopology primitive_topology,
 		render::RasterizerState const& rasterizer_state,
 		render::BlendState const& blend_state,
@@ -64,15 +65,15 @@ public:
 //		desc.CachedPSO;
 //		desc.Flags;
 
-		for (auto const& shader : shaders)
+		for (auto const& shader : program.GetShaders())
 		{
-			switch (shader->GetStage())
+			switch (shader.GetStage())
 			{
-			case render::ShaderStage::Vertex:   desc.VS = shader->GetBytecode(); break;
-			case render::ShaderStage::Hull:     desc.HS = shader->GetBytecode(); break;
-			case render::ShaderStage::Domain:   desc.DS = shader->GetBytecode(); break;
-			case render::ShaderStage::Geometry: desc.GS = shader->GetBytecode(); break;
-			case render::ShaderStage::Pixel:    desc.PS = shader->GetBytecode(); break;
+			case render::ShaderStage::Vertex:   desc.VS = shader.GetBytecode(); break;
+			case render::ShaderStage::Hull:     desc.HS = shader.GetBytecode(); break;
+			case render::ShaderStage::Domain:   desc.DS = shader.GetBytecode(); break;
+			case render::ShaderStage::Geometry: desc.GS = shader.GetBytecode(); break;
+			case render::ShaderStage::Pixel:    desc.PS = shader.GetBytecode(); break;
 			case render::ShaderStage::Compute:  break;
 			}
 		}

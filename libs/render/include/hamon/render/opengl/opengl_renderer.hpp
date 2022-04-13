@@ -77,7 +77,7 @@ public:
 
 	void Render(
 		Geometry const& geometry,
-		std::vector<Shader> const& shaders,
+		Program const& program,
 		RasterizerState const& rasterizer_state,
 		BlendState const& blend_state,
 		DepthStencilState const& depth_stencil_state) override
@@ -86,7 +86,7 @@ public:
 		gl::BlendState::Apply(blend_state);
 		gl::DepthStencilState::Apply(depth_stencil_state);
 
-		gl::Program gl_program(shaders);
+		gl::Program gl_program(program);
 		gl::Geometry gl_geometry(geometry);
 
 		gl_program.Use();

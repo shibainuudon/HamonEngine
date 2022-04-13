@@ -19,6 +19,7 @@
 #include <hamon/render/d3d12/render_target_view.hpp>
 #include <hamon/render/d3d12/root_signature.hpp>
 #include <hamon/render/d3d12/shader.hpp>
+#include <hamon/render/d3d12/program.hpp>
 #include <hamon/render/d3d12/input_layout.hpp>
 #include <hamon/render/d3d12/pipeline_state.hpp>
 #include <hamon/render/d3d12/geometry.hpp>
@@ -157,26 +158,21 @@ public:
 
 	void Render(
 		Geometry const& geometry,
-		std::vector<Shader> const& shaders,
+		Program const& program,
 		RasterizerState const& rasterizer_state,
 		BlendState const& blend_state,
 		DepthStencilState const& depth_stencil_state) override
 	{
-		std::vector<d3d12::Shader*> d3d12_shaders;
-		for (auto const& shader : shaders)
-		{
-			auto d3d12_shader = std::make_shared<d3d12::Shader>(shader);
-			m_shaders.push_back(d3d12_shader);
-			d3d12_shaders.emplace_back(d3d12_shader.get());
-		}
+		auto d3d12_program = std::make_shared<d3d12::Program>(program);
+		m_programs.push_back(d3d12_program);
 
 		d3d12::InputLayout input_layout(geometry.GetLayout());
 
 		auto pipeline = std::make_shared<d3d12::PipelineState>(
 			m_device.get(),
 			input_layout,
-			*m_root_signature.get(),
-			d3d12_shaders,
+			*m_root_signature,
+			*d3d12_program,
 			geometry.GetPrimitiveTopology(),
 			rasterizer_state,
 			blend_state,
@@ -204,9 +200,9 @@ private:
 	std::unique_ptr<d3d12::RootSignature>		m_root_signature;
 	::UINT										m_frame_index;
 
-	std::vector<std::shared_ptr<d3d12::Shader>>	m_shaders;
+	std::vector<std::shared_ptr<d3d12::Program>>		m_programs;
 	std::vector<std::shared_ptr<d3d12::PipelineState>>	m_pipeline_states;
-	std::vector<std::shared_ptr<d3d12::Geometry>>	m_geometries;
+	std::vector<std::shared_ptr<d3d12::Geometry>>		m_geometries;
 };
 
 }	// inline namespace render

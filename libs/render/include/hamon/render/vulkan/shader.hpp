@@ -8,6 +8,8 @@
 #define HAMON_RENDER_VULKAN_SHADER_HPP
 
 #include <hamon/render/vulkan/device.hpp>
+#include <hamon/render/vulkan/shader_stage.hpp>
+#include <hamon/render/vulkan/shader_module.hpp>
 #include <hamon/render/vulkan/vulkan.hpp>
 #include <hamon/render/shader.hpp>
 #include <glslang/SPIRV/GlslangToSpv.h>
@@ -21,44 +23,23 @@ inline namespace render
 namespace vulkan
 {
 
-inline ::VkShaderStageFlagBits ShaderStage(render::ShaderStage stage)
-{
-	switch (stage)
-	{
-	case render::ShaderStage::Compute:					return VK_SHADER_STAGE_COMPUTE_BIT;
-	case render::ShaderStage::Vertex:					return VK_SHADER_STAGE_VERTEX_BIT;
-	case render::ShaderStage::Geometry:					return VK_SHADER_STAGE_GEOMETRY_BIT;
-	case render::ShaderStage::TessellationControl:		return VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-	case render::ShaderStage::TessellationEvaluation:	return VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
-	case render::ShaderStage::Fragment:					return VK_SHADER_STAGE_FRAGMENT_BIT;
-	}
-	return VK_SHADER_STAGE_VERTEX_BIT;
-}
-
 class Shader
 {
 public:
 	explicit Shader(vulkan::Device* device, render::Shader const& shader)
-		: m_device(device)
-		, m_stage(vulkan::ShaderStage(shader.GetStage()))
+		: m_stage(vulkan::ShaderStage(shader.GetStage()))
+		, m_shader_module(std::make_unique<vulkan::ShaderModule>(device, GLSLtoSPV(shader)))
+	{}
+
+	::VkShaderStageFlagBits	GetStage(void) const
 	{
-		std::vector<std::uint32_t> spv = GLSLtoSPV(shader);
-
-		::VkShaderModuleCreateInfo info{};
-		info.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-		info.codeSize = spv.size() * sizeof(std::uint32_t);
-		info.pCode    = spv.data();
-
-		m_shader_module = m_device->CreateShaderModule(info);
+		return m_stage;
 	}
-
-	~Shader()
+	
+	::VkShaderModule GetModule(void) const
 	{
-		m_device->DestroyShaderModule(m_shader_module);
+		return m_shader_module->Get();
 	}
-
-	::VkShaderModule		GetModule(void) const { return m_shader_module; }
-	::VkShaderStageFlagBits	GetStage(void) const { return m_stage; }
 
 private:
 	static EShLanguage ToEShLanguage(render::ShaderStage stage)
@@ -227,9 +208,9 @@ private:
 	}
 
 private:
-	::VkShaderModule		m_shader_module;
-	::VkShaderStageFlagBits	m_stage;
-	vulkan::Device*			m_device;
+	::VkShaderStageFlagBits					m_stage;
+	std::unique_ptr<vulkan::ShaderModule>	m_shader_module;
+	vulkan::Device*							m_device;
 };
 
 }	// namespace vulkan

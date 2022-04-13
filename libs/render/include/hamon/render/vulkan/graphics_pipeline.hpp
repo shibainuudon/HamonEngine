@@ -8,6 +8,7 @@
 #define HAMON_RENDER_VULKAN_GRAPHICS_PIPELINE_HPP
 
 #include <hamon/render/vulkan/device.hpp>
+#include <hamon/render/vulkan/program.hpp>
 #include <hamon/render/vulkan/pipeline_layout.hpp>
 #include <hamon/render/vulkan/pipeline_input_assembly_state.hpp>
 #include <hamon/render/vulkan/pipeline_rasterization_state.hpp>
@@ -37,7 +38,7 @@ public:
 		vulkan::Device* device,
 		vulkan::PipelineLayout* pipeline_layout,
 		vulkan::RenderPass* render_pass,
-		std::vector<vulkan::Shader*> const& shaders,
+		vulkan::Program const& program,
 		render::Geometry const& geometry,
 		RasterizerState const& rasterizer_state,
 		BlendState const& blend_state,
@@ -60,9 +61,9 @@ public:
 		auto const color_blend_state            = vulkan::PipelineColorBlendState(blend_state);
 
 		std::vector<::VkPipelineShaderStageCreateInfo>	shader_stages;
-		for (auto shader : shaders)
+		for (auto const& shader : program.GetShaders())
 		{
-			shader_stages.push_back(vulkan::PipelineShaderStage(*shader));
+			shader_stages.push_back(vulkan::PipelineShaderStage(shader));
 		}
 
 		::VkGraphicsPipelineCreateInfo info{};
