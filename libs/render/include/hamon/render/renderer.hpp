@@ -17,8 +17,7 @@ inline namespace render
 
 class Geometry;
 class Program;
-struct ClearValue;
-struct Viewport;
+struct RenderPassState;
 struct RenderState;
 
 class Renderer
@@ -29,7 +28,7 @@ public:
 	virtual void Begin(void) = 0;
 	virtual void End(void) = 0;
 
-	virtual void BeginRenderPass(ClearValue const& clear_value, Viewport const& viewport) = 0;
+	virtual void BeginRenderPass(RenderPassState const& render_pass_state) = 0;
 	virtual void EndRenderPass(void) = 0;
 
 	virtual void Render(

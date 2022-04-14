@@ -180,23 +180,21 @@ int main()
 			}
 		}
 
-		hamon::ClearValue clear_value;
-		clear_value.color.r = 0.4f;
-		clear_value.color.g = 0.4f;
-		clear_value.color.b = 0.4f;
-		clear_value.color.a = 1.0f;
-		clear_value.depth = 0.0f;
-		clear_value.stencil = 0;
-
-		hamon::Viewport viewport;
-		viewport.width  = width;
-		viewport.height = height;
+		hamon::RenderPassState render_pass;
+		render_pass.clear_value.color.r = 0.4f;
+		render_pass.clear_value.color.g = 0.4f;
+		render_pass.clear_value.color.b = 0.4f;
+		render_pass.clear_value.color.a = 1.0f;
+		render_pass.clear_value.depth = 0.0f;
+		render_pass.clear_value.stencil = 0;
+		render_pass.viewport.width  = width;
+		render_pass.viewport.height = height;
 
 		int i = 0;
 		for (auto& renderer : renderers)
 		{
 			renderer->Begin();
-			renderer->BeginRenderPass(clear_value, viewport);
+			renderer->BeginRenderPass(render_pass);
 
 			renderer->Render(geometry, programs[i], {});
 

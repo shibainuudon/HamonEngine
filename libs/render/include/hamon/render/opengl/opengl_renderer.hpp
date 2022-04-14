@@ -22,6 +22,7 @@
 #include <hamon/render/clear_value.hpp>
 #include <hamon/render/viewport.hpp>
 #include <hamon/render/render_state.hpp>
+#include <hamon/render/render_pass_state.hpp>
 #include <memory>
 #include <cstdio>
 
@@ -66,10 +67,10 @@ public:
 		m_context->SwapBuffers();
 	}
 
-	void BeginRenderPass(ClearValue const& clear_value, Viewport const& viewport) override
+	void BeginRenderPass(RenderPassState const& render_pass_state) override
 	{
-		gl::ClearValue::Apply(clear_value);
-		gl::Viewport::Apply(viewport);
+		gl::ClearValue::Apply(render_pass_state.clear_value);
+		gl::Viewport::Apply(render_pass_state.viewport);
 	}
 
 	void EndRenderPass(void) override

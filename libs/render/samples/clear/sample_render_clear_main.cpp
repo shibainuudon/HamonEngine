@@ -132,18 +132,18 @@ int main()
 
 		auto rgb = HSVtoRGB(hsv);
 
-		hamon::ClearValue clear_value;
-		clear_value.color.r = rgb.r;
-		clear_value.color.g = rgb.g;
-		clear_value.color.b = rgb.b;
-		clear_value.color.a = 1.0f;
-		clear_value.depth = 0.0f;
-		clear_value.stencil = 0;
+		hamon::RenderPassState render_pass;
+		render_pass.clear_value.color.r = rgb.r;
+		render_pass.clear_value.color.g = rgb.g;
+		render_pass.clear_value.color.b = rgb.b;
+		render_pass.clear_value.color.a = 1.0f;
+		render_pass.clear_value.depth = 0.0f;
+		render_pass.clear_value.stencil = 0;
 
 		for (auto& renderer : renderers)
 		{
 			renderer->Begin();
-			renderer->BeginRenderPass(clear_value, {});
+			renderer->BeginRenderPass(render_pass);
 			renderer->EndRenderPass();
 			renderer->End();
 		}

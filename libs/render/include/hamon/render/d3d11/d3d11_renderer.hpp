@@ -15,6 +15,7 @@
 #include <hamon/render/viewport.hpp>
 #include <hamon/render/rasterizer_state.hpp>
 #include <hamon/render/render_state.hpp>
+#include <hamon/render/render_pass_state.hpp>
 #include <hamon/render/d3d/dxgi_factory.hpp>
 #include <hamon/render/d3d/dxgi_swap_chain.hpp>
 #include <hamon/render/d3d11/device.hpp>
@@ -77,7 +78,7 @@ public:
 		m_swap_chain->Present(1, 0);
 	}
 
-	void BeginRenderPass(ClearValue const& clear_value, Viewport const& viewport) override
+	void BeginRenderPass(RenderPassState const& render_pass_state) override
 	{
 		{
 			ID3D11RenderTargetView* rtv = m_render_target_view->Get();
@@ -89,22 +90,22 @@ public:
 
 		float const clear_color[] =
 		{
-			clear_value.color.r,
-			clear_value.color.g,
-			clear_value.color.b,
-			clear_value.color.a,
+			render_pass_state.clear_value.color.r,
+			render_pass_state.clear_value.color.g,
+			render_pass_state.clear_value.color.b,
+			render_pass_state.clear_value.color.a,
 		};
 		m_device_context->ClearRenderTargetView(
 			m_render_target_view->Get(),
 			clear_color);
 
 		::D3D11_VIEWPORT vp;
-		vp.Width    = viewport.width;
-		vp.Height   = viewport.height;
-		vp.MinDepth = viewport.min_depth;
-		vp.MaxDepth = viewport.max_depth;
-		vp.TopLeftX = viewport.left;
-		vp.TopLeftY = viewport.top;
+		vp.Width    = render_pass_state.viewport.width;
+		vp.Height   = render_pass_state.viewport.height;
+		vp.MinDepth = render_pass_state.viewport.min_depth;
+		vp.MaxDepth = render_pass_state.viewport.max_depth;
+		vp.TopLeftX = render_pass_state.viewport.left;
+		vp.TopLeftY = render_pass_state.viewport.top;
 		m_device_context->RSSetViewports(1, &vp);
 	}
 

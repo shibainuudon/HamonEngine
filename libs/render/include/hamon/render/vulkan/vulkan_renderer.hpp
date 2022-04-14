@@ -30,6 +30,7 @@
 #include <hamon/render/vulkan/graphics_pipeline.hpp>
 #include <hamon/render/vulkan/vulkan.hpp>
 #include <hamon/render/render_state.hpp>
+#include <hamon/render/render_pass_state.hpp>
 #include <unordered_map>
 
 namespace hamon
@@ -281,29 +282,29 @@ public:
 		m_present_queue->Present(m_swapchain->Get(), m_frame_index);
 	}
 
-	void BeginRenderPass(ClearValue const& clear_value, Viewport const& viewport) override
+	void BeginRenderPass(RenderPassState const& render_pass_state) override
 	{
 		m_command_buffers[0]->BeginRenderPass(
 			m_render_pass->Get(),
 			m_framebuffers[m_frame_index]->Get(),
 			m_swapchain->GetExtent(),
-			clear_value);
+			render_pass_state.clear_value);
 
 		{
 			::VkViewport vp;
-			vp.x        = viewport.left;
-			vp.y        = viewport.top + viewport.height;
-			vp.width    = viewport.width;
-			vp.height   = -viewport.height;
-			vp.minDepth = viewport.min_depth;
-			vp.maxDepth = viewport.max_depth;
+			vp.x        = render_pass_state.viewport.left;
+			vp.y        = render_pass_state.viewport.top + render_pass_state.viewport.height;
+			vp.width    = render_pass_state.viewport.width;
+			vp.height   = -render_pass_state.viewport.height;
+			vp.minDepth = render_pass_state.viewport.min_depth;
+			vp.maxDepth = render_pass_state.viewport.max_depth;
 			m_command_buffers[0]->SetViewport(0, 1, &vp);
 		}
 		{
 			::VkRect2D scissor;
 			scissor.offset = {0, 0};
-			scissor.extent.width  = static_cast<std::uint32_t>(viewport.width);
-			scissor.extent.height = static_cast<std::uint32_t>(viewport.height);
+			scissor.extent.width  = static_cast<std::uint32_t>(render_pass_state.viewport.width);
+			scissor.extent.height = static_cast<std::uint32_t>(render_pass_state.viewport.height);
 			m_command_buffers[0]->SetScissor(0, 1, &scissor);
 		}
 	}

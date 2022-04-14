@@ -7,8 +7,9 @@
 #ifndef HAMON_RENDER_D3D12_D3D12_RENDERER_HPP
 #define HAMON_RENDER_D3D12_D3D12_RENDERER_HPP
 
-
 #include <hamon/render/renderer.hpp>
+#include <hamon/render/render_state.hpp>
+#include <hamon/render/render_pass_state.hpp>
 #include <hamon/render/d3d/dxgi_factory.hpp>
 #include <hamon/render/d3d/dxgi_swap_chain.hpp>
 #include <hamon/render/d3d12/device.hpp>
@@ -23,7 +24,6 @@
 #include <hamon/render/d3d12/input_layout.hpp>
 #include <hamon/render/d3d12/pipeline_state.hpp>
 #include <hamon/render/d3d12/geometry.hpp>
-#include <hamon/render/render_state.hpp>
 #include <memory>
 #include <unordered_map>
 
@@ -119,37 +119,37 @@ public:
 		m_fence->MoveToNextFrame(m_command_queue.get(), m_frame_index);
 	}
 
-	void BeginRenderPass(ClearValue const& clear_value, Viewport const& viewport) override
+	void BeginRenderPass(RenderPassState const& render_pass_state) override
 	{
 		auto const rtv_handle = m_render_target_view->GetHandle(m_frame_index);
 		m_command_list->OMSetRenderTargets(1, &rtv_handle, FALSE, nullptr);
 
 		float const clear_color[] =
 		{
-			clear_value.color.r,
-			clear_value.color.g,
-			clear_value.color.b,
-			clear_value.color.a,
+			render_pass_state.clear_value.color.r,
+			render_pass_state.clear_value.color.g,
+			render_pass_state.clear_value.color.b,
+			render_pass_state.clear_value.color.a,
 		};
 		m_command_list->ClearRenderTargetView(rtv_handle, clear_color, 0, nullptr);
 
 		{
 			::D3D12_VIEWPORT vp;
-			vp.TopLeftX = viewport.left;
-			vp.TopLeftY = viewport.top;
-			vp.Width    = viewport.width;
-			vp.Height   = viewport.height;
-			vp.MinDepth = viewport.min_depth;
-			vp.MaxDepth = viewport.max_depth;
+			vp.TopLeftX = render_pass_state.viewport.left;
+			vp.TopLeftY = render_pass_state.viewport.top;
+			vp.Width    = render_pass_state.viewport.width;
+			vp.Height   = render_pass_state.viewport.height;
+			vp.MinDepth = render_pass_state.viewport.min_depth;
+			vp.MaxDepth = render_pass_state.viewport.max_depth;
 			m_command_list->RSSetViewports(1, &vp);
 		}
 
 		{
 			::D3D12_RECT scissor_rect;
-			scissor_rect.left   = static_cast<::LONG>(viewport.left);
-			scissor_rect.top    = static_cast<::LONG>(viewport.top);
-			scissor_rect.right  = static_cast<::LONG>(viewport.left + viewport.width);
-			scissor_rect.bottom = static_cast<::LONG>(viewport.top + viewport.height);
+			scissor_rect.left   = static_cast<::LONG>(render_pass_state.viewport.left);
+			scissor_rect.top    = static_cast<::LONG>(render_pass_state.viewport.top);
+			scissor_rect.right  = static_cast<::LONG>(render_pass_state.viewport.left + render_pass_state.viewport.width);
+			scissor_rect.bottom = static_cast<::LONG>(render_pass_state.viewport.top  + render_pass_state.viewport.height);
 			m_command_list->RSSetScissorRects(1, &scissor_rect);
 		}
 	}
