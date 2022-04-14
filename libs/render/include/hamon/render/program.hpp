@@ -9,6 +9,7 @@
 
 #include <hamon/render/shader.hpp>
 #include <hamon/render/shader_language.hpp>
+#include <hamon/render/detail/identifiable.hpp>
 #include <vector>
 
 namespace hamon
@@ -17,7 +18,7 @@ namespace hamon
 inline namespace render
 {
 
-class Program
+class Program : public detail::Identifiable
 {
 public:
 	Program(ShaderLanguage language, std::vector<Shader> shaders)

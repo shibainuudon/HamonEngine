@@ -75,6 +75,25 @@ public:
 	{
 	}
 
+private:
+	template <typename T, typename Map, typename Id, typename... Args>
+	typename Map::mapped_type
+	GetOrCreate(Map& map, Id const& id, Args&&... args)
+	{
+		auto it = map.find(id);
+		if (it != map.end())
+		{
+			return it->second;
+		}
+		else
+		{
+			auto p = std::make_shared<T>(std::forward<Args>(args)...);
+			map[id] = p;
+			return p;
+		}
+	}
+
+public:
 	void Render(
 		Geometry const& geometry,
 		Program const& program,
@@ -86,12 +105,14 @@ public:
 		gl::BlendState::Apply(blend_state);
 		gl::DepthStencilState::Apply(depth_stencil_state);
 
-		gl::Program gl_program(program);
-		gl::Geometry gl_geometry(geometry);
+		auto gl_geometry = GetOrCreate<gl::Geometry>(
+			m_geometry_map, geometry.GetID(), geometry);
+		auto gl_program = GetOrCreate<gl::Program>(
+			m_program_map, program.GetID(), program);
 
-		gl_program.Use();
-		gl_geometry.Draw();
-		gl_program.Unuse();
+		gl_program->Use();
+		gl_geometry->Draw();
+		gl_program->Unuse();
 	}
 
 private:
@@ -109,6 +130,8 @@ private:
 
 private:
 	std::unique_ptr<gl::Context>	m_context;
+	std::unordered_map<detail::Identifier, std::shared_ptr<gl::Program>>	m_program_map;
+	std::unordered_map<detail::Identifier, std::shared_ptr<gl::Geometry>>	m_geometry_map;
 };
 
 }	// inline namespace render

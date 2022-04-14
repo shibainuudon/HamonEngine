@@ -24,6 +24,7 @@
 #include <hamon/render/d3d12/pipeline_state.hpp>
 #include <hamon/render/d3d12/geometry.hpp>
 #include <memory>
+#include <unordered_map>
 
 namespace hamon
 {
@@ -156,6 +157,25 @@ public:
 	{
 	}
 
+private:
+	template <typename T, typename Map, typename Id, typename... Args>
+	typename Map::mapped_type
+	GetOrCreate(Map& map, Id const& id, Args&&... args)
+	{
+		auto it = map.find(id);
+		if (it != map.end())
+		{
+			return it->second;
+		}
+		else
+		{
+			auto p = std::make_shared<T>(std::forward<Args>(args)...);
+			map[id] = p;
+			return p;
+		}
+	}
+
+public:
 	void Render(
 		Geometry const& geometry,
 		Program const& program,
@@ -163,12 +183,22 @@ public:
 		BlendState const& blend_state,
 		DepthStencilState const& depth_stencil_state) override
 	{
-		auto d3d12_program = std::make_shared<d3d12::Program>(program);
-		m_programs.push_back(d3d12_program);
+		auto d3d12_geometry = GetOrCreate<d3d12::Geometry>(
+			m_geometry_map, geometry.GetID(), m_device.get(), geometry);
+		auto d3d12_program = GetOrCreate<d3d12::Program>(
+			m_program_map, program.GetID(), program);
 
 		d3d12::InputLayout input_layout(geometry.GetLayout());
 
-		auto pipeline = std::make_shared<d3d12::PipelineState>(
+		auto id = render::detail::HashCombine(
+			geometry.GetID(),
+			program.GetID(),
+			rasterizer_state,
+			blend_state,
+			depth_stencil_state);
+		auto d3d12_pipeline = GetOrCreate<d3d12::PipelineState>(
+			m_pipeline_state_map,
+			id,
 			m_device.get(),
 			input_layout,
 			*m_root_signature,
@@ -177,14 +207,11 @@ public:
 			rasterizer_state,
 			blend_state,
 			depth_stencil_state);
-		m_pipeline_states.push_back(pipeline);
 
 		m_command_list->OMSetStencilRef(depth_stencil_state.stencil.reference);
 		m_command_list->SetGraphicsRootSignature(m_root_signature->Get());
-		m_command_list->SetPipelineState(pipeline->Get());
+		m_command_list->SetPipelineState(d3d12_pipeline->Get());
 
-		auto d3d12_geometry = std::make_shared<d3d12::Geometry>(m_device.get(), geometry);
-		m_geometries.push_back(d3d12_geometry);
 		d3d12_geometry->Draw(m_command_list.get());
 	}
 
@@ -200,9 +227,9 @@ private:
 	std::unique_ptr<d3d12::RootSignature>		m_root_signature;
 	::UINT										m_frame_index;
 
-	std::vector<std::shared_ptr<d3d12::Program>>		m_programs;
-	std::vector<std::shared_ptr<d3d12::PipelineState>>	m_pipeline_states;
-	std::vector<std::shared_ptr<d3d12::Geometry>>		m_geometries;
+	std::unordered_map<detail::Identifier, std::shared_ptr<d3d12::Program>>		m_program_map;
+	std::unordered_map<detail::Identifier, std::shared_ptr<d3d12::Geometry>>	m_geometry_map;
+	std::unordered_map<std::size_t, std::shared_ptr<d3d12::PipelineState>>		m_pipeline_state_map;
 };
 
 }	// inline namespace render

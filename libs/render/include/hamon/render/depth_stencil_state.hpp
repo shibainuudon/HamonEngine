@@ -43,4 +43,33 @@ struct DepthStencilState
 
 }	// namespace hamon
 
+
+#include <hamon/render/detail/hash_combine.hpp>
+#include <functional>
+
+namespace std
+{
+
+template <>
+struct hash<hamon::render::DepthStencilState>
+{
+	std::size_t operator()(hamon::render::DepthStencilState const& arg) const
+	{
+		return hamon::render::detail::HashCombine(
+			arg.depth.enable,
+			arg.depth.write,
+			arg.depth.func,
+			arg.stencil.enable,
+			arg.stencil.read_mask,
+			arg.stencil.write_mask,
+			arg.stencil.fail_operation,
+			arg.stencil.depth_fail_operation,
+			arg.stencil.pass_operation,
+			arg.stencil.func,
+			arg.stencil.reference);
+	}
+};
+
+}	// namespace std
+
 #endif // HAMON_RENDER_DEPTH_STENCIL_STATE_HPP

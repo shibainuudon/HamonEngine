@@ -29,6 +29,7 @@
 #include <hamon/render/vulkan/program.hpp>
 #include <hamon/render/vulkan/graphics_pipeline.hpp>
 #include <hamon/render/vulkan/vulkan.hpp>
+#include <unordered_map>
 
 namespace hamon
 {
@@ -311,6 +312,25 @@ public:
 		m_command_buffers[0]->EndRenderPass();
 	}
 
+private:
+	template <typename T, typename Map, typename Id, typename... Args>
+	typename Map::mapped_type
+	GetOrCreate(Map& map, Id const& id, Args&&... args)
+	{
+		auto it = map.find(id);
+		if (it != map.end())
+		{
+			return it->second;
+		}
+		else
+		{
+			auto p = std::make_shared<T>(std::forward<Args>(args)...);
+			map[id] = p;
+			return p;
+		}
+	}
+
+public:
 	void Render(
 		Geometry const& geometry,
 		Program const& program,
@@ -318,32 +338,30 @@ public:
 		BlendState const& blend_state,
 		DepthStencilState const& depth_stencil_state) override
 	{
-		if (!m_initialized)
-		{
-			auto vulkan_program = std::make_shared<vulkan::Program>(m_device.get(), program);
-			m_programs.push_back(vulkan_program);
+		auto vulkan_geometry = GetOrCreate<vulkan::Geometry>(
+			m_geometry_map, geometry.GetID(), m_device.get(), geometry);
+		auto vulkan_program = GetOrCreate<vulkan::Program>(
+			m_program_map, program.GetID(), m_device.get(), program);
 
-			auto vulkan_graphics_pipeline = std::make_shared<vulkan::GraphicsPipeline>(
-				m_device.get(),
-				m_pipeline_layout.get(),
-				m_render_pass.get(),
-				*vulkan_program,
-				geometry,
-				rasterizer_state,
-				blend_state,
-				depth_stencil_state);
-			m_graphics_pipelines.push_back(vulkan_graphics_pipeline);
+		auto id = render::detail::HashCombine(
+			geometry.GetID(),
+			program.GetID(),
+			rasterizer_state,
+			blend_state,
+			depth_stencil_state);
+		auto vulkan_graphics_pipeline = GetOrCreate<vulkan::GraphicsPipeline>(
+			m_graphics_pipeline_map,
+			id,
+			m_device.get(),
+			m_pipeline_layout.get(),
+			m_render_pass.get(),
+			*vulkan_program,
+			geometry,
+			rasterizer_state,
+			blend_state,
+			depth_stencil_state);
 
-			auto vulkan_geometry = std::make_shared<vulkan::Geometry>(m_device.get(), geometry);
-			m_geometries.push_back(vulkan_geometry);
-
-			m_initialized = true;
-		}
-
-		auto vulkan_graphics_pipeline = m_graphics_pipelines[0];
 		vulkan_graphics_pipeline->Bind(m_command_buffers[0].get());
-
-		auto vulkan_geometry = m_geometries[0];
 		vulkan_geometry->Draw(m_command_buffers[0].get());
 	}
 
@@ -367,10 +385,9 @@ private:
 
 	std::unique_ptr<vulkan::PipelineLayout>				m_pipeline_layout;
 
-	std::vector<std::shared_ptr<vulkan::Program>>			m_programs;
-	std::vector<std::shared_ptr<vulkan::GraphicsPipeline>>	m_graphics_pipelines;
-	std::vector<std::shared_ptr<vulkan::Geometry>>			m_geometries;
-	bool m_initialized = false;
+	std::unordered_map<detail::Identifier, std::shared_ptr<vulkan::Program>>	m_program_map;
+	std::unordered_map<detail::Identifier, std::shared_ptr<vulkan::Geometry>>	m_geometry_map;
+	std::unordered_map<std::size_t, std::shared_ptr<vulkan::GraphicsPipeline>>	m_graphics_pipeline_map;
 };
 
 }	// inline namespace render

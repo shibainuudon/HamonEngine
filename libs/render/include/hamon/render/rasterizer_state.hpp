@@ -28,4 +28,24 @@ struct RasterizerState
 
 }	// namespace hamon
 
+#include <hamon/render/detail/hash_combine.hpp>
+#include <functional>
+
+namespace std
+{
+
+template <>
+struct hash<hamon::render::RasterizerState>
+{
+	std::size_t operator()(hamon::render::RasterizerState const& arg) const
+	{
+		return hamon::render::detail::HashCombine(
+			arg.fill_mode,
+			arg.cull_mode,
+			arg.front_face);
+	}
+};
+
+}	// namespace std
+
 #endif // HAMON_RENDER_RASTERIZER_STATE_HPP

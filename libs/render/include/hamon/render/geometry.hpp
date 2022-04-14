@@ -9,6 +9,7 @@
 
 #include <hamon/render/primitive_topology.hpp>
 #include <hamon/render/vertex_layout.hpp>
+#include <hamon/render/detail/identifiable.hpp>
 #include <vector>
 #include <utility>
 
@@ -18,7 +19,7 @@ namespace hamon
 inline namespace render
 {
 
-class Geometry
+class Geometry : public detail::Identifiable
 {
 public:
 	Geometry(PrimitiveTopology topology,

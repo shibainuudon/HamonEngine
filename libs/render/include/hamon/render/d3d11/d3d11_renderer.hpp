@@ -111,6 +111,25 @@ public:
 	{
 	}
 
+private:
+	template <typename T, typename Map, typename Id, typename... Args>
+	typename Map::mapped_type
+	GetOrCreate(Map& map, Id const& id, Args&&... args)
+	{
+		auto it = map.find(id);
+		if (it != map.end())
+		{
+			return it->second;
+		}
+		else
+		{
+			auto p = std::make_shared<T>(std::forward<Args>(args)...);
+			map[id] = p;
+			return p;
+		}
+	}
+
+public:
 	void Render(
 		Geometry const& geometry,
 		Program const& program,
@@ -137,11 +156,13 @@ public:
 				state.Get(), depth_stencil_state.stencil.reference);
 		}
 
-		d3d11::Program d3d11_program(m_device.get(), program);
-		d3d11::Geometry d3d11_geometry(m_device.get(), geometry);
+		auto d3d11_geometry = GetOrCreate<d3d11::Geometry>(
+			m_geometry_map, geometry.GetID(), m_device.get(), geometry);
+		auto d3d11_program = GetOrCreate<d3d11::Program>(
+			m_program_map, program.GetID(), m_device.get(), program);
 
-		d3d11_program.Bind(m_device_context.get());
-		d3d11_geometry.Draw(m_device_context.get());
+		d3d11_program->Bind(m_device_context.get());
+		d3d11_geometry->Draw(m_device_context.get());
 	}
 
 private:
@@ -150,6 +171,9 @@ private:
 	std::unique_ptr<d3d11::Device>				m_device;
 	std::unique_ptr<d3d11::DeviceContext>		m_device_context;
 	std::unique_ptr<d3d11::RenderTargetView>	m_render_target_view;
+
+	std::unordered_map<detail::Identifier, std::shared_ptr<d3d11::Program>>		m_program_map;
+	std::unordered_map<detail::Identifier, std::shared_ptr<d3d11::Geometry>>	m_geometry_map;
 };
 
 }	// inline namespace render

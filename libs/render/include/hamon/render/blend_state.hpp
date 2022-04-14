@@ -39,4 +39,31 @@ struct BlendState
 
 }	// namespace hamon
 
+#include <hamon/render/detail/hash_combine.hpp>
+#include <functional>
+
+namespace std
+{
+
+template <>
+struct hash<hamon::render::BlendState>
+{
+	std::size_t operator()(hamon::render::BlendState const& arg) const
+	{
+		return hamon::render::detail::HashCombine(
+			arg.blend_enable,
+			arg.color_src_factor,
+			arg.color_dest_factor,
+			arg.color_operation,
+			arg.alpha_src_factor,
+			arg.alpha_dest_factor,
+			arg.alpha_operation,
+			arg.logic_op_enable,
+			arg.logic_operation,
+			arg.color_write_mask);
+	}
+};
+
+}	// namespace std
+
 #endif // HAMON_RENDER_BLEND_STATE_HPP
