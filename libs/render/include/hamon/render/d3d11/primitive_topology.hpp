@@ -24,9 +24,9 @@ PrimitiveTopology(render::PrimitiveTopology topology)
 {
 	switch (topology)
 	{
-	case render::PrimitiveTopology::Points:    return D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
-	case render::PrimitiveTopology::Lines:     return D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
-	case render::PrimitiveTopology::Triangles: return D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	case render::PrimitiveTopology::PointList:    return D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
+	case render::PrimitiveTopology::LineList:     return D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
+	case render::PrimitiveTopology::TriangleList: return D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	}
 	return D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED;
 }

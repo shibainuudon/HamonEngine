@@ -23,11 +23,11 @@ inline ::GLenum PrimitiveTopology(render::PrimitiveTopology topology)
 {
 	switch (topology)
 	{
-	case render::PrimitiveTopology::Points:		return GL_POINTS;
-	case render::PrimitiveTopology::Lines:		return GL_LINES;
-	case render::PrimitiveTopology::Triangles:	return GL_TRIANGLES;
-	default:									return GL_POINTS;
+	case render::PrimitiveTopology::PointList:		return GL_POINTS;
+	case render::PrimitiveTopology::LineList:		return GL_LINES;
+	case render::PrimitiveTopology::TriangleList:	return GL_TRIANGLES;
 	}
+	return GL_POINTS;
 }
 
 }	// namespace gl

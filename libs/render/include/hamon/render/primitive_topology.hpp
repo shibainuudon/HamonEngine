@@ -17,9 +17,9 @@ inline namespace render
 
 enum class PrimitiveTopology : std::uint32_t
 {
-	Points,
-	Lines,
-	Triangles,
+	PointList,
+	LineList,
+	TriangleList,
 };
 
 }	// inline namespace render

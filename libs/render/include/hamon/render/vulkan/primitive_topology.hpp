@@ -24,9 +24,9 @@ PrimitiveTopology(render::PrimitiveTopology primitive_topology)
 {
 	switch (primitive_topology)
 	{
-	case render::PrimitiveTopology::Points:		return VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
-	case render::PrimitiveTopology::Lines:		return VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
-	case render::PrimitiveTopology::Triangles:	return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+	case render::PrimitiveTopology::PointList:		return VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
+	case render::PrimitiveTopology::LineList:		return VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+	case render::PrimitiveTopology::TriangleList:	return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 	}
 	return VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
 }

@@ -167,7 +167,7 @@ int main()
 
 	hamon::Geometry const geometry
 	{
-		hamon::PrimitiveTopology::Triangles, vertex_layout, vertices
+		hamon::PrimitiveTopology::TriangleList, vertex_layout, vertices
 	};
 
 	for (;;)
