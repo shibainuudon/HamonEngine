@@ -20,11 +20,11 @@ enum class StencilOperation : std::uint32_t
 	Keep,
 	Zero,
 	Replace,
-	IncrementSaturate,
-	DecrementSaturate,
+	IncrementAndClamp,
+	DecrementAndClamp,
 	Invert,
-	Increment,
-	Decrement,
+	IncrementAndWrap,
+	DecrementAndWrap,
 };
 
 }	// inline namespace render

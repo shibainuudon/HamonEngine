@@ -26,11 +26,11 @@ inline ::GLenum StencilOperation(render::StencilOperation op)
 	case render::StencilOperation::Keep:				return GL_KEEP;
 	case render::StencilOperation::Zero:				return GL_ZERO;
 	case render::StencilOperation::Replace:				return GL_REPLACE;
-	case render::StencilOperation::IncrementSaturate:	return GL_INCR;
-	case render::StencilOperation::DecrementSaturate:	return GL_DECR;
+	case render::StencilOperation::IncrementAndClamp:	return GL_INCR;
+	case render::StencilOperation::DecrementAndClamp:	return GL_DECR;
 	case render::StencilOperation::Invert:				return GL_INVERT;
-	case render::StencilOperation::Increment:			return GL_INCR_WRAP;
-	case render::StencilOperation::Decrement:			return GL_DECR_WRAP;
+	case render::StencilOperation::IncrementAndWrap:	return GL_INCR_WRAP;
+	case render::StencilOperation::DecrementAndWrap:	return GL_DECR_WRAP;
 	}
 	return GL_KEEP;
 }

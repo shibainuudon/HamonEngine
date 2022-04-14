@@ -27,11 +27,11 @@ StencilOperation(render::StencilOperation op)
 	case render::StencilOperation::Keep:				return VK_STENCIL_OP_KEEP;
 	case render::StencilOperation::Zero:				return VK_STENCIL_OP_ZERO;
 	case render::StencilOperation::Replace:				return VK_STENCIL_OP_REPLACE;
-	case render::StencilOperation::IncrementSaturate:	return VK_STENCIL_OP_INCREMENT_AND_CLAMP;
-	case render::StencilOperation::DecrementSaturate:	return VK_STENCIL_OP_DECREMENT_AND_CLAMP;
+	case render::StencilOperation::IncrementAndClamp:	return VK_STENCIL_OP_INCREMENT_AND_CLAMP;
+	case render::StencilOperation::DecrementAndClamp:	return VK_STENCIL_OP_DECREMENT_AND_CLAMP;
 	case render::StencilOperation::Invert:				return VK_STENCIL_OP_INVERT;
-	case render::StencilOperation::Increment:			return VK_STENCIL_OP_INCREMENT_AND_WRAP;
-	case render::StencilOperation::Decrement:			return VK_STENCIL_OP_DECREMENT_AND_WRAP;
+	case render::StencilOperation::IncrementAndWrap:	return VK_STENCIL_OP_INCREMENT_AND_WRAP;
+	case render::StencilOperation::DecrementAndWrap:	return VK_STENCIL_OP_DECREMENT_AND_WRAP;
 	}
 	return VK_STENCIL_OP_KEEP;
 }
