@@ -21,6 +21,7 @@
 #include <hamon/render/rasterizer_state.hpp>
 #include <hamon/render/clear_value.hpp>
 #include <hamon/render/viewport.hpp>
+#include <hamon/render/render_state.hpp>
 #include <memory>
 #include <cstdio>
 
@@ -97,13 +98,11 @@ public:
 	void Render(
 		Geometry const& geometry,
 		Program const& program,
-		RasterizerState const& rasterizer_state,
-		BlendState const& blend_state,
-		DepthStencilState const& depth_stencil_state) override
+		RenderState const& render_state) override
 	{
-		gl::RasterizerState::Apply(rasterizer_state);
-		gl::BlendState::Apply(blend_state);
-		gl::DepthStencilState::Apply(depth_stencil_state);
+		gl::RasterizerState::Apply(render_state.rasterizer_state);
+		gl::BlendState::Apply(render_state.blend_state);
+		gl::DepthStencilState::Apply(render_state.depth_stencil_state);
 
 		auto gl_geometry = GetOrCreate<gl::Geometry>(
 			m_geometry_map, geometry.GetID(), geometry);

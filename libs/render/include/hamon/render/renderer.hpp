@@ -19,9 +19,7 @@ class Geometry;
 class Program;
 struct ClearValue;
 struct Viewport;
-struct RasterizerState;
-struct BlendState;
-struct DepthStencilState;
+struct RenderState;
 
 class Renderer
 {
@@ -37,9 +35,7 @@ public:
 	virtual void Render(
 		Geometry const& geometry,
 		Program const& program,
-		RasterizerState const& rasterizer_state,
-		BlendState const& blend_state,
-		DepthStencilState const& depth_stencil_state) = 0;
+		RenderState const& render_state) = 0;
 };
 
 }	// inline namespace render

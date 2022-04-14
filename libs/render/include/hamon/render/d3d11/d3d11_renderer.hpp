@@ -14,6 +14,7 @@
 #include <hamon/render/clear_value.hpp>
 #include <hamon/render/viewport.hpp>
 #include <hamon/render/rasterizer_state.hpp>
+#include <hamon/render/render_state.hpp>
 #include <hamon/render/d3d/dxgi_factory.hpp>
 #include <hamon/render/d3d/dxgi_swap_chain.hpp>
 #include <hamon/render/d3d11/device.hpp>
@@ -133,27 +134,25 @@ public:
 	void Render(
 		Geometry const& geometry,
 		Program const& program,
-		RasterizerState const& rasterizer_state,
-		BlendState const& blend_state,
-		DepthStencilState const& depth_stencil_state) override
+		RenderState const& render_state) override
 	{
 		{
 			auto state = m_device->CreateRasterizerState(
-				d3d11::RasterizerState(rasterizer_state));
+				d3d11::RasterizerState(render_state.rasterizer_state));
 			m_device_context->RSSetState(state.Get());
 		}
 		{
 			auto state = m_device->CreateBlendState(
-				d3d11::BlendState(blend_state));
+				d3d11::BlendState(render_state.blend_state));
 			float const blend_factor[4] {};
 			::UINT const sample_mask = 0xffffffff;
 			m_device_context->OMSetBlendState(state.Get(), blend_factor, sample_mask);
 		}
 		{
 			auto state = m_device->CreateDepthStencilState(
-				d3d11::DepthStencilState(depth_stencil_state));
+				d3d11::DepthStencilState(render_state.depth_stencil_state));
 			m_device_context->OMSetDepthStencilState(
-				state.Get(), depth_stencil_state.stencil.reference);
+				state.Get(), render_state.depth_stencil_state.stencil.reference);
 		}
 
 		auto d3d11_geometry = GetOrCreate<d3d11::Geometry>(

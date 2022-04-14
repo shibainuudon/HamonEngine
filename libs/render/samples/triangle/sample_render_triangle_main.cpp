@@ -198,7 +198,7 @@ int main()
 			renderer->Begin();
 			renderer->BeginRenderPass(clear_value, viewport);
 
-			renderer->Render(geometry, programs[i], {}, {}, {});
+			renderer->Render(geometry, programs[i], {});
 
 			renderer->EndRenderPass();
 			renderer->End();

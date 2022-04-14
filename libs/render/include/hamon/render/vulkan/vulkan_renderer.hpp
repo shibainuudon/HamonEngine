@@ -29,6 +29,7 @@
 #include <hamon/render/vulkan/program.hpp>
 #include <hamon/render/vulkan/graphics_pipeline.hpp>
 #include <hamon/render/vulkan/vulkan.hpp>
+#include <hamon/render/render_state.hpp>
 #include <unordered_map>
 
 namespace hamon
@@ -334,9 +335,7 @@ public:
 	void Render(
 		Geometry const& geometry,
 		Program const& program,
-		RasterizerState const& rasterizer_state,
-		BlendState const& blend_state,
-		DepthStencilState const& depth_stencil_state) override
+		RenderState const& render_state) override
 	{
 		auto vulkan_geometry = GetOrCreate<vulkan::Geometry>(
 			m_geometry_map, geometry.GetID(), m_device.get(), geometry);
@@ -346,9 +345,9 @@ public:
 		auto id = render::detail::HashCombine(
 			geometry.GetID(),
 			program.GetID(),
-			rasterizer_state,
-			blend_state,
-			depth_stencil_state);
+			render_state.rasterizer_state,
+			render_state.blend_state,
+			render_state.depth_stencil_state);
 		auto vulkan_graphics_pipeline = GetOrCreate<vulkan::GraphicsPipeline>(
 			m_graphics_pipeline_map,
 			id,
@@ -357,9 +356,9 @@ public:
 			m_render_pass.get(),
 			*vulkan_program,
 			geometry,
-			rasterizer_state,
-			blend_state,
-			depth_stencil_state);
+			render_state.rasterizer_state,
+			render_state.blend_state,
+			render_state.depth_stencil_state);
 
 		vulkan_graphics_pipeline->Bind(m_command_buffers[0].get());
 		vulkan_geometry->Draw(m_command_buffers[0].get());
