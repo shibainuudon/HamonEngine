@@ -34,7 +34,7 @@ inline ::D3D12_LOGIC_OP LogicOperation(render::LogicOperation op)
 	case render::LogicOperation::Or:			return D3D12_LOGIC_OP_OR;
 	case render::LogicOperation::Nor:			return D3D12_LOGIC_OP_NOR;
 	case render::LogicOperation::Xor:			return D3D12_LOGIC_OP_XOR;
-	case render::LogicOperation::Equiv:			return D3D12_LOGIC_OP_EQUIV;
+	case render::LogicOperation::Equivalent:	return D3D12_LOGIC_OP_EQUIV;
 	case render::LogicOperation::AndReverse:	return D3D12_LOGIC_OP_AND_REVERSE;
 	case render::LogicOperation::AndInverted:	return D3D12_LOGIC_OP_AND_INVERTED;
 	case render::LogicOperation::OrReverse:		return D3D12_LOGIC_OP_OR_REVERSE;

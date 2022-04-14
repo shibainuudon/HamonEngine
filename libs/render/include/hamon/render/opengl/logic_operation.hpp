@@ -34,7 +34,7 @@ inline ::GLenum LogicOperation(render::LogicOperation op)
 	case render::LogicOperation::Or:			return GL_OR;
 	case render::LogicOperation::Nor:			return GL_NOR;
 	case render::LogicOperation::Xor:			return GL_XOR;
-	case render::LogicOperation::Equiv:			return GL_EQUIV;
+	case render::LogicOperation::Equivalent:	return GL_EQUIV;
 	case render::LogicOperation::AndReverse:	return GL_AND_REVERSE;
 	case render::LogicOperation::AndInverted:	return GL_AND_INVERTED;
 	case render::LogicOperation::OrReverse:		return GL_OR_REVERSE;

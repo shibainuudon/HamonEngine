@@ -35,7 +35,7 @@ LogicOperation(render::LogicOperation op)
 	case render::LogicOperation::Or:			return VK_LOGIC_OP_OR;
 	case render::LogicOperation::Nor:			return VK_LOGIC_OP_NOR;
 	case render::LogicOperation::Xor:			return VK_LOGIC_OP_XOR;
-	case render::LogicOperation::Equiv:			return VK_LOGIC_OP_EQUIVALENT;
+	case render::LogicOperation::Equivalent:	return VK_LOGIC_OP_EQUIVALENT;
 	case render::LogicOperation::AndReverse:	return VK_LOGIC_OP_AND_REVERSE;
 	case render::LogicOperation::AndInverted:	return VK_LOGIC_OP_AND_INVERTED;
 	case render::LogicOperation::OrReverse:		return VK_LOGIC_OP_OR_REVERSE;

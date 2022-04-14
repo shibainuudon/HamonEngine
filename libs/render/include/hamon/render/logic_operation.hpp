@@ -28,7 +28,7 @@ enum class LogicOperation : std::uint32_t
 	Or,
 	Nor,
 	Xor,
-	Equiv,
+	Equivalent,
 	AndReverse,
 	AndInverted,
 	OrReverse,
