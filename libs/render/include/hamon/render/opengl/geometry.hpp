@@ -8,7 +8,8 @@
 #define HAMON_RENDER_OPENGL_GEOMETRY_HPP
 
 #include <hamon/render/geometry.hpp>
-#include <hamon/render/opengl/buffer.hpp>
+#include <hamon/render/opengl/vertex_buffer.hpp>
+#include <hamon/render/opengl/index_buffer.hpp>
 #include <hamon/render/opengl/vertex_array.hpp>
 #include <hamon/render/opengl/primitive_topology.hpp>
 #include <hamon/render/opengl/gl.hpp>
@@ -26,26 +27,42 @@ class Geometry
 {
 public:
 	explicit Geometry(render::Geometry const& geometry)
-		: m_vertex_buffer(geometry.GetVertexArrayBytes(), geometry.GetVertexArrayData(), GL_STATIC_DRAW)
-		, m_vertex_array(geometry.GetLayout(), m_vertex_buffer.GetId(), 0)
-		, m_topology(gl::PrimitiveTopology(geometry.GetPrimitiveTopology()))
-		, m_vertex_count(static_cast<::GLsizei>(geometry.GetVertexArrayCount()))
+		: m_topology(gl::PrimitiveTopology(geometry.GetPrimitiveTopology()))
 	{
+		m_vertex_buffer = std::make_unique<VertexBuffer>(geometry);
+
+		if (geometry.GetIndexArrayData() != nullptr)
+		{
+			m_index_buffer = std::make_unique<IndexBuffer>(geometry);
+		}
+
+		m_vertex_array = std::make_unique<VertexArray>(
+			geometry.GetLayout(),
+			m_vertex_buffer.get(),
+			m_index_buffer.get());
 	}
 
 	void Draw()
 	{
-		m_vertex_array.Bind();
-		::glDrawArrays(m_topology, 0, m_vertex_count);
-		m_vertex_array.Unbind();
+		m_vertex_array->Bind();
+
+		if (m_index_buffer)
+		{
+			m_index_buffer->Draw(m_topology);
+		}
+		else
+		{
+			m_vertex_buffer->Draw(m_topology);
+		}
+
+		m_vertex_array->Unbind();
 	}
 
 private:
-	gl::Buffer		m_vertex_buffer;
-	// gl::Buffer	m_index_buffer;
-	gl::VertexArray	m_vertex_array;
-	::GLenum		m_topology;
-	::GLsizei		m_vertex_count;
+	std::unique_ptr<gl::VertexBuffer>	m_vertex_buffer;
+	std::unique_ptr<gl::IndexBuffer>	m_index_buffer;
+	std::unique_ptr<gl::VertexArray>	m_vertex_array;
+	::GLenum							m_topology;
 };
 
 }	// namespace gl

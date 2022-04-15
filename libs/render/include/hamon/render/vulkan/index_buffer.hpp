@@ -1,11 +1,11 @@
 ﻿/**
- *	@file	vertex_buffer.hpp
+ *	@file	index_buffer.hpp
  *
- *	@brief	VertexBuffer
+ *	@brief	IndexBuffer
  */
 
-#ifndef HAMON_RENDER_VULKAN_VERTEX_BUFFER_HPP
-#define HAMON_RENDER_VULKAN_VERTEX_BUFFER_HPP
+#ifndef HAMON_RENDER_VULKAN_INDEX_BUFFER_HPP
+#define HAMON_RENDER_VULKAN_INDEX_BUFFER_HPP
 
 #include <hamon/render/vulkan/vulkan.hpp>
 #include <hamon/render/vulkan/buffer.hpp>
@@ -23,19 +23,19 @@ inline namespace render
 namespace vulkan
 {
 
-class VertexBuffer
+class IndexBuffer
 {
 public:
-	explicit VertexBuffer(vulkan::Device* device, render::Geometry const& geometry)
-		: m_count(static_cast<std::uint32_t>(geometry.GetVertexArrayCount()))
+	explicit IndexBuffer(vulkan::Device* device, render::Geometry const& geometry)
+		: m_count(static_cast<std::uint32_t>(geometry.GetIndexArrayCount()))
 	{
-		auto const size = geometry.GetVertexArrayBytes();
-		auto const src  = geometry.GetVertexArrayData();
+		auto const size = geometry.GetIndexArrayBytes();
+		auto const src  = geometry.GetIndexArrayData();
 
 		m_buffer = std::make_unique<vulkan::Buffer>(
 			device,
 			size,
-			VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+			VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 
 		m_device_memory = std::make_unique<vulkan::DeviceMemory>(
 			device,
@@ -53,13 +53,12 @@ public:
 
 	void Bind(vulkan::CommandBuffer* command_buffer)
 	{
-		::VkDeviceSize offset = 0;
-		command_buffer->BindVertexBuffers(0, 1, &m_buffer->Get(), &offset);
+		command_buffer->BindIndexBuffer(m_buffer->Get(), 0, VK_INDEX_TYPE_UINT16);
 	}
 
 	void Draw(vulkan::CommandBuffer* command_buffer)
 	{
-		command_buffer->Draw(m_count, 1, 0, 0);
+		command_buffer->DrawIndexed(m_count, 1, 0, 0, 0);
 	}
 
 private:
@@ -74,4 +73,4 @@ private:
 
 }	// namespace hamon
 
-#endif // HAMON_RENDER_VULKAN_VERTEX_BUFFER_HPP
+#endif // HAMON_RENDER_VULKAN_INDEX_BUFFER_HPP

@@ -91,6 +91,14 @@ public:
 		::vkCmdBindVertexBuffers(m_command_buffer, first_binding, binding_count, buffers, offsets);
 	}
 
+	void BindIndexBuffer(
+		::VkBuffer      buffer,
+		::VkDeviceSize  offset,
+		::VkIndexType   index_type)
+	{
+		::vkCmdBindIndexBuffer(m_command_buffer, buffer, offset, index_type);
+	}
+
 	void BindPipeline(
 		::VkPipelineBindPoint pipeline_bind_point,
 		::VkPipeline          pipeline)
@@ -106,7 +114,23 @@ public:
 	{
 		::vkCmdDraw(m_command_buffer, vertex_count, instance_count, first_vertex, first_instance);
 	}
-	
+
+	void DrawIndexed(
+		std::uint32_t index_count,
+		std::uint32_t instance_count,
+		std::uint32_t first_index,
+		std::int32_t  vertex_offset,
+		std::uint32_t first_instance)
+	{
+		::vkCmdDrawIndexed(
+			m_command_buffer,
+			index_count,
+			instance_count,
+			first_index,
+			vertex_offset,
+			first_instance);
+	}
+
 	void SetViewport(
 		std::uint32_t       first_viewport,
 		std::uint32_t       viewport_count,

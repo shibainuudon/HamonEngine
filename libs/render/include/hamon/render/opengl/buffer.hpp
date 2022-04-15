@@ -23,19 +23,25 @@ class Buffer
 public:
 	explicit Buffer(::GLsizeiptr size, void const* data, ::GLenum usage)
 	{
-		gl::glCreateBuffers(1, &m_id);
-		gl::glNamedBufferData(m_id, size, data, usage);
+		if (size != 0 && data != nullptr)
+		{
+			gl::glCreateBuffers(1, &m_id);
+			gl::glNamedBufferData(m_id, size, data, usage);
+		}
 	}
 
 	~Buffer()
 	{
-		gl::glDeleteBuffers(1, &m_id);
+		if (m_id != 0)
+		{
+			gl::glDeleteBuffers(1, &m_id);
+		}
 	}
 
 	::GLuint GetId(void) const { return m_id; }
 
 private:
-	::GLuint		m_id;
+	::GLuint		m_id{};
 };
 
 }	// namespace gl

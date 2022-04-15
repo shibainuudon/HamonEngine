@@ -57,11 +57,7 @@ public:
 		device_memory->BindBufferMemory(m_buffer, memory_offset);
 	}
 
-	void BindAsVertexBuffers(vulkan::CommandBuffer* command_buffer)
-	{
-		::VkDeviceSize offset = 0;
-		command_buffer->BindVertexBuffers(0, 1, &m_buffer, &offset);
-	}
+	::VkBuffer const& Get(void) const { return m_buffer; }
 
 private:
 	::VkBuffer		m_buffer;

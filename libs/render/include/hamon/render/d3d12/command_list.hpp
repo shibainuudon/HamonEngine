@@ -62,6 +62,12 @@ public:
 		m_command_list->IASetVertexBuffers(start_slot, num_views, views);
 	}
 
+	void IASetIndexBuffer(
+		const ::D3D12_INDEX_BUFFER_VIEW* view)
+	{
+		m_command_list->IASetIndexBuffer(view);
+	}
+
 	void IASetPrimitiveTopology(
 		::D3D12_PRIMITIVE_TOPOLOGY primitive_topology)
 	{
@@ -78,6 +84,20 @@ public:
 			vertex_count_per_instance,
 			instance_count,
 			start_vertex_location,
+			start_instance_location);
+	}
+	void DrawIndexedInstanced(
+		::UINT index_count_per_instance,
+		::UINT instance_count,
+		::UINT start_index_location,
+		::INT  base_vertex_location,
+		::UINT start_instance_location)
+	{
+		m_command_list->DrawIndexedInstanced(
+			index_count_per_instance,
+			instance_count,
+			start_index_location,
+			base_vertex_location,
 			start_instance_location);
 	}
 

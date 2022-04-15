@@ -49,6 +49,14 @@ public:
 		m_device_context->IASetVertexBuffers(start_slot, num_buffers, vertex_buffers, strides, offsets);
 	}
 
+	void IASetIndexBuffer(
+		::ID3D11Buffer* index_buffer,
+		::DXGI_FORMAT   format,
+		::UINT          offset)
+	{
+		m_device_context->IASetIndexBuffer(index_buffer, format, offset);
+	}
+
 	void IASetPrimitiveTopology(
 		::D3D11_PRIMITIVE_TOPOLOGY topology)
 	{
@@ -130,6 +138,14 @@ public:
 		::UINT start_vertex_location)
 	{
 		m_device_context->Draw(vertex_count, start_vertex_location);
+	}
+
+	void DrawIndexed(
+		::UINT index_count,
+		::UINT start_index_location,
+		::INT  base_vertex_location)
+	{
+		m_device_context->DrawIndexed(index_count, start_index_location, base_vertex_location);
 	}
 
 private:
