@@ -10,6 +10,7 @@
 #include <hamon/render/d3d11/device.hpp>
 #include <hamon/render/d3d11/device_context.hpp>
 #include <hamon/render/d3d11/buffer.hpp>
+#include <hamon/render/d3d11/index_type.hpp>
 #include <hamon/render/geometry.hpp>
 
 namespace hamon
@@ -24,20 +25,21 @@ namespace d3d11
 class IndexBuffer
 {
 public:
-	IndexBuffer(Device* device, render::Geometry const& geometry)
+	IndexBuffer(Device* device, render::detail::IndexArrayBase const* index_array)
 		: m_buffer(
 			device,
-			static_cast<::UINT>(geometry.GetIndexArrayBytes()),
+			static_cast<::UINT>(index_array->GetBytes()),
 			D3D11_USAGE_DEFAULT,
 			D3D11_BIND_INDEX_BUFFER,
-			geometry.GetIndexArrayData())
-		, m_count(static_cast<::UINT>(geometry.GetIndexArrayCount()))
+			index_array->GetData())
+		, m_count(static_cast<::UINT>(index_array->GetCount()))
+		, m_format(d3d11::IndexType(index_array->GetType()))
 	{
 	}
 
 	void Bind(DeviceContext* device_context)
 	{
-		device_context->IASetIndexBuffer(m_buffer.Get(), DXGI_FORMAT_R16_UINT, 0);
+		device_context->IASetIndexBuffer(m_buffer.Get(), m_format, 0);
 	}
 
 	void Draw(DeviceContext* device_context)
@@ -48,6 +50,7 @@ public:
 private:
 	d3d11::Buffer		m_buffer;
 	::UINT				m_count = 0;
+	::DXGI_FORMAT		m_format;
 };
 
 }	// namespace d3d11

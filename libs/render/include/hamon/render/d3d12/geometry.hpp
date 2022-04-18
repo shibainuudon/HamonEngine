@@ -30,9 +30,9 @@ public:
 		: m_primitive_topology(d3d12::PrimitiveTopology(geometry.GetPrimitiveTopology()))
 		, m_vertex_buffer(new VertexBuffer(device, geometry))
 	{
-		if (geometry.GetIndexArrayData() != nullptr)
+		if (geometry.GetIndexArray() != nullptr)
 		{
-			m_index_buffer = std::make_unique<IndexBuffer>(device, geometry);
+			m_index_buffer = std::make_unique<IndexBuffer>(device, geometry.GetIndexArray());
 		}
 	}
 

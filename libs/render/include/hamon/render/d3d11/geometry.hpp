@@ -32,9 +32,9 @@ public:
 	{
 		m_vertex_buffer = std::make_unique<VertexBuffer>(device, geometry);
 
-		if (geometry.GetIndexArrayData() != nullptr)
+		if (geometry.GetIndexArray() != nullptr)
 		{
-			m_index_buffer = std::make_unique<IndexBuffer>(device, geometry);
+			m_index_buffer = std::make_unique<IndexBuffer>(device, geometry.GetIndexArray());
 		}
 	}
 

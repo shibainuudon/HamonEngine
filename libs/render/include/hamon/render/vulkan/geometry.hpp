@@ -29,9 +29,9 @@ public:
 	explicit Geometry(vulkan::Device* device, render::Geometry const& geometry)
 	{
 		m_vertex_buffer = std::make_unique<vulkan::VertexBuffer>(device, geometry);
-		if (geometry.GetIndexArrayData() != nullptr)
+		if (geometry.GetIndexArray() != nullptr)
 		{
-			m_index_buffer = std::make_unique<vulkan::IndexBuffer>(device, geometry);
+			m_index_buffer = std::make_unique<vulkan::IndexBuffer>(device, geometry.GetIndexArray());
 		}
 	}
 

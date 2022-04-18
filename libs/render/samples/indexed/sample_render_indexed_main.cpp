@@ -166,7 +166,15 @@ int main()
 		 0.5f, -0.5f, 0.0f,  1.0f, 1.0f, 1.0f, 1.0f,	// 右下
 	};
 
+#if 1
 	std::vector<std::uint16_t> const indices
+#elif 0
+	std::vector<std::uint32_t> const indices
+#elif 0
+	std::uint16_t const indices[]
+#else
+	std::uint32_t const indices[]
+#endif
 	{
 		0, 1, 2,
 		2, 1, 3,

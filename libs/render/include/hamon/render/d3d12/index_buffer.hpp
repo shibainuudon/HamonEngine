@@ -12,6 +12,7 @@
 #include <hamon/render/d3d12/device.hpp>
 #include <hamon/render/d3d12/command_list.hpp>
 #include <hamon/render/d3d12/resource.hpp>
+#include <hamon/render/d3d12/index_type.hpp>
 #include <hamon/render/geometry.hpp>
 
 namespace hamon
@@ -26,16 +27,16 @@ namespace d3d12
 class IndexBuffer
 {
 public:
-	IndexBuffer(Device* device, render::Geometry const& geometry)
-		: m_resource(device, geometry.GetIndexArrayBytes(), geometry.GetIndexArrayData())
-		, m_count(static_cast<::UINT>(geometry.GetIndexArrayCount()))
+	IndexBuffer(Device* device, render::detail::IndexArrayBase const* index_array)
+		: m_resource(device, index_array->GetBytes(), index_array->GetData())
+		, m_count(static_cast<::UINT>(index_array->GetCount()))
 	{
-		auto const size = geometry.GetVertexArrayBytes();
+		auto const size = index_array->GetBytes();
 
 		// IndexBufferView を初期化
 		m_view.BufferLocation = m_resource.Get()->GetGPUVirtualAddress();
 		m_view.SizeInBytes = static_cast<::UINT>(size);
-		m_view.Format = DXGI_FORMAT_R16_UINT;
+		m_view.Format = d3d12::IndexType(index_array->GetType());
 	}
 	
 	void Bind(CommandList* command_list)

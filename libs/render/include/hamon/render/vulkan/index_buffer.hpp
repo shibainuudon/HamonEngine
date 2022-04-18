@@ -11,6 +11,7 @@
 #include <hamon/render/vulkan/buffer.hpp>
 #include <hamon/render/vulkan/device_memory.hpp>
 #include <hamon/render/vulkan/command_buffer.hpp>
+#include <hamon/render/vulkan/index_type.hpp>
 #include <hamon/render/geometry.hpp>
 #include <memory>
 
@@ -26,11 +27,12 @@ namespace vulkan
 class IndexBuffer
 {
 public:
-	explicit IndexBuffer(vulkan::Device* device, render::Geometry const& geometry)
-		: m_count(static_cast<std::uint32_t>(geometry.GetIndexArrayCount()))
+	explicit IndexBuffer(vulkan::Device* device, render::detail::IndexArrayBase const* index_array)
+		: m_count(static_cast<std::uint32_t>(index_array->GetCount()))
+		, m_type(vulkan::IndexType(index_array->GetType()))
 	{
-		auto const size = geometry.GetIndexArrayBytes();
-		auto const src  = geometry.GetIndexArrayData();
+		auto const size = index_array->GetBytes();
+		auto const src  = index_array->GetData();
 
 		m_buffer = std::make_unique<vulkan::Buffer>(
 			device,
@@ -53,7 +55,7 @@ public:
 
 	void Bind(vulkan::CommandBuffer* command_buffer)
 	{
-		command_buffer->BindIndexBuffer(m_buffer->Get(), 0, VK_INDEX_TYPE_UINT16);
+		command_buffer->BindIndexBuffer(m_buffer->Get(), 0, m_type);
 	}
 
 	void Draw(vulkan::CommandBuffer* command_buffer)
@@ -65,6 +67,7 @@ private:
 	std::unique_ptr<vulkan::Buffer>			m_buffer;
 	std::unique_ptr<vulkan::DeviceMemory>	m_device_memory;
 	std::uint32_t							m_count;
+	::VkIndexType							m_type;
 };
 
 }	// namespace vulkan
