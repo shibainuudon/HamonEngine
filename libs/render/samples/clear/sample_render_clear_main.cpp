@@ -85,7 +85,7 @@ int main()
 #if defined(HAMON_HAS_OPEN_GL)
 	{
 		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_clear OpenGL");
-		auto renderer = std::make_unique<hamon::OpenGLRenderer>(*window);
+		auto renderer = std::make_unique<hamon::GLRenderer>(*window);
 		windows.push_back(std::move(window));
 		renderers.push_back(std::move(renderer));
 	}

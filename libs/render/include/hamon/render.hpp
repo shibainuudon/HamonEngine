@@ -11,7 +11,7 @@
 #include <hamon/render/d3d11_renderer.hpp>
 #include <hamon/render/d3d12_renderer.hpp>
 #include <hamon/render/geometry.hpp>
-#include <hamon/render/opengl_renderer.hpp>
+#include <hamon/render/gl_renderer.hpp>
 #include <hamon/render/primitive_topology.hpp>
 #include <hamon/render/program.hpp>
 #include <hamon/render/renderer.hpp>
