@@ -23,7 +23,7 @@ class Buffer
 public:
 	explicit Buffer(::GLsizeiptr size, void const* data, ::GLenum usage)
 	{
-		if (size != 0 && data != nullptr)
+		if (size > 0)
 		{
 			gl::glCreateBuffers(1, &m_id);
 			gl::glNamedBufferData(m_id, size, data, usage);
@@ -36,6 +36,11 @@ public:
 		{
 			gl::glDeleteBuffers(1, &m_id);
 		}
+	}
+
+	void SubData(::GLintptr offset, ::GLsizeiptr size, const void* data) const
+	{
+		gl::glNamedBufferSubData(m_id, offset, size, data);
 	}
 
 	::GLuint GetId(void) const { return m_id; }

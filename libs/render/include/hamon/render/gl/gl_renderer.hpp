@@ -99,6 +99,7 @@ public:
 	void Render(
 		Geometry const& geometry,
 		Program const& program,
+		Uniforms const& uniforms,
 		RenderState const& render_state) override
 	{
 		gl::RasterizerState::Apply(render_state.rasterizer_state);
@@ -111,6 +112,7 @@ public:
 			m_program_map, program.GetID(), program);
 
 		gl_program->Use();
+		gl_program->LoadUniforms(uniforms);
 		gl_geometry->Draw();
 		gl_program->Unuse();
 	}

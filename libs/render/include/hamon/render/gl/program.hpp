@@ -10,6 +10,8 @@
 #include <hamon/render/shader.hpp>
 #include <hamon/render/program.hpp>
 #include <hamon/render/gl/shader.hpp>
+#include <hamon/render/gl/uniform_block.hpp>
+#include <hamon/render/gl/uniform.hpp>
 #include <hamon/render/gl/glext.hpp>
 #include <vector>
 
@@ -52,6 +54,20 @@ public:
 				return;
 			}
 		}
+
+		::GLint uniform_block_count;
+		gl::glGetProgramiv(m_id, GL_ACTIVE_UNIFORM_BLOCKS, &uniform_block_count);
+		for (::GLint i = 0; i < uniform_block_count; ++i)
+		{
+			m_uniform_blocks.emplace_back(m_id, i);
+		}
+
+		::GLint uniform_count;
+		gl::glGetProgramiv(m_id, GL_ACTIVE_UNIFORMS, &uniform_count);
+		for (::GLint i = 0; i < uniform_count; ++i)
+		{
+			m_uniforms.emplace_back(m_id, i);
+		}
 	}
 
 	~Program()
@@ -69,16 +85,39 @@ public:
 	void Use()
 	{
 		gl::glUseProgram(m_id);
+		for (auto& uniform_block : m_uniform_blocks)
+		{
+			uniform_block.Bind();
+		}
 	}
 
 	void Unuse()
 	{
+		for (auto& uniform_block : m_uniform_blocks)
+		{
+			uniform_block.Unbind();
+		}
 		gl::glUseProgram(0u);
 	}
 
+	void LoadUniforms(render::Uniforms const& uniforms)
+	{
+		for (auto& uniform_block : m_uniform_blocks)
+		{
+			uniform_block.LoadUniforms(uniforms, m_uniforms);
+		}
+
+		for (auto& uniform : m_uniforms)
+		{
+			uniform.LoadUniforms(uniforms);
+		}
+	}
+
 private:
-	::GLuint	m_id;
-	std::vector<gl::Shader>	m_shaders;
+	::GLuint						m_id;
+	std::vector<gl::Shader>			m_shaders;
+	std::vector<gl::UniformBlock>	m_uniform_blocks;
+	std::vector<gl::Uniform>		m_uniforms;
 };
 
 }	// namespace gl

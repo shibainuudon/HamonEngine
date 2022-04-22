@@ -336,6 +336,7 @@ public:
 	void Render(
 		Geometry const& geometry,
 		Program const& program,
+		Uniforms const& /*uniforms*/,
 		RenderState const& render_state) override
 	{
 		auto vulkan_geometry = GetOrCreate<vulkan::Geometry>(

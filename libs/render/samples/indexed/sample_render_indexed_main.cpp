@@ -211,7 +211,7 @@ int main()
 			renderer->Begin();
 			renderer->BeginRenderPass(render_pass);
 
-			renderer->Render(geometry, programs[i], {});
+			renderer->Render(geometry, programs[i], {}, {});
 
 			renderer->EndRenderPass();
 			renderer->End();

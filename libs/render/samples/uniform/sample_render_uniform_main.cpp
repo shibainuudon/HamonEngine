@@ -1,7 +1,7 @@
 ﻿/**
- *	@file	sample_render_color_write_mask_main.cpp
+ *	@file	sample_render_uniform_main.cpp
  *
- *	@brief	ColorWriteMaskを設定するサンプル
+ *	@brief	ユニフォーム変数を設定するサンプル
  */
 
 #include <hamon/window.hpp>
@@ -22,15 +22,19 @@ hamon::Program GetGLSLProgram(void)
 				hamon::ShaderStage::Vertex,
 				R"(
 					#version 450
-					layout(location = 0) in vec3 aPosition;
-					layout(location = 1) in vec4 aColor;
 
-					layout(location = 0) out vec4 vColor;
+					layout (set=0, binding=0)
+					uniform UniformBuffer1
+					{
+						vec3 uOffset;
+						mat4 uMat;
+					};
+
+					layout(location = 0) in vec3 aPosition;
 
 					void main()
 					{
-						gl_Position = vec4(aPosition, 1.0);
-						vColor = aColor;
+						gl_Position = uMat * vec4(aPosition, 1.0) + vec4(uOffset, 0.0);
 					}
 				)"
 			},
@@ -38,13 +42,20 @@ hamon::Program GetGLSLProgram(void)
 				hamon::ShaderStage::Fragment,
 				R"(
 					#version 450
-					layout(location = 0) in vec4 vColor;
+
+					layout (set=0, binding=1)
+					uniform UniformBuffer2
+					{
+						float uRed;
+						float uGreen;
+						float uBlue;
+					};
 
 					layout(location = 0) out vec4 oColor;
 
 					void main()
 					{
-						oColor = vColor;
+						oColor = vec4(uRed, uGreen, uBlue, 1);
 					}
 				)"
 			},
@@ -52,6 +63,7 @@ hamon::Program GetGLSLProgram(void)
 	};
 }
 
+#if 0
 hamon::Program GetHLSLProgram(void)
 {
 	return
@@ -64,20 +76,17 @@ hamon::Program GetHLSLProgram(void)
 					struct VS_INPUT
 					{
 						float3 pos   : POSITION;
-						float4 color : COLOR;
 					};
 
 					struct VS_OUTPUT
 					{
 						float4 pos   : SV_POSITION;
-						float4 color : COLOR;
 					};
 
 					VS_OUTPUT main(VS_INPUT input)
 					{
 						VS_OUTPUT output;
 						output.pos = float4(input.pos, 1.0);
-						output.color = input.color;
 						return output;
 					}
 				)"
@@ -88,18 +97,23 @@ hamon::Program GetHLSLProgram(void)
 					struct PS_INPUT
 					{
 						float4 pos   : SV_POSITION;
-						float4 color : COLOR;
+					};
+
+					cbuffer ConstantBuffer : register(b1)
+					{
+						float3 uColor;
 					};
 
 					float4 main(PS_INPUT input) : SV_Target
 					{
-						return input.color;
+						return float4(uColor, 1);
 					}
 				)"
 			},
 		}
 	};
 }
+#endif
 
 }
 
@@ -114,34 +128,34 @@ int main()
 
 #if defined(HAMON_HAS_OPEN_GL)
 	{
-		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_color_write_mask OpenGL");
+		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_uniform OpenGL");
 		auto renderer = std::make_unique<hamon::GLRenderer>(*window);
 		windows.push_back(std::move(window));
 		renderers.push_back(std::move(renderer));
 		programs.push_back(GetGLSLProgram());
 	}
 #endif
-#if defined(HAMON_HAS_D3D11)
+#if 0//defined(HAMON_HAS_D3D11)
 	{
-		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_color_write_mask D3D11");
+		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_uniform D3D11");
 		auto renderer = std::make_unique<hamon::D3D11Renderer>(*window);
 		windows.push_back(std::move(window));
 		renderers.push_back(std::move(renderer));
 		programs.push_back(GetHLSLProgram());
 	}
 #endif
-#if defined(HAMON_HAS_D3D12)
+#if 0//defined(HAMON_HAS_D3D12)
 	{
-		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_color_write_mask D3D12");
+		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_uniform D3D12");
 		auto renderer = std::make_unique<hamon::D3D12Renderer>(*window);
 		windows.push_back(std::move(window));
 		renderers.push_back(std::move(renderer));
 		programs.push_back(GetHLSLProgram());
 	}
 #endif
-#if defined(HAMON_HAS_VULKAN)
+#if 0//defined(HAMON_HAS_VULKAN)
 	{
-		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_color_write_mask Vulkan");
+		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_uniform Vulkan");
 		auto renderer = std::make_unique<hamon::VulkanRenderer>(*window);
 		windows.push_back(std::move(window));
 		renderers.push_back(std::move(renderer));
@@ -170,10 +184,25 @@ int main()
 		hamon::PrimitiveTopology::TriangleList, vertex_layout, vertices
 	};
 
-	hamon::RenderState render_state;
+	hamon::Uniforms uniforms;
 
-	render_state.blend_state.color_write_mask = hamon::ColorWriteMask::Blue;
-	int count = 0;
+	std::vector<float> const color = {1, 0, 1};
+	uniforms["uColor"] = color;
+	
+	uniforms["uGreen"] = 0.5f;
+
+	struct Vector3
+	{
+		float x;
+		float y;
+		float z;
+	};
+	Vector3 offset {0, 0, 0};
+
+	float a = 0;
+	float r = 0;
+	float b = 0;
+	float t = 0;
 	for (;;)
 	{
 		for (auto& window : windows)
@@ -184,46 +213,27 @@ int main()
 			}
 		}
 
+		offset.x = std::sin(t);
+		uniforms["uOffset"] = offset;
+
+		uniforms["uRed"] = r;
+		uniforms["uBlue"] = b;
+
+		float mat[4 * 4] =
+		{
+			 std::cos(a), std::sin(a), 0, 0,
+			-std::sin(a), std::cos(a), 0, 0,
+			 0,           0,           1, 0,
+			 0,           0,           0, 1,
+		};
+		uniforms["uMat"] = mat;
+
 		hamon::RenderPassState render_pass;
-		render_pass.clear_value.color.r = 0.4f;
-		render_pass.clear_value.color.g = 0.4f;
-		render_pass.clear_value.color.b = 0.4f;
-		render_pass.clear_value.color.a = 1.0f;
+		render_pass.clear_value.color = { 0.4f, 0.4f, 0.4f, 1.0f };
 		render_pass.clear_value.depth = 0.0f;
 		render_pass.clear_value.stencil = 0;
 		render_pass.viewport.width  = width;
 		render_pass.viewport.height = height;
-
-		switch ((count / 60) % 8)
-		{
-		case 0:
-			render_state.blend_state.color_write_mask = 0;
-			break;
-		case 1:
-			render_state.blend_state.color_write_mask = hamon::ColorWriteMask::Red;
-			break;
-		case 2:
-			render_state.blend_state.color_write_mask = hamon::ColorWriteMask::Green;
-			break;
-		case 3:
-			render_state.blend_state.color_write_mask = hamon::ColorWriteMask::Blue;
-			break;
-		case 4:
-			render_state.blend_state.color_write_mask =
-				hamon::ColorWriteMask::Red | hamon::ColorWriteMask::Green;
-			break;
-		case 5:
-			render_state.blend_state.color_write_mask =
-				hamon::ColorWriteMask::Green | hamon::ColorWriteMask::Blue;
-			break;
-		case 6:
-			render_state.blend_state.color_write_mask =
-				hamon::ColorWriteMask::Blue | hamon::ColorWriteMask::Red;
-			break;
-		case 7:
-			render_state.blend_state.color_write_mask = hamon::ColorWriteMask::All;
-			break;
-		}
 
 		int i = 0;
 		for (auto& renderer : renderers)
@@ -231,14 +241,25 @@ int main()
 			renderer->Begin();
 			renderer->BeginRenderPass(render_pass);
 
-			renderer->Render(geometry, programs[i], {}, render_state);
+			renderer->Render(geometry, programs[i], uniforms, {});
 
 			renderer->EndRenderPass();
 			renderer->End();
 			++i;
 		}
 
-		++count;
+		a += 0.01f;
+		t += 0.02f;
+		r += 0.01f;
+		if (r > 1.0f)
+		{
+			r = 0.0f;
+		}
+		b += 0.02f;
+		if (b > 1.0f)
+		{
+			b = 0.0f;
+		}
 	}
 
 	return 0;

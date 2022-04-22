@@ -210,7 +210,6 @@ private:
 private:
 	::VkShaderStageFlagBits					m_stage;
 	std::unique_ptr<vulkan::ShaderModule>	m_shader_module;
-	vulkan::Device*							m_device;
 };
 
 }	// namespace vulkan

@@ -83,6 +83,11 @@ private:
 			std::cout << static_cast<const char*>(error_msgs->GetBufferPointer()) << std::endl;
 		}
 
+		if (FAILED(hr))
+		{
+			return {};
+		}
+
 		return micro_code;
 	}
 

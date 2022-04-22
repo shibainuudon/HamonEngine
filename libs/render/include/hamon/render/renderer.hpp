@@ -17,6 +17,7 @@ inline namespace render
 
 class Geometry;
 class Program;
+class Uniforms;
 struct RenderPassState;
 struct RenderState;
 
@@ -34,6 +35,7 @@ public:
 	virtual void Render(
 		Geometry const& geometry,
 		Program const& program,
+		Uniforms const& uniforms,
 		RenderState const& render_state) = 0;
 };
 

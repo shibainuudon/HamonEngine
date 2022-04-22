@@ -20,6 +20,7 @@
 #include <hamon/render/shader_language.hpp>
 #include <hamon/render/shader_stage.hpp>
 #include <hamon/render/type.hpp>
+#include <hamon/render/uniforms.hpp>
 #include <hamon/render/vertex_layout.hpp>
 #include <hamon/render/vulkan_renderer.hpp>
 

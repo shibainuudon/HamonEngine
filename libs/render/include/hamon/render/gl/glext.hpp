@@ -115,7 +115,11 @@ inline void APIENTRY glDeleteShader(GLuint shader)
 //GLAPI void APIENTRY glDisableVertexAttribArray(GLuint index);
 //GLAPI void APIENTRY glEnableVertexAttribArray(GLuint index);
 //GLAPI void APIENTRY glGetActiveAttrib(GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, GLchar* name);
-//GLAPI void APIENTRY glGetActiveUniform(GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, GLchar* name);
+inline void APIENTRY glGetActiveUniform(GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, GLchar* name)
+{
+	static auto func = (PFNGLGETACTIVEUNIFORMPROC)GET_PROC_ADDRESS("glGetActiveUniform");
+	return func(program, index, bufSize, length, size, type, name);
+}
 //GLAPI void APIENTRY glGetAttachedShaders(GLuint program, GLsizei maxCount, GLsizei* count, GLuint* shaders);
 //GLAPI GLint APIENTRY glGetAttribLocation(GLuint program, const GLchar* name);
 inline void APIENTRY glGetProgramiv(GLuint program, GLenum pname, GLint* params)
@@ -139,7 +143,11 @@ inline void APIENTRY glGetShaderInfoLog(GLuint shader, GLsizei bufSize, GLsizei*
 	return func(shader, bufSize, length, infoLog);
 }
 //GLAPI void APIENTRY glGetShaderSource(GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* source);
-//GLAPI GLint APIENTRY glGetUniformLocation(GLuint program, const GLchar* name);
+inline GLint APIENTRY glGetUniformLocation(GLuint program, const GLchar* name)
+{
+	static auto func = (PFNGLGETUNIFORMLOCATIONPROC)GET_PROC_ADDRESS("glGetUniformLocation");
+	return func(program, name);
+}
 //GLAPI void APIENTRY glGetUniformfv(GLuint program, GLint location, GLfloat* params);
 //GLAPI void APIENTRY glGetUniformiv(GLuint program, GLint location, GLint* params);
 //GLAPI void APIENTRY glGetVertexAttribdv(GLuint index, GLenum pname, GLdouble* params);
@@ -171,17 +179,61 @@ inline void APIENTRY glUseProgram(GLuint program)
 //GLAPI void APIENTRY glUniform2i(GLint location, GLint v0, GLint v1);
 //GLAPI void APIENTRY glUniform3i(GLint location, GLint v0, GLint v1, GLint v2);
 //GLAPI void APIENTRY glUniform4i(GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
-//GLAPI void APIENTRY glUniform1fv(GLint location, GLsizei count, const GLfloat* value);
-//GLAPI void APIENTRY glUniform2fv(GLint location, GLsizei count, const GLfloat* value);
-//GLAPI void APIENTRY glUniform3fv(GLint location, GLsizei count, const GLfloat* value);
-//GLAPI void APIENTRY glUniform4fv(GLint location, GLsizei count, const GLfloat* value);
-//GLAPI void APIENTRY glUniform1iv(GLint location, GLsizei count, const GLint* value);
-//GLAPI void APIENTRY glUniform2iv(GLint location, GLsizei count, const GLint* value);
-//GLAPI void APIENTRY glUniform3iv(GLint location, GLsizei count, const GLint* value);
-//GLAPI void APIENTRY glUniform4iv(GLint location, GLsizei count, const GLint* value);
-//GLAPI void APIENTRY glUniformMatrix2fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
-//GLAPI void APIENTRY glUniformMatrix3fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
-//GLAPI void APIENTRY glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+inline void APIENTRY glUniform1fv(GLint location, GLsizei count, const GLfloat* value)
+{
+	static auto func = (PFNGLUNIFORM1FVPROC)GET_PROC_ADDRESS("glUniform1fv");
+	return func(location, count, value);
+}
+inline void APIENTRY glUniform2fv(GLint location, GLsizei count, const GLfloat* value)
+{
+	static auto func = (PFNGLUNIFORM2FVPROC)GET_PROC_ADDRESS("glUniform2fv");
+	return func(location, count, value);
+}
+inline void APIENTRY glUniform3fv(GLint location, GLsizei count, const GLfloat* value)
+{
+	static auto func = (PFNGLUNIFORM3FVPROC)GET_PROC_ADDRESS("glUniform3fv");
+	return func(location, count, value);
+}
+inline void APIENTRY glUniform4fv(GLint location, GLsizei count, const GLfloat* value)
+{
+	static auto func = (PFNGLUNIFORM4FVPROC)GET_PROC_ADDRESS("glUniform4fv");
+	return func(location, count, value);
+}
+inline void APIENTRY glUniform1iv(GLint location, GLsizei count, const GLint* value)
+{
+	static auto func = (PFNGLUNIFORM1IVPROC)GET_PROC_ADDRESS("glUniform1iv");
+	return func(location, count, value);
+}
+inline void APIENTRY glUniform2iv(GLint location, GLsizei count, const GLint* value)
+{
+	static auto func = (PFNGLUNIFORM2IVPROC)GET_PROC_ADDRESS("glUniform2iv");
+	return func(location, count, value);
+}
+inline void APIENTRY glUniform3iv(GLint location, GLsizei count, const GLint* value)
+{
+	static auto func = (PFNGLUNIFORM3IVPROC)GET_PROC_ADDRESS("glUniform3iv");
+	return func(location, count, value);
+}
+inline void APIENTRY glUniform4iv(GLint location, GLsizei count, const GLint* value)
+{
+	static auto func = (PFNGLUNIFORM4IVPROC)GET_PROC_ADDRESS("glUniform4iv");
+	return func(location, count, value);
+}
+inline void APIENTRY glUniformMatrix2fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value)
+{
+	static auto func = (PFNGLUNIFORMMATRIX2FVPROC)GET_PROC_ADDRESS("glUniformMatrix2fv");
+	return func(location, count, transpose, value);
+}
+inline void APIENTRY glUniformMatrix3fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value)
+{
+	static auto func = (PFNGLUNIFORMMATRIX3FVPROC)GET_PROC_ADDRESS("glUniformMatrix3fv");
+	return func(location, count, transpose, value);
+}
+inline void APIENTRY glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value)
+{
+	static auto func = (PFNGLUNIFORMMATRIX4FVPROC)GET_PROC_ADDRESS("glUniformMatrix4fv");
+	return func(location, count, transpose, value);
+}
 //GLAPI void APIENTRY glValidateProgram(GLuint program);
 //GLAPI void APIENTRY glVertexAttrib1d(GLuint index, GLdouble x);
 //GLAPI void APIENTRY glVertexAttrib1dv(GLuint index, const GLdouble* v);
@@ -221,6 +273,38 @@ inline void APIENTRY glUseProgram(GLuint program)
 //GLAPI void APIENTRY glVertexAttrib4usv(GLuint index, const GLushort* v);
 //GLAPI void APIENTRY glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
 
+/* GL_VERSION_2_1 */
+inline void APIENTRY glUniformMatrix2x3fv (GLint location, GLsizei count, GLboolean transpose, const GLfloat *value)
+{
+	static auto func = (PFNGLUNIFORMMATRIX2X3FVPROC)GET_PROC_ADDRESS("glUniformMatrix2x3fv");
+	return func(location, count, transpose, value);
+}
+inline void APIENTRY glUniformMatrix3x2fv (GLint location, GLsizei count, GLboolean transpose, const GLfloat *value)
+{
+	static auto func = (PFNGLUNIFORMMATRIX3X2FVPROC)GET_PROC_ADDRESS("glUniformMatrix3x2fv");
+	return func(location, count, transpose, value);
+}
+inline void APIENTRY glUniformMatrix2x4fv (GLint location, GLsizei count, GLboolean transpose, const GLfloat *value)
+{
+	static auto func = (PFNGLUNIFORMMATRIX2X4FVPROC)GET_PROC_ADDRESS("glUniformMatrix2x4fv");
+	return func(location, count, transpose, value);
+}
+inline void APIENTRY glUniformMatrix4x2fv (GLint location, GLsizei count, GLboolean transpose, const GLfloat *value)
+{
+	static auto func = (PFNGLUNIFORMMATRIX4X2FVPROC)GET_PROC_ADDRESS("glUniformMatrix4x2fv");
+	return func(location, count, transpose, value);
+}
+inline void APIENTRY glUniformMatrix3x4fv (GLint location, GLsizei count, GLboolean transpose, const GLfloat *value)
+{
+	static auto func = (PFNGLUNIFORMMATRIX3X4FVPROC)GET_PROC_ADDRESS("glUniformMatrix3x4fv");
+	return func(location, count, transpose, value);
+}
+inline void APIENTRY glUniformMatrix4x3fv (GLint location, GLsizei count, GLboolean transpose, const GLfloat *value)
+{
+	static auto func = (PFNGLUNIFORMMATRIX4X3FVPROC)GET_PROC_ADDRESS("glUniformMatrix4x3fv");
+	return func(location, count, transpose, value);
+}
+
 /* GL_VERSION_3_0 */
 //GLAPI void APIENTRY glColorMaski(GLuint index, GLboolean r, GLboolean g, GLboolean b, GLboolean a);
 //GLAPI void APIENTRY glGetBooleani_v(GLenum target, GLuint index, GLboolean* data);
@@ -231,7 +315,11 @@ inline void APIENTRY glUseProgram(GLuint program)
 //GLAPI void APIENTRY glBeginTransformFeedback(GLenum primitiveMode);
 //GLAPI void APIENTRY glEndTransformFeedback(void);
 //GLAPI void APIENTRY glBindBufferRange(GLenum target, GLuint index, GLuint buffer, GLintptr offset, GLsizeiptr size);
-//GLAPI void APIENTRY glBindBufferBase(GLenum target, GLuint index, GLuint buffer);
+inline void APIENTRY glBindBufferBase(GLenum target, GLuint index, GLuint buffer)
+{
+	static auto func = (PFNGLBINDBUFFERBASEPROC)GET_PROC_ADDRESS("glBindBufferBase");
+	return func(target, index, buffer);
+}
 //GLAPI void APIENTRY glTransformFeedbackVaryings(GLuint program, GLsizei count, const GLchar* const* varyings, GLenum bufferMode);
 //GLAPI void APIENTRY glGetTransformFeedbackVarying(GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLsizei* size, GLenum* type, GLchar* name);
 //GLAPI void APIENTRY glClampColor(GLenum target, GLenum clamp);
@@ -267,10 +355,26 @@ inline void APIENTRY glUseProgram(GLuint program)
 //GLAPI void APIENTRY glUniform2ui(GLint location, GLuint v0, GLuint v1);
 //GLAPI void APIENTRY glUniform3ui(GLint location, GLuint v0, GLuint v1, GLuint v2);
 //GLAPI void APIENTRY glUniform4ui(GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3);
-//GLAPI void APIENTRY glUniform1uiv(GLint location, GLsizei count, const GLuint* value);
-//GLAPI void APIENTRY glUniform2uiv(GLint location, GLsizei count, const GLuint* value);
-//GLAPI void APIENTRY glUniform3uiv(GLint location, GLsizei count, const GLuint* value);
-//GLAPI void APIENTRY glUniform4uiv(GLint location, GLsizei count, const GLuint* value);
+inline void APIENTRY glUniform1uiv(GLint location, GLsizei count, const GLuint* value)
+{
+	static auto func = (PFNGLUNIFORM1UIVPROC)GET_PROC_ADDRESS("glUniform1uiv");
+	return func(location, count, value);
+}
+inline void APIENTRY glUniform2uiv(GLint location, GLsizei count, const GLuint* value)
+{
+	static auto func = (PFNGLUNIFORM2UIVPROC)GET_PROC_ADDRESS("glUniform2uiv");
+	return func(location, count, value);
+}
+inline void APIENTRY glUniform3uiv(GLint location, GLsizei count, const GLuint* value)
+{
+	static auto func = (PFNGLUNIFORM3UIVPROC)GET_PROC_ADDRESS("glUniform3uiv");
+	return func(location, count, value);
+}
+inline void APIENTRY glUniform4uiv(GLint location, GLsizei count, const GLuint* value)
+{
+	static auto func = (PFNGLUNIFORM4UIVPROC)GET_PROC_ADDRESS("glUniform4uiv");
+	return func(location, count, value);
+}
 //GLAPI void APIENTRY glTexParameterIiv(GLenum target, GLenum pname, const GLint* params);
 //GLAPI void APIENTRY glTexParameterIuiv(GLenum target, GLenum pname, const GLuint* params);
 //GLAPI void APIENTRY glGetTexParameterIiv(GLenum target, GLenum pname, GLint* params);
@@ -314,6 +418,136 @@ inline void APIENTRY glDeleteVertexArrays(GLsizei n, const GLuint* arrays)
 }
 //GLAPI void APIENTRY glGenVertexArrays(GLsizei n, GLuint* arrays);
 //GLAPI GLboolean APIENTRY glIsVertexArray(GLuint array);
+
+/* GL_VERSION_3_1 */
+//GLAPI void APIENTRY glDrawArraysInstanced (GLenum mode, GLint first, GLsizei count, GLsizei instancecount);
+//GLAPI void APIENTRY glDrawElementsInstanced (GLenum mode, GLsizei count, GLenum type, const void *indices, GLsizei instancecount);
+//GLAPI void APIENTRY glTexBuffer (GLenum target, GLenum internalformat, GLuint buffer);
+//GLAPI void APIENTRY glPrimitiveRestartIndex (GLuint index);
+//GLAPI void APIENTRY glCopyBufferSubData (GLenum readTarget, GLenum writeTarget, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
+//GLAPI void APIENTRY glGetUniformIndices (GLuint program, GLsizei uniformCount, const GLchar *const*uniformNames, GLuint *uniformIndices);
+inline void APIENTRY glGetActiveUniformsiv (GLuint program, GLsizei uniformCount, const GLuint *uniformIndices, GLenum pname, GLint *params)
+{
+	static auto func = (PFNGLGETACTIVEUNIFORMSIVPROC)GET_PROC_ADDRESS("glGetActiveUniformsiv");
+	return func(program, uniformCount, uniformIndices, pname, params);
+}
+//GLAPI void APIENTRY glGetActiveUniformName (GLuint program, GLuint uniformIndex, GLsizei bufSize, GLsizei *length, GLchar *uniformName);
+//GLAPI GLuint APIENTRY glGetUniformBlockIndex (GLuint program, const GLchar *uniformBlockName);
+inline void APIENTRY glGetActiveUniformBlockiv (GLuint program, GLuint uniformBlockIndex, GLenum pname, GLint *params)
+{
+	static auto func = (PFNGLGETACTIVEUNIFORMBLOCKIVPROC)GET_PROC_ADDRESS("glGetActiveUniformBlockiv");
+	return func(program, uniformBlockIndex, pname, params);
+}
+inline void APIENTRY glGetActiveUniformBlockName (GLuint program, GLuint uniformBlockIndex, GLsizei bufSize, GLsizei *length, GLchar *uniformBlockName)
+{
+	static auto func = (PFNGLGETACTIVEUNIFORMBLOCKNAMEPROC)GET_PROC_ADDRESS("glGetActiveUniformBlockName");
+	return func(program, uniformBlockIndex, bufSize, length, uniformBlockName);
+}
+inline void APIENTRY glUniformBlockBinding (GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding)
+{
+	static auto func = (PFNGLUNIFORMBLOCKBINDINGPROC)GET_PROC_ADDRESS("glUniformBlockBinding");
+	return func(program, uniformBlockIndex, uniformBlockBinding);
+}
+
+/* GL_VERSION_4_0 */
+//GLAPI void APIENTRY glMinSampleShading (GLfloat value);
+//GLAPI void APIENTRY glBlendEquationi (GLuint buf, GLenum mode);
+//GLAPI void APIENTRY glBlendEquationSeparatei (GLuint buf, GLenum modeRGB, GLenum modeAlpha);
+//GLAPI void APIENTRY glBlendFunci (GLuint buf, GLenum src, GLenum dst);
+//GLAPI void APIENTRY glBlendFuncSeparatei (GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha);
+//GLAPI void APIENTRY glDrawArraysIndirect (GLenum mode, const void *indirect);
+//GLAPI void APIENTRY glDrawElementsIndirect (GLenum mode, GLenum type, const void *indirect);
+//GLAPI void APIENTRY glUniform1d (GLint location, GLdouble x);
+//GLAPI void APIENTRY glUniform2d (GLint location, GLdouble x, GLdouble y);
+//GLAPI void APIENTRY glUniform3d (GLint location, GLdouble x, GLdouble y, GLdouble z);
+//GLAPI void APIENTRY glUniform4d (GLint location, GLdouble x, GLdouble y, GLdouble z, GLdouble w);
+inline void APIENTRY glUniform1dv (GLint location, GLsizei count, const GLdouble *value)
+{
+	static auto func = (PFNGLUNIFORM1DVPROC)GET_PROC_ADDRESS("glUniform1dv");
+	return func(location, count, value);
+}
+inline void APIENTRY glUniform2dv (GLint location, GLsizei count, const GLdouble *value)
+{
+	static auto func = (PFNGLUNIFORM2DVPROC)GET_PROC_ADDRESS("glUniform2dv");
+	return func(location, count, value);
+}
+inline void APIENTRY glUniform3dv (GLint location, GLsizei count, const GLdouble *value)
+{
+	static auto func = (PFNGLUNIFORM3DVPROC)GET_PROC_ADDRESS("glUniform3dv");
+	return func(location, count, value);
+}
+inline void APIENTRY glUniform4dv (GLint location, GLsizei count, const GLdouble *value)
+{
+	static auto func = (PFNGLUNIFORM4DVPROC)GET_PROC_ADDRESS("glUniform4dv");
+	return func(location, count, value);
+}
+inline void APIENTRY glUniformMatrix2dv (GLint location, GLsizei count, GLboolean transpose, const GLdouble *value)
+{
+	static auto func = (PFNGLUNIFORMMATRIX2DVPROC)GET_PROC_ADDRESS("glUniformMatrix2dv");
+	return func(location, count, transpose, value);
+}
+inline void APIENTRY glUniformMatrix3dv (GLint location, GLsizei count, GLboolean transpose, const GLdouble *value)
+{
+	static auto func = (PFNGLUNIFORMMATRIX3DVPROC)GET_PROC_ADDRESS("glUniformMatrix3dv");
+	return func(location, count, transpose, value);
+}
+inline void APIENTRY glUniformMatrix4dv (GLint location, GLsizei count, GLboolean transpose, const GLdouble *value)
+{
+	static auto func = (PFNGLUNIFORMMATRIX4DVPROC)GET_PROC_ADDRESS("glUniformMatrix4dv");
+	return func(location, count, transpose, value);
+}
+inline void APIENTRY glUniformMatrix2x3dv (GLint location, GLsizei count, GLboolean transpose, const GLdouble *value)
+{
+	static auto func = (PFNGLUNIFORMMATRIX2X3DVPROC)GET_PROC_ADDRESS("glUniformMatrix2x3dv");
+	return func(location, count, transpose, value);
+}
+inline void APIENTRY glUniformMatrix2x4dv (GLint location, GLsizei count, GLboolean transpose, const GLdouble *value)
+{
+	static auto func = (PFNGLUNIFORMMATRIX2X4DVPROC)GET_PROC_ADDRESS("glUniformMatrix2x4dv");
+	return func(location, count, transpose, value);
+}
+inline void APIENTRY glUniformMatrix3x2dv (GLint location, GLsizei count, GLboolean transpose, const GLdouble *value)
+{
+	static auto func = (PFNGLUNIFORMMATRIX3X2DVPROC)GET_PROC_ADDRESS("glUniformMatrix3x2dv");
+	return func(location, count, transpose, value);
+}
+inline void APIENTRY glUniformMatrix3x4dv (GLint location, GLsizei count, GLboolean transpose, const GLdouble *value)
+{
+	static auto func = (PFNGLUNIFORMMATRIX3X4DVPROC)GET_PROC_ADDRESS("glUniformMatrix3x4dv");
+	return func(location, count, transpose, value);
+}
+inline void APIENTRY glUniformMatrix4x2dv (GLint location, GLsizei count, GLboolean transpose, const GLdouble *value)
+{
+	static auto func = (PFNGLUNIFORMMATRIX4X2DVPROC)GET_PROC_ADDRESS("glUniformMatrix4x2dv");
+	return func(location, count, transpose, value);
+}
+inline void APIENTRY glUniformMatrix4x3dv (GLint location, GLsizei count, GLboolean transpose, const GLdouble *value)
+{
+	static auto func = (PFNGLUNIFORMMATRIX4X3DVPROC)GET_PROC_ADDRESS("glUniformMatrix4x3dv");
+	return func(location, count, transpose, value);
+}
+//GLAPI void APIENTRY glGetUniformdv (GLuint program, GLint location, GLdouble *params);
+//GLAPI GLint APIENTRY glGetSubroutineUniformLocation (GLuint program, GLenum shadertype, const GLchar *name);
+//GLAPI GLuint APIENTRY glGetSubroutineIndex (GLuint program, GLenum shadertype, const GLchar *name);
+//GLAPI void APIENTRY glGetActiveSubroutineUniformiv (GLuint program, GLenum shadertype, GLuint index, GLenum pname, GLint *values);
+//GLAPI void APIENTRY glGetActiveSubroutineUniformName (GLuint program, GLenum shadertype, GLuint index, GLsizei bufSize, GLsizei *length, GLchar *name);
+//GLAPI void APIENTRY glGetActiveSubroutineName (GLuint program, GLenum shadertype, GLuint index, GLsizei bufSize, GLsizei *length, GLchar *name);
+//GLAPI void APIENTRY glUniformSubroutinesuiv (GLenum shadertype, GLsizei count, const GLuint *indices);
+//GLAPI void APIENTRY glGetUniformSubroutineuiv (GLenum shadertype, GLint location, GLuint *params);
+//GLAPI void APIENTRY glGetProgramStageiv (GLuint program, GLenum shadertype, GLenum pname, GLint *values);
+//GLAPI void APIENTRY glPatchParameteri (GLenum pname, GLint value);
+//GLAPI void APIENTRY glPatchParameterfv (GLenum pname, const GLfloat *values);
+//GLAPI void APIENTRY glBindTransformFeedback (GLenum target, GLuint id);
+//GLAPI void APIENTRY glDeleteTransformFeedbacks (GLsizei n, const GLuint *ids);
+//GLAPI void APIENTRY glGenTransformFeedbacks (GLsizei n, GLuint *ids);
+//GLAPI GLboolean APIENTRY glIsTransformFeedback (GLuint id);
+//GLAPI void APIENTRY glPauseTransformFeedback (void);
+//GLAPI void APIENTRY glResumeTransformFeedback (void);
+//GLAPI void APIENTRY glDrawTransformFeedback (GLenum mode, GLuint id);
+//GLAPI void APIENTRY glDrawTransformFeedbackStream (GLenum mode, GLuint id, GLuint stream);
+//GLAPI void APIENTRY glBeginQueryIndexed (GLenum target, GLuint index, GLuint id);
+//GLAPI void APIENTRY glEndQueryIndexed (GLenum target, GLuint index);
+//GLAPI void APIENTRY glGetQueryIndexediv (GLenum target, GLuint index, GLenum pname, GLint *params);
 
 /* GL_VERSION_4_1 */
 //GLAPI void APIENTRY glReleaseShaderCompiler (void);
@@ -477,7 +711,11 @@ inline void APIENTRY glNamedBufferData(GLuint buffer, GLsizeiptr size, const voi
 	static auto func = (PFNGLNAMEDBUFFERDATAPROC)GET_PROC_ADDRESS("glNamedBufferData");
 	return func(buffer, size, data, usage);
 }
-//GLAPI void APIENTRY glNamedBufferSubData(GLuint buffer, GLintptr offset, GLsizeiptr size, const void* data);
+inline void APIENTRY glNamedBufferSubData(GLuint buffer, GLintptr offset, GLsizeiptr size, const void* data)
+{
+	static auto func = (PFNGLNAMEDBUFFERSUBDATAPROC)GET_PROC_ADDRESS("glNamedBufferSubData");
+	return func(buffer, offset, size, data);
+}
 //GLAPI void APIENTRY glCopyNamedBufferSubData(GLuint readBuffer, GLuint writeBuffer, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
 //GLAPI void APIENTRY glClearNamedBufferData(GLuint buffer, GLenum internalformat, GLenum format, GLenum type, const void* data);
 //GLAPI void APIENTRY glClearNamedBufferSubData(GLuint buffer, GLenum internalformat, GLintptr offset, GLsizeiptr size, GLenum format, GLenum type, const void* data);

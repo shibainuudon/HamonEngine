@@ -55,9 +55,15 @@ protected:
 			&micro_code,
 			&error_msgs);
 
+
 		if (error_msgs)
 		{
 			std::cout << static_cast<const char*>(error_msgs->GetBufferPointer()) << std::endl;
+		}
+
+		if (FAILED(hr))
+		{
+			return {};
 		}
 
 		return micro_code;
@@ -124,6 +130,7 @@ private:
 			case D3D_REGISTER_COMPONENT_UINT32:		return DXGI_FORMAT_R32_UINT;
 			case D3D_REGISTER_COMPONENT_SINT32:		return DXGI_FORMAT_R32_SINT;
 			case D3D_REGISTER_COMPONENT_FLOAT32:	return DXGI_FORMAT_R32_FLOAT;
+			default: break;
 			}
 		}
 		else if (mask <= 3)
@@ -133,6 +140,7 @@ private:
 			case D3D_REGISTER_COMPONENT_UINT32:		return DXGI_FORMAT_R32G32_UINT;
 			case D3D_REGISTER_COMPONENT_SINT32:		return DXGI_FORMAT_R32G32_SINT;
 			case D3D_REGISTER_COMPONENT_FLOAT32:	return DXGI_FORMAT_R32G32_FLOAT;
+			default: break;
 			}
 		}
 		else if (mask <= 7)
@@ -142,6 +150,7 @@ private:
 			case D3D_REGISTER_COMPONENT_UINT32:		return DXGI_FORMAT_R32G32B32_UINT;
 			case D3D_REGISTER_COMPONENT_SINT32:		return DXGI_FORMAT_R32G32B32_SINT;
 			case D3D_REGISTER_COMPONENT_FLOAT32:	return DXGI_FORMAT_R32G32B32_FLOAT;
+			default: break;
 			}
 		}
 		else if (mask <= 15)
@@ -151,6 +160,7 @@ private:
 			case D3D_REGISTER_COMPONENT_UINT32:		return DXGI_FORMAT_R32G32B32A32_UINT;
 			case D3D_REGISTER_COMPONENT_SINT32:		return DXGI_FORMAT_R32G32B32A32_SINT;
 			case D3D_REGISTER_COMPONENT_FLOAT32:	return DXGI_FORMAT_R32G32B32A32_FLOAT;
+			default: break;
 			}
 		}
 
