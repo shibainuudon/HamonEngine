@@ -63,7 +63,6 @@ hamon::Program GetGLSLProgram(void)
 	};
 }
 
-#if 0
 hamon::Program GetHLSLProgram(void)
 {
 	return
@@ -83,10 +82,16 @@ hamon::Program GetHLSLProgram(void)
 						float4 pos   : SV_POSITION;
 					};
 
+					cbuffer ConstantBuffer1 : register(b1)
+					{
+						float3 uOffset;
+						row_major float4x4 uMat;
+					};
+
 					VS_OUTPUT main(VS_INPUT input)
 					{
 						VS_OUTPUT output;
-						output.pos = float4(input.pos, 1.0);
+						output.pos = mul(float4(input.pos, 1.0), uMat) + float4(uOffset, 0.0);
 						return output;
 					}
 				)"
@@ -99,21 +104,22 @@ hamon::Program GetHLSLProgram(void)
 						float4 pos   : SV_POSITION;
 					};
 
-					cbuffer ConstantBuffer : register(b1)
+					cbuffer ConstantBuffer2 : register(b2)
 					{
-						float3 uColor;
+						float uRed;
+						float uGreen;
+						float uBlue;
 					};
 
 					float4 main(PS_INPUT input) : SV_Target
 					{
-						return float4(uColor, 1);
+						return float4(uRed, uGreen, uBlue, 1);
 					}
 				)"
 			},
 		}
 	};
 }
-#endif
 
 }
 
@@ -135,7 +141,7 @@ int main()
 		programs.push_back(GetGLSLProgram());
 	}
 #endif
-#if 0//defined(HAMON_HAS_D3D11)
+#if defined(HAMON_HAS_D3D11)
 	{
 		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_uniform D3D11");
 		auto renderer = std::make_unique<hamon::D3D11Renderer>(*window);

@@ -31,35 +31,43 @@ public:
 	{
 		for (auto const& shader : program.GetShaders())
 		{
-			switch (shader.GetStage())
-			{
-			case render::ShaderStage::Compute:
-				m_shaders.push_back(std::make_unique<d3d11::ComputeShader>(device, shader));
-				break;
-			case render::ShaderStage::Vertex:
-				m_shaders.push_back(std::make_unique<d3d11::VertexShader>(device, shader));
-				break;
-			case render::ShaderStage::Hull:
-				m_shaders.push_back(std::make_unique<d3d11::HullShader>(device, shader));
-				break;
-			case render::ShaderStage::Domain:
-				m_shaders.push_back(std::make_unique<d3d11::DomainShader>(device, shader));
-				break;
-			case render::ShaderStage::Geometry:
-				m_shaders.push_back(std::make_unique<d3d11::GeometryShader>(device, shader));
-				break;
-			case render::ShaderStage::Pixel:
-				m_shaders.push_back(std::make_unique<d3d11::PixelShader>(device, shader));
-				break;
-			}
+			auto d3d11_shader = CreateShader(shader.GetStage());
+			d3d11_shader->Create(device, shader);
+			m_shaders.push_back(std::move(d3d11_shader));
 		}
 	}
+
+private:
+	static std::unique_ptr<d3d11::Shader>
+	CreateShader(ShaderStage stage)
+	{
+		switch (stage)
+		{
+		case render::ShaderStage::Compute: return std::make_unique<d3d11::ComputeShader>();
+		case render::ShaderStage::Vertex:  return std::make_unique<d3d11::VertexShader>();
+		case render::ShaderStage::Hull:    return std::make_unique<d3d11::HullShader>();
+		case render::ShaderStage::Domain:  return std::make_unique<d3d11::DomainShader>();
+		case render::ShaderStage::Geometry:return std::make_unique<d3d11::GeometryShader>();
+		case render::ShaderStage::Pixel:   return std::make_unique<d3d11::PixelShader>();
+		}
+		return {};
+	}
+
+public:
 
 	void Bind(DeviceContext* device_context)
 	{
 		for (auto const& shader : m_shaders)
 		{
 			shader->Bind(device_context);
+		}
+	}
+
+	void LoadUniforms(DeviceContext* device_context, render::Uniforms const& uniforms)
+	{
+		for (auto const& shader : m_shaders)
+		{
+			shader->LoadUniforms(device_context, uniforms);
 		}
 	}
 

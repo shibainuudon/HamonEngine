@@ -37,10 +37,17 @@ public:
         desc.Usage     = usage;
         desc.BindFlags = bind_flags;
 
-		::D3D11_SUBRESOURCE_DATA subresource_data{};
-		subresource_data.pSysMem = data;
+		if (data == nullptr)
+		{
+			m_buffer = device->CreateBuffer(&desc, nullptr);
+		}
+		else
+		{
+			::D3D11_SUBRESOURCE_DATA subresource_data{};
+			subresource_data.pSysMem = data;
 
-		m_buffer = device->CreateBuffer(&desc, &subresource_data);
+			m_buffer = device->CreateBuffer(&desc, &subresource_data);
+		}
 	}
 
 	::ID3D11Buffer* Get(void) const { return m_buffer.Get(); }

@@ -10,6 +10,8 @@
  #include <hamon/render/shader.hpp>
  #include <hamon/render/d3d11/device.hpp>
  #include <hamon/render/d3d11/device_context.hpp>
+ #include <hamon/render/d3d11/constant_buffer.hpp>
+ #include <hamon/render/d3d11/shader_reflection.hpp>
  #include <hamon/render/d3d/d3d11.hpp>
  #include <hamon/render/d3d/d3dcompiler.hpp>
  #include <hamon/render/d3d/com_ptr.hpp>
@@ -27,12 +29,50 @@ namespace d3d11
 class Shader
 {
 public:
+	void Create(Device* device, render::Shader const& shader)
+	{
+		auto micro_code = Compile(GetTargetString(), shader);
+
+		d3d11::ShaderReflection reflection(micro_code.Get());
+
+		Initialize(device, micro_code.Get(), reflection);
+		CreateConstantBuffers(device, reflection);
+	}
+
 	virtual ~Shader(){}
 
 	virtual void Bind(DeviceContext* device_context) = 0;
 
-protected:
-	ComPtr<::ID3DBlob>
+	void LoadUniforms(DeviceContext* device_context, render::Uniforms const& uniforms)
+	{
+		for (auto& constant_buffer : m_constant_buffers)
+		{
+			constant_buffer.LoadUniforms(device_context, uniforms);
+
+			auto buffer = constant_buffer.GetBuffer();
+			this->SetConstantBuffers(device_context,
+				constant_buffer.GetBindPoint(),
+				1,
+				&buffer);
+		}
+	}
+
+private:
+	virtual const char* GetTargetString(void) = 0;
+
+	virtual void Initialize(
+		Device* device,
+		::ID3DBlob* micro_code,
+		d3d11::ShaderReflection const& reflection) = 0;
+	
+	virtual void SetConstantBuffers(
+		DeviceContext*         device_context,
+		::UINT                 start_slot,
+		::UINT                 num_buffers,
+		::ID3D11Buffer* const* constant_buffers) = 0;
+
+private:
+	static ComPtr<::ID3DBlob>
 	Compile(const char* target, render::Shader const& shader)
 	{
 		::UINT flags1 =
@@ -55,7 +95,6 @@ protected:
 			&micro_code,
 			&error_msgs);
 
-
 		if (error_msgs)
 		{
 			std::cout << static_cast<const char*>(error_msgs->GetBufferPointer()) << std::endl;
@@ -68,16 +107,52 @@ protected:
 
 		return micro_code;
 	}
+	
+	void CreateConstantBuffers(Device* device, d3d11::ShaderReflection const& reflection)
+	{
+		auto const shader_desc = reflection.GetDesc();
+
+		for (::UINT i = 0; i < shader_desc.BoundResources; ++i)
+		{
+			auto const input_bind_desc = reflection.GetResourceBindingDesc(i);
+
+			switch (input_bind_desc.Type)
+			{
+			case D3D_SIT_CBUFFER:
+				{
+					auto cbuffer = reflection.GetConstantBufferByName(input_bind_desc.Name);
+					::D3D11_SHADER_BUFFER_DESC cbuffer_desc;
+					cbuffer->GetDesc(&cbuffer_desc);
+					m_constant_buffers.emplace_back(
+						device,
+						cbuffer,
+						cbuffer_desc,
+						input_bind_desc.BindPoint);
+				}
+				break;
+			}
+		}
+	}
+
+private:
+	std::vector<d3d11::ConstantBuffer>		m_constant_buffers;
 };
 
 class VertexShader : public Shader
 {
-public:
-	VertexShader(Device* device, render::Shader const& shader)
+private:
+	const char* GetTargetString(void) override
 	{
-		auto micro_code = Compile("vs_5_0", shader);
-		m_shader = device->CreateVertexShader(micro_code.Get());
-		m_input_layout = CreateInputLayout(device, micro_code.Get());
+		return "vs_5_0";
+	}
+
+	void Initialize(
+		Device* device,
+		::ID3DBlob* micro_code,
+		d3d11::ShaderReflection const& reflection) override
+	{
+		m_shader = device->CreateVertexShader(micro_code);
+		m_input_layout = CreateInputLayout(device, micro_code, reflection);
 	}
 
 	void Bind(DeviceContext* device_context) override
@@ -86,24 +161,26 @@ public:
 		device_context->IASetInputLayout(m_input_layout.Get());
 	}
 
-private:
-	ComPtr<::ID3D11InputLayout> CreateInputLayout(Device* device, ::ID3DBlob* micro_code)
+	void SetConstantBuffers(
+		DeviceContext*         device_context,
+		::UINT                 start_slot,
+		::UINT                 num_buffers,
+		::ID3D11Buffer* const* constant_buffers) override
 	{
-		ComPtr<::ID3D11ShaderReflection> reflection;
-		ThrowIfFailed(::D3DReflect(
-			micro_code->GetBufferPointer(),
-			micro_code->GetBufferSize(),
-			IID_PPV_ARGS(&reflection)));
+		device_context->VSSetConstantBuffers(start_slot, num_buffers, constant_buffers);
+	}
 
-		::D3D11_SHADER_DESC shader_desc;
-		ThrowIfFailed(reflection->GetDesc(&shader_desc));
+private:
+	static ComPtr<::ID3D11InputLayout>
+	CreateInputLayout(Device* device, ::ID3DBlob* micro_code, d3d11::ShaderReflection const& reflection)
+	{
+		auto const shader_desc = reflection.GetDesc();
 
 		std::vector<::D3D11_INPUT_ELEMENT_DESC> input_element_descs(shader_desc.InputParameters);
 
 		for (::UINT i = 0; i < shader_desc.InputParameters; ++i)
 		{
-			::D3D11_SIGNATURE_PARAMETER_DESC param_desc;
-			ThrowIfFailed(reflection->GetInputParameterDesc(i, &param_desc));
+			auto const param_desc = reflection.GetInputParameterDesc(i);
 
 			auto& desc = input_element_descs[i];
 			desc.SemanticName         = param_desc.SemanticName;
@@ -174,16 +251,32 @@ private:
 
 class GeometryShader : public Shader
 {
-public:
-	GeometryShader(Device* device, render::Shader const& shader)
+private:
+	const char* GetTargetString(void) override
 	{
-		auto micro_code = Compile("gs_5_0", shader);
-		m_shader = device->CreateGeometryShader(micro_code.Get());
+		return "gs_5_0";
+	}
+
+	void Initialize(
+		Device* device,
+		::ID3DBlob* micro_code,
+		d3d11::ShaderReflection const& /*reflection*/) override
+	{
+		m_shader = device->CreateGeometryShader(micro_code);
 	}
 
 	void Bind(DeviceContext* device_context) override
 	{
 		device_context->GSSetShader(m_shader.Get());
+	}
+
+	void SetConstantBuffers(
+		DeviceContext*         device_context,
+		::UINT                 start_slot,
+		::UINT                 num_buffers,
+		::ID3D11Buffer* const* constant_buffers) override
+	{
+		device_context->GSSetConstantBuffers(start_slot, num_buffers, constant_buffers);
 	}
 
 private:
@@ -192,16 +285,32 @@ private:
 
 class PixelShader : public Shader
 {
-public:
-	PixelShader(Device* device, render::Shader const& shader)
+private:
+	const char* GetTargetString(void) override
 	{
-		auto micro_code = Compile("ps_5_0", shader);
-		m_shader = device->CreatePixelShader(micro_code.Get());
+		return "ps_5_0";
+	}
+
+	void Initialize(
+		Device* device,
+		::ID3DBlob* micro_code,
+		d3d11::ShaderReflection const& /*reflection*/) override
+	{
+		m_shader = device->CreatePixelShader(micro_code);
 	}
 
 	void Bind(DeviceContext* device_context) override
 	{
 		device_context->PSSetShader(m_shader.Get());
+	}
+
+	void SetConstantBuffers(
+		DeviceContext*         device_context,
+		::UINT                 start_slot,
+		::UINT                 num_buffers,
+		::ID3D11Buffer* const* constant_buffers) override
+	{
+		device_context->PSSetConstantBuffers(start_slot, num_buffers, constant_buffers);
 	}
 
 private:
@@ -210,16 +319,32 @@ private:
 
 class HullShader : public Shader
 {
-public:
-	HullShader(Device* device, render::Shader const& shader)
+private:
+	const char* GetTargetString(void) override
 	{
-		auto micro_code = Compile("hs_5_0", shader);
-		m_shader = device->CreateHullShader(micro_code.Get());
+		return "hs_5_0";
+	}
+
+	void Initialize(
+		Device* device,
+		::ID3DBlob* micro_code,
+		d3d11::ShaderReflection const& /*reflection*/) override
+	{
+		m_shader = device->CreateHullShader(micro_code);
 	}
 
 	void Bind(DeviceContext* device_context) override
 	{
 		device_context->HSSetShader(m_shader.Get());
+	}
+
+	void SetConstantBuffers(
+		DeviceContext*         device_context,
+		::UINT                 start_slot,
+		::UINT                 num_buffers,
+		::ID3D11Buffer* const* constant_buffers) override
+	{
+		device_context->HSSetConstantBuffers(start_slot, num_buffers, constant_buffers);
 	}
 
 private:
@@ -228,16 +353,32 @@ private:
 
 class DomainShader : public Shader
 {
-public:
-	DomainShader(Device* device, render::Shader const& shader)
+private:
+	const char* GetTargetString(void) override
 	{
-		auto micro_code = Compile("ds_5_0", shader);
-		m_shader = device->CreateDomainShader(micro_code.Get());
+		return "ds_5_0";
+	}
+
+	void Initialize(
+		Device* device,
+		::ID3DBlob* micro_code,
+		d3d11::ShaderReflection const& /*reflection*/) override
+	{
+		m_shader = device->CreateDomainShader(micro_code);
 	}
 
 	void Bind(DeviceContext* device_context) override
 	{
 		device_context->DSSetShader(m_shader.Get());
+	}
+
+	void SetConstantBuffers(
+		DeviceContext*         device_context,
+		::UINT                 start_slot,
+		::UINT                 num_buffers,
+		::ID3D11Buffer* const* constant_buffers) override
+	{
+		device_context->DSSetConstantBuffers(start_slot, num_buffers, constant_buffers);
 	}
 
 private:
@@ -246,16 +387,32 @@ private:
 
 class ComputeShader : public Shader
 {
-public:
-	ComputeShader(Device* device, render::Shader const& shader)
+private:
+	const char* GetTargetString(void) override
 	{
-		auto micro_code = Compile("cs_5_0", shader);
-		m_shader = device->CreateComputeShader(micro_code.Get());
+		return "cs_5_0";
+	}
+
+	void Initialize(
+		Device* device,
+		::ID3DBlob* micro_code,
+		d3d11::ShaderReflection const& /*reflection*/) override
+	{
+		m_shader = device->CreateComputeShader(micro_code);
 	}
 
 	void Bind(DeviceContext* device_context) override
 	{
 		device_context->CSSetShader(m_shader.Get());
+	}
+
+	void SetConstantBuffers(
+		DeviceContext*         device_context,
+		::UINT                 start_slot,
+		::UINT                 num_buffers,
+		::ID3D11Buffer* const* constant_buffers) override
+	{
+		device_context->CSSetConstantBuffers(start_slot, num_buffers, constant_buffers);
 	}
 
 private:

@@ -135,7 +135,7 @@ public:
 	void Render(
 		Geometry const& geometry,
 		Program const& program,
-		Uniforms const& /*uniforms*/,
+		Uniforms const& uniforms,
 		RenderState const& render_state) override
 	{
 		{
@@ -163,6 +163,7 @@ public:
 			m_program_map, program.GetID(), m_device.get(), program);
 
 		d3d11_program->Bind(m_device_context.get());
+		d3d11_program->LoadUniforms(m_device_context.get(), uniforms);
 		d3d11_geometry->Draw(m_device_context.get());
 	}
 

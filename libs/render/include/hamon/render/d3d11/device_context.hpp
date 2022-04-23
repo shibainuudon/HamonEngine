@@ -133,6 +133,71 @@ public:
 		m_device_context->OMSetDepthStencilState(depth_stencil_state, stencil_ref);
 	}
 
+	void VSSetConstantBuffers(
+		::UINT                 start_slot,
+		::UINT                 num_buffers,
+		::ID3D11Buffer* const* constant_buffers)
+	{
+		m_device_context->VSSetConstantBuffers(start_slot, num_buffers, constant_buffers);
+	}
+
+	void PSSetConstantBuffers(
+		::UINT                 start_slot,
+		::UINT                 num_buffers,
+		::ID3D11Buffer* const* constant_buffers)
+	{
+		m_device_context->PSSetConstantBuffers(start_slot, num_buffers, constant_buffers);
+	}
+
+	void GSSetConstantBuffers(
+		::UINT                 start_slot,
+		::UINT                 num_buffers,
+		::ID3D11Buffer* const* constant_buffers)
+	{
+		m_device_context->GSSetConstantBuffers(start_slot, num_buffers, constant_buffers);
+	}
+
+	void HSSetConstantBuffers(
+		::UINT                 start_slot,
+		::UINT                 num_buffers,
+		::ID3D11Buffer* const* constant_buffers)
+	{
+		m_device_context->HSSetConstantBuffers(start_slot, num_buffers, constant_buffers);
+	}
+
+	void DSSetConstantBuffers(
+		::UINT                 start_slot,
+		::UINT                 num_buffers,
+		::ID3D11Buffer* const* constant_buffers)
+	{
+		m_device_context->DSSetConstantBuffers(start_slot, num_buffers, constant_buffers);
+	}
+	
+	void CSSetConstantBuffers(
+		::UINT                 start_slot,
+		::UINT                 num_buffers,
+		::ID3D11Buffer* const* constant_buffers)
+	{
+		m_device_context->CSSetConstantBuffers(start_slot, num_buffers, constant_buffers);
+	}
+
+	void UpdateSubresource(
+		::ID3D11Resource*  dst_resource,
+		::UINT             dst_subresource,
+		const ::D3D11_BOX* dst_box,
+		const void*        src_data,
+		::UINT             src_row_pitch,
+		::UINT             src_depth_pitch)
+	{
+		m_device_context->UpdateSubresource(
+			dst_resource,
+			dst_subresource,
+			dst_box,
+			src_data,
+			src_row_pitch,
+			src_depth_pitch);
+	}
+
 	void Draw(
 		::UINT vertex_count,
 		::UINT start_vertex_location)
