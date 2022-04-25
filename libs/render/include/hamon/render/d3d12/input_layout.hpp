@@ -41,7 +41,7 @@ public:
 		}
 	}
 
-	::D3D12_INPUT_LAYOUT_DESC Get(void) const
+	::D3D12_INPUT_LAYOUT_DESC GetDesc(void) const
 	{
 		return { m_descs.data(), static_cast<::UINT>(m_descs.size()) };
 	}
@@ -71,49 +71,49 @@ private:
 		case 1:
 			switch (type)
 			{
-			case hamon::render::Type::Int8:		return DXGI_FORMAT_R8_SINT;
-			case hamon::render::Type::Int16:	return DXGI_FORMAT_R16_SINT;
-			case hamon::render::Type::Int32:	return DXGI_FORMAT_R32_SINT;
-			case hamon::render::Type::UInt8:	return DXGI_FORMAT_R8_UINT;
-			case hamon::render::Type::UInt16:	return DXGI_FORMAT_R16_UINT;
-			case hamon::render::Type::UInt32:	return DXGI_FORMAT_R32_UINT;
-			case hamon::render::Type::Float:	return DXGI_FORMAT_R32_FLOAT;
+			case render::Type::Int8:	return DXGI_FORMAT_R8_SINT;
+			case render::Type::Int16:	return DXGI_FORMAT_R16_SINT;
+			case render::Type::Int32:	return DXGI_FORMAT_R32_SINT;
+			case render::Type::UInt8:	return DXGI_FORMAT_R8_UINT;
+			case render::Type::UInt16:	return DXGI_FORMAT_R16_UINT;
+			case render::Type::UInt32:	return DXGI_FORMAT_R32_UINT;
+			case render::Type::Float:	return DXGI_FORMAT_R32_FLOAT;
 			}
 			break;
 		case 2:
 			switch (type)
 			{
-			case hamon::render::Type::Int8:		return DXGI_FORMAT_R8G8_SINT;
-			case hamon::render::Type::Int16:	return DXGI_FORMAT_R16G16_SINT;
-			case hamon::render::Type::Int32:	return DXGI_FORMAT_R32G32_SINT;
-			case hamon::render::Type::UInt8:	return DXGI_FORMAT_R8G8_UINT;
-			case hamon::render::Type::UInt16:	return DXGI_FORMAT_R16G16_UINT;
-			case hamon::render::Type::UInt32:	return DXGI_FORMAT_R32G32_UINT;
-			case hamon::render::Type::Float:	return DXGI_FORMAT_R32G32_FLOAT;
+			case render::Type::Int8:	return DXGI_FORMAT_R8G8_SINT;
+			case render::Type::Int16:	return DXGI_FORMAT_R16G16_SINT;
+			case render::Type::Int32:	return DXGI_FORMAT_R32G32_SINT;
+			case render::Type::UInt8:	return DXGI_FORMAT_R8G8_UINT;
+			case render::Type::UInt16:	return DXGI_FORMAT_R16G16_UINT;
+			case render::Type::UInt32:	return DXGI_FORMAT_R32G32_UINT;
+			case render::Type::Float:	return DXGI_FORMAT_R32G32_FLOAT;
 			}
 			break;
 		case 3:
 			switch (type)
 			{
-			case hamon::render::Type::Int8:		return DXGI_FORMAT_UNKNOWN;//DXGI_FORMAT_R8G8B8_SINT;
-			case hamon::render::Type::Int16:	return DXGI_FORMAT_UNKNOWN;//DXGI_FORMAT_R16G16B16_SINT;
-			case hamon::render::Type::Int32:	return DXGI_FORMAT_R32G32B32_SINT;
-			case hamon::render::Type::UInt8:	return DXGI_FORMAT_UNKNOWN;//DXGI_FORMAT_R8G8B8_UINT;
-			case hamon::render::Type::UInt16:	return DXGI_FORMAT_UNKNOWN;//DXGI_FORMAT_R16G16B16_UINT;
-			case hamon::render::Type::UInt32:	return DXGI_FORMAT_R32G32B32_UINT;
-			case hamon::render::Type::Float:	return DXGI_FORMAT_R32G32B32_FLOAT;
+			case render::Type::Int8:	return DXGI_FORMAT_UNKNOWN;//DXGI_FORMAT_R8G8B8_SINT;
+			case render::Type::Int16:	return DXGI_FORMAT_UNKNOWN;//DXGI_FORMAT_R16G16B16_SINT;
+			case render::Type::Int32:	return DXGI_FORMAT_R32G32B32_SINT;
+			case render::Type::UInt8:	return DXGI_FORMAT_UNKNOWN;//DXGI_FORMAT_R8G8B8_UINT;
+			case render::Type::UInt16:	return DXGI_FORMAT_UNKNOWN;//DXGI_FORMAT_R16G16B16_UINT;
+			case render::Type::UInt32:	return DXGI_FORMAT_R32G32B32_UINT;
+			case render::Type::Float:	return DXGI_FORMAT_R32G32B32_FLOAT;
 			}
 			break;
 		case 4:
 			switch (type)
 			{
-			case hamon::render::Type::Int8:		return DXGI_FORMAT_R8G8B8A8_SINT;
-			case hamon::render::Type::Int16:	return DXGI_FORMAT_R16G16B16A16_SINT;
-			case hamon::render::Type::Int32:	return DXGI_FORMAT_R32G32B32A32_SINT;
-			case hamon::render::Type::UInt8:	return DXGI_FORMAT_R8G8B8A8_UINT;
-			case hamon::render::Type::UInt16:	return DXGI_FORMAT_R16G16B16A16_UINT;
-			case hamon::render::Type::UInt32:	return DXGI_FORMAT_R32G32B32A32_UINT;
-			case hamon::render::Type::Float:	return DXGI_FORMAT_R32G32B32A32_FLOAT;
+			case render::Type::Int8:	return DXGI_FORMAT_R8G8B8A8_SINT;
+			case render::Type::Int16:	return DXGI_FORMAT_R16G16B16A16_SINT;
+			case render::Type::Int32:	return DXGI_FORMAT_R32G32B32A32_SINT;
+			case render::Type::UInt8:	return DXGI_FORMAT_R8G8B8A8_UINT;
+			case render::Type::UInt16:	return DXGI_FORMAT_R16G16B16A16_UINT;
+			case render::Type::UInt32:	return DXGI_FORMAT_R32G32B32A32_UINT;
+			case render::Type::Float:	return DXGI_FORMAT_R32G32B32A32_FLOAT;
 			}
 			break;
 		}

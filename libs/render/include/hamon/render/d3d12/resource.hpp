@@ -7,10 +7,10 @@
 #ifndef HAMON_RENDER_D3D12_RESOURCE_HPP
 #define HAMON_RENDER_D3D12_RESOURCE_HPP
 
-#include <hamon/render/d3d/d3d12.hpp>
-#include <hamon/render/d3d/com_ptr.hpp>
 #include <hamon/render/d3d12/device.hpp>
-#include <hamon/render/d3d12/command_list.hpp>
+#include <hamon/render/d3d/com_ptr.hpp>
+#include <hamon/render/d3d/throw_if_failed.hpp>
+#include <hamon/render/d3d/d3d12.hpp>
 
 namespace hamon
 {
@@ -24,7 +24,7 @@ namespace d3d12
 class Resource
 {
 public:
-	Resource(Device* device, ::UINT64 size, void const* data)
+	Resource(d3d12::Device* device, ::UINT64 size, void const* data)
 	{
 		::D3D12_HEAP_PROPERTIES prop = {};
 		prop.Type                 = D3D12_HEAP_TYPE_UPLOAD;
@@ -52,14 +52,30 @@ public:
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			nullptr);
 
-		// 頂点データをResourceにコピー
-		::UINT8* p;
-		ThrowIfFailed(m_resource->Map(0, nullptr, reinterpret_cast<void**>(&p)));
-		std::memcpy(p, data, size);
-        m_resource->Unmap(0, nullptr);
+		if (data != nullptr)
+		{
+			::UINT8* p = static_cast<::UINT8*>(this->Map(0, nullptr));
+			std::memcpy(p, data, size);
+			this->Unmap(0, nullptr);
+		}
 	}
 
-	::ID3D12Resource1* Get(void) const { return	m_resource.Get(); }
+	::ID3D12Resource1* Get(void) const
+	{
+		return	m_resource.Get();
+	}
+
+	void* Map(::UINT subresource, const ::D3D12_RANGE* read_range) const
+	{
+		void* result;
+		ThrowIfFailed(m_resource->Map(subresource, read_range, &result));
+		return result;
+	}
+	
+	void Unmap(::UINT subresource, const ::D3D12_RANGE* written_range) const
+	{
+		m_resource->Unmap(subresource, written_range);
+	}
 
 private:
 	ComPtr<::ID3D12Resource1>	m_resource;

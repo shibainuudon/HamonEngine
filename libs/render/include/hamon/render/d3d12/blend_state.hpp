@@ -8,11 +8,11 @@
 #define HAMON_RENDER_D3D12_BLEND_STATE_HPP
 
 #include <hamon/render/blend_state.hpp>
-#include <hamon/render/d3d/d3d12.hpp>
 #include <hamon/render/d3d12/blend_factor.hpp>
 #include <hamon/render/d3d12/blend_operation.hpp>
 #include <hamon/render/d3d12/logic_operation.hpp>
 #include <hamon/render/d3d12/color_write_mask.hpp>
+#include <hamon/render/d3d/d3d12.hpp>
 
 namespace hamon
 {

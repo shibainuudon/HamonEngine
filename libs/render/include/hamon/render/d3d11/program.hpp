@@ -54,7 +54,6 @@ private:
 	}
 
 public:
-
 	void Bind(DeviceContext* device_context)
 	{
 		for (auto const& shader : m_shaders)

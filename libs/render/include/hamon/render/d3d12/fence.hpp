@@ -7,10 +7,11 @@
 #ifndef HAMON_RENDER_D3D12_FENCE_HPP
 #define HAMON_RENDER_D3D12_FENCE_HPP
 
-#include <hamon/render/d3d/d3d12.hpp>
-#include <hamon/render/d3d/throw_if_failed.hpp>
 #include <hamon/render/d3d12/device.hpp>
 #include <hamon/render/d3d12/command_queue.hpp>
+#include <hamon/render/d3d/throw_if_failed.hpp>
+#include <hamon/render/d3d/com_ptr.hpp>
+#include <hamon/render/d3d/d3d12.hpp>
 #include <vector>
 
 namespace hamon
@@ -25,7 +26,7 @@ namespace d3d12
 class Fence
 {
 public:
-	explicit Fence(Device* device, ::UINT buffer_count)
+	explicit Fence(d3d12::Device* device, ::UINT buffer_count)
 	{
 		::UINT64 const initial_value = 0;
 		m_fence = device->CreateFence(initial_value, D3D12_FENCE_FLAG_NONE);
@@ -33,7 +34,7 @@ public:
 		m_event = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
 	}
 
-	void WaitForGpu(CommandQueue* command_queue, ::UINT frame_index)
+	void WaitForGpu(d3d12::CommandQueue* command_queue, ::UINT frame_index)
 	{
 		command_queue->Signal(m_fence.Get(), m_values[frame_index]);
 
@@ -48,7 +49,7 @@ public:
 		::CloseHandle(m_event);
 	}
 
-	void MoveToNextFrame(CommandQueue* command_queue, ::UINT frame_index)
+	void MoveToNextFrame(d3d12::CommandQueue* command_queue, ::UINT frame_index)
 	{
 		auto const current_value = m_values[frame_index];
 		command_queue->Signal(m_fence.Get(), current_value);

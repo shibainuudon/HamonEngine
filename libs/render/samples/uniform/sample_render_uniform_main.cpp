@@ -150,7 +150,7 @@ int main()
 		programs.push_back(GetHLSLProgram());
 	}
 #endif
-#if 0//defined(HAMON_HAS_D3D12)
+#if defined(HAMON_HAS_D3D12)
 	{
 		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_uniform D3D12");
 		auto renderer = std::make_unique<hamon::D3D12Renderer>(*window);

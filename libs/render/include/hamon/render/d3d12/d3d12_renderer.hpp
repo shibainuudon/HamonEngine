@@ -24,6 +24,7 @@
 #include <hamon/render/d3d12/input_layout.hpp>
 #include <hamon/render/d3d12/pipeline_state.hpp>
 #include <hamon/render/d3d12/geometry.hpp>
+#include <hamon/render/d3d12/descriptor_heap.hpp>
 #include <memory>
 #include <unordered_map>
 
@@ -65,8 +66,16 @@ public:
 			m_command_allocators.push_back(std::make_unique<d3d12::CommandAllocator>(m_device.get()));
 		}
 		m_command_list      = std::make_unique<d3d12::CommandList>(m_device.get(), m_command_allocators[0].get());
-		m_command_list->Close();
 		m_fence             = std::make_unique<d3d12::Fence>(m_device.get(), buffer_count);
+
+		m_descriptor_heaps[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV] =
+			std::make_unique<d3d12::DescriptorHeap>(
+				m_device.get(),
+				D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+				100,
+				D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
+
+		m_command_list->Close();
 
 		m_swap_chain = std::make_unique<DXGISwapChain>(
 			m_factory.get(), m_command_queue->Get(), buffer_count, width, height, hwnd);
@@ -81,8 +90,6 @@ public:
 		m_fence->WaitForGpu(m_command_queue.get(), m_frame_index);
 
 		m_render_target_view = std::make_unique<d3d12::RenderTargetView>(m_device.get(), m_swap_chain.get());
-
-		m_root_signature = std::make_unique<d3d12::RootSignature>(m_device.get());
 	}
 
 	~D3D12Renderer()
@@ -103,6 +110,19 @@ public:
 			resource.Get(),
 			D3D12_RESOURCE_STATE_PRESENT,
 			D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+		std::vector<::ID3D12DescriptorHeap*> heaps;
+		for (auto& descriptor_heap : m_descriptor_heaps)
+		{
+			if (descriptor_heap)
+			{
+				descriptor_heap->Reset();
+				heaps.push_back(descriptor_heap->Get());
+			}
+		}
+		m_command_list->SetDescriptorHeaps(
+			static_cast<::UINT>(heaps.size()),
+			heaps.data());
 	}
 
 	void End(void) override
@@ -180,38 +200,47 @@ public:
 	void Render(
 		Geometry const& geometry,
 		Program const& program,
-		Uniforms const& /*uniforms*/,
+		Uniforms const& uniforms,
 		RenderState const& render_state) override
 	{
 		auto d3d12_geometry = GetOrCreate<d3d12::Geometry>(
 			m_geometry_map, geometry.GetID(), m_device.get(), geometry);
 		auto d3d12_program = GetOrCreate<d3d12::Program>(
-			m_program_map, program.GetID(), program);
+			m_program_map, program.GetID(), m_device.get(), program);
 
 		d3d12::InputLayout input_layout(geometry.GetLayout());
 
 		auto id = render::detail::HashCombine(
 			geometry.GetID(),
 			program.GetID(),
-			render_state.rasterizer_state,
-			render_state.blend_state,
-			render_state.depth_stencil_state);
+			render_state);
 		auto d3d12_pipeline = GetOrCreate<d3d12::PipelineState>(
 			m_pipeline_state_map,
 			id,
 			m_device.get(),
-			input_layout,
-			*m_root_signature,
+			*d3d12_geometry,
 			*d3d12_program,
-			geometry.GetPrimitiveTopology(),
-			render_state.rasterizer_state,
-			render_state.blend_state,
-			render_state.depth_stencil_state);
+			render_state);
 
 		m_command_list->OMSetStencilRef(render_state.depth_stencil_state.stencil.reference);
-		m_command_list->SetGraphicsRootSignature(m_root_signature->Get());
+		m_command_list->SetGraphicsRootSignature(d3d12_program->GetRootSignature());
 		m_command_list->SetPipelineState(d3d12_pipeline->Get());
 
+		{
+			auto& root_parameters = d3d12_program->GetRootParameters();
+			for (std::size_t i = 0; i < root_parameters.size(); ++i)
+			{
+				auto& descriptor_heap = m_descriptor_heaps[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV];
+				m_command_list->SetGraphicsRootDescriptorTable(
+					static_cast<::UINT>(i),
+					descriptor_heap->AssignGpuDescriptorHandle());
+			}
+		}
+
+		d3d12_program->LoadUniforms(
+			m_device.get(),
+			m_descriptor_heaps[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV].get(),
+			uniforms);
 		d3d12_geometry->Draw(m_command_list.get());
 	}
 
@@ -222,9 +251,9 @@ private:
 	std::unique_ptr<d3d12::CommandQueue>		m_command_queue;
 	std::vector<std::unique_ptr<d3d12::CommandAllocator>>	m_command_allocators;
 	std::unique_ptr<d3d12::CommandList>			m_command_list;
+	std::unique_ptr<d3d12::DescriptorHeap>		m_descriptor_heaps[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
 	std::unique_ptr<d3d12::Fence>				m_fence;
 	std::unique_ptr<d3d12::RenderTargetView>	m_render_target_view;
-	std::unique_ptr<d3d12::RootSignature>		m_root_signature;
 	::UINT										m_frame_index;
 
 	std::unordered_map<detail::Identifier, std::shared_ptr<d3d12::Program>>		m_program_map;

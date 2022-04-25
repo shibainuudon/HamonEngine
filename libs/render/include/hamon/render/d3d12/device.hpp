@@ -113,6 +113,13 @@ public:
 		m_device->CreateRenderTargetView(resource, desc, dest_descriptor);
 	}
 
+	void CreateConstantBufferView(
+		::D3D12_CONSTANT_BUFFER_VIEW_DESC const* desc,
+		::D3D12_CPU_DESCRIPTOR_HANDLE			 dest_descriptor)
+	{
+		m_device->CreateConstantBufferView(desc, dest_descriptor);
+	}
+
 	ComPtr<::ID3D12RootSignature> CreateRootSignature(
 		::UINT       node_mask,
 		const void*  blob_with_root_signature,

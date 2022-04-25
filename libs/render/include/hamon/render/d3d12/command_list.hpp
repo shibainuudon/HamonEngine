@@ -7,10 +7,11 @@
 #ifndef HAMON_RENDER_D3D12_COMMAND_LIST_HPP
 #define HAMON_RENDER_D3D12_COMMAND_LIST_HPP
 
-#include <hamon/render/d3d/d3d12.hpp>
 #include <hamon/render/d3d12/device.hpp>
 #include <hamon/render/d3d12/command_allocator.hpp>
 #include <hamon/render/d3d/throw_if_failed.hpp>
+#include <hamon/render/d3d/com_ptr.hpp>
+#include <hamon/render/d3d/d3d12.hpp>
 
 namespace hamon
 {
@@ -24,7 +25,7 @@ namespace d3d12
 class CommandList
 {
 public:
-	explicit CommandList(Device* device, CommandAllocator* command_allocator)
+	explicit CommandList(d3d12::Device* device, d3d12::CommandAllocator* command_allocator)
 	{
 		m_command_list = device->CreateGraphicsCommandList(
 			D3D12_COMMAND_LIST_TYPE_DIRECT, command_allocator->Get());
@@ -35,7 +36,7 @@ public:
 		ThrowIfFailed(m_command_list->Close());
 	}
 
-	void Reset(CommandAllocator* command_allocator)
+	void Reset(d3d12::CommandAllocator* command_allocator)
 	{
 		ThrowIfFailed(m_command_list->Reset(command_allocator->Get(), nullptr));
 	}
@@ -144,6 +145,20 @@ public:
 			color_rgba,
 			num_rects,
 			rects);
+	}
+	
+	void SetDescriptorHeaps(
+		::UINT                         num_descriptor_heaps,
+		::ID3D12DescriptorHeap* const* descriptor_heaps)
+	{
+		m_command_list->SetDescriptorHeaps(num_descriptor_heaps, descriptor_heaps);
+	}
+
+	void SetGraphicsRootDescriptorTable(
+		::UINT                        root_parameter_index,
+		::D3D12_GPU_DESCRIPTOR_HANDLE base_descriptor)
+	{
+		m_command_list->SetGraphicsRootDescriptorTable(root_parameter_index, base_descriptor);
 	}
 
 	void SetGraphicsRootSignature(

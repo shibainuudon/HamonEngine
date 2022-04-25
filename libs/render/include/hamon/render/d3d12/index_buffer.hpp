@@ -7,12 +7,12 @@
 #ifndef HAMON_RENDER_D3D12_INDEX_BUFFER_HPP
 #define HAMON_RENDER_D3D12_INDEX_BUFFER_HPP
 
-#include <hamon/render/d3d/d3d12.hpp>
-#include <hamon/render/d3d/com_ptr.hpp>
 #include <hamon/render/d3d12/device.hpp>
 #include <hamon/render/d3d12/command_list.hpp>
 #include <hamon/render/d3d12/resource.hpp>
 #include <hamon/render/d3d12/index_type.hpp>
+#include <hamon/render/d3d/com_ptr.hpp>
+#include <hamon/render/d3d/d3d12.hpp>
 #include <hamon/render/geometry.hpp>
 
 namespace hamon
@@ -27,7 +27,7 @@ namespace d3d12
 class IndexBuffer
 {
 public:
-	IndexBuffer(Device* device, render::detail::IndexArrayBase const* index_array)
+	IndexBuffer(d3d12::Device* device, render::detail::IndexArrayBase const* index_array)
 		: m_resource(device, index_array->GetBytes(), index_array->GetData())
 		, m_count(static_cast<::UINT>(index_array->GetCount()))
 	{
@@ -39,12 +39,12 @@ public:
 		m_view.Format = d3d12::IndexType(index_array->GetType());
 	}
 	
-	void Bind(CommandList* command_list)
+	void Bind(d3d12::CommandList* command_list)
 	{
 		command_list->IASetIndexBuffer(&m_view);
 	}
 
-	void Draw(CommandList * command_list)
+	void Draw(d3d12::CommandList * command_list)
 	{
 		command_list->DrawIndexedInstanced(m_count, 1, 0, 0, 0);
 	}

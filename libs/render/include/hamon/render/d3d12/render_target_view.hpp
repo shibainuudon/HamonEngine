@@ -7,9 +7,10 @@
 #ifndef HAMON_RENDER_D3D12_RENDER_TARGET_VIEW_HPP
 #define HAMON_RENDER_D3D12_RENDER_TARGET_VIEW_HPP
 
-#include <hamon/render/d3d/d3d12.hpp>
-#include <hamon/render/d3d/dxgi_swap_chain.hpp>
 #include <hamon/render/d3d12/device.hpp>
+#include <hamon/render/d3d/dxgi_swap_chain.hpp>
+#include <hamon/render/d3d/com_ptr.hpp>
+#include <hamon/render/d3d/d3d12.hpp>
 
 namespace hamon
 {
@@ -23,7 +24,7 @@ namespace d3d12
 class RenderTargetView
 {
 public:
-	explicit RenderTargetView(Device* device, DXGISwapChain* swap_chain)
+	explicit RenderTargetView(d3d12::Device* device, render::DXGISwapChain* swap_chain)
 	{
 		auto const buffer_count = swap_chain->GetBufferCount();
 

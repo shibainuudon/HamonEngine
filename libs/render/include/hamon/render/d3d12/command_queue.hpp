@@ -7,10 +7,11 @@
 #ifndef HAMON_RENDER_D3D12_COMMAND_QUEUE_HPP
 #define HAMON_RENDER_D3D12_COMMAND_QUEUE_HPP
 
-#include <hamon/render/d3d/d3d12.hpp>
 #include <hamon/render/d3d12/device.hpp>
 #include <hamon/render/d3d12/command_list.hpp>
 #include <hamon/render/d3d/throw_if_failed.hpp>
+#include <hamon/render/d3d/com_ptr.hpp>
+#include <hamon/render/d3d/d3d12.hpp>
 
 namespace hamon
 {
@@ -24,7 +25,7 @@ namespace d3d12
 class CommandQueue
 {
 public:
-	explicit CommandQueue(Device* device)
+	explicit CommandQueue(d3d12::Device* device)
 	{
 		::D3D12_COMMAND_QUEUE_DESC desc {};
 		desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
@@ -38,13 +39,16 @@ public:
 		ThrowIfFailed(m_command_queue->Signal(fence, value));
 	}
 
-	void ExecuteCommandList(CommandList* command_list)
+	void ExecuteCommandList(d3d12::CommandList* command_list)
 	{
 		::ID3D12CommandList* command_lists[] = { command_list->Get() };
 		m_command_queue->ExecuteCommandLists(ARRAYSIZE(command_lists), command_lists);
 	}
 
-	::ID3D12CommandQueue* Get(void) const { return m_command_queue.Get(); }
+	::ID3D12CommandQueue* Get(void) const
+	{
+		return m_command_queue.Get();
+	}
 
 private:
 	ComPtr<::ID3D12CommandQueue>	m_command_queue;
