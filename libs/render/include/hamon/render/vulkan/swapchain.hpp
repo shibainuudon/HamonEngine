@@ -40,7 +40,7 @@ public:
 		auto const surface_capabilities = physical_device->GetSurfaceCapabilities(surface->Get());
 		
 		auto const surface_formats = physical_device->GetSurfaceFormats(surface->Get());
-		VkFormat format;
+		::VkFormat format;
 		if (surface_formats.size() == 1 &&
 			surface_formats[0].format == VK_FORMAT_UNDEFINED)
 		{
@@ -83,7 +83,7 @@ public:
 			m_extent = surface_capabilities.currentExtent;
 		}
 
-		VkSurfaceTransformFlagBitsKHR preTransform;
+		::VkSurfaceTransformFlagBitsKHR preTransform;
 		if (surface_capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR)
 		{
 			preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
@@ -93,8 +93,8 @@ public:
 			preTransform = surface_capabilities.currentTransform;
 		}
 
-		VkCompositeAlphaFlagBitsKHR compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-		VkCompositeAlphaFlagBitsKHR compositeAlphaFlags[4] =
+		::VkCompositeAlphaFlagBitsKHR compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+		::VkCompositeAlphaFlagBitsKHR compositeAlphaFlags[4] =
 		{
 			VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
 			VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR,
@@ -111,7 +111,7 @@ public:
 			}
 		}
 
-		VkSwapchainCreateInfoKHR info = {};
+		::VkSwapchainCreateInfoKHR info {};
 		info.sType                 = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 		info.pNext                 = nullptr;
 		info.surface               = surface->Get();
@@ -156,30 +156,30 @@ public:
 		m_device->DestroySwapchain(m_swapchain);
 	}
 	
-	std::vector<VkImage> GetImages(void) const
+	std::vector<::VkImage> GetImages(void) const
 	{
 		return m_device->GetSwapchainImages(m_swapchain);
 	}
 
 	std::uint32_t AcquireNextImage(
 		std::uint64_t timeout,
-		VkSemaphore semaphore,
-		VkFence fence)
+		::VkSemaphore semaphore,
+		::VkFence fence)
 	{
 		return m_device->AcquireNextImage(m_swapchain, timeout, semaphore, fence);
 	}
 
-	VkExtent2D const& GetExtent(void) const { return m_extent; }
+	::VkExtent2D const& GetExtent(void) const { return m_extent; }
 
-	VkFormat const& GetFormat(void) const { return m_format; }
+	::VkFormat const& GetFormat(void) const { return m_format; }
 
-	VkSwapchainKHR const& Get(void) const { return m_swapchain; }
+	::VkSwapchainKHR const& Get(void) const { return m_swapchain; }
 
 private:
-	VkSwapchainKHR  m_swapchain;
-	VkExtent2D      m_extent;
-	VkFormat		m_format;
-	vulkan::Device* m_device;
+	::VkSwapchainKHR	m_swapchain;
+	::VkExtent2D		m_extent;
+	::VkFormat			m_format;
+	vulkan::Device*		m_device;
 };
 
 }	// namespace vulkan

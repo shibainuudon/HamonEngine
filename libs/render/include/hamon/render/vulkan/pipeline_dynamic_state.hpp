@@ -8,7 +8,7 @@
 #define HAMON_RENDER_VULKAN_PIPELINE_DYNAMIC_STATE_HPP
 
 #include <hamon/render/vulkan/vulkan.hpp>
-#include <hamon/render/vulkan/shader.hpp>
+#include <vector>
 
 namespace hamon
 {

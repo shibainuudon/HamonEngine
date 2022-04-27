@@ -40,9 +40,7 @@ public:
 		vulkan::RenderPass* render_pass,
 		vulkan::Program const& program,
 		render::Geometry const& geometry,
-		RasterizerState const& rasterizer_state,
-		BlendState const& blend_state,
-		DepthStencilState const& depth_stencil_state)
+		render::RenderState const& render_state)
 		: m_device(device)
 	{
 		std::vector<::VkDynamicState> const dynamic_state_enables
@@ -55,10 +53,10 @@ public:
 		auto const input_assembly_state         = vulkan::PipelineInputAssemblyState(geometry.GetPrimitiveTopology());
 		auto const dynamic_state                = vulkan::PipelineDynamicState(dynamic_state_enables);
 		auto const viewport_state               = vulkan::PipelineViewportState();
-		auto const rasterization_state          = vulkan::PipelineRasterizationState(rasterizer_state);
+		auto const rasterization_state          = vulkan::PipelineRasterizationState(render_state.rasterizer_state);
 		auto const multisample_state            = vulkan::PipelineMultisampleState(VK_SAMPLE_COUNT_1_BIT);
-		auto const pipeline_depth_stencil_state = vulkan::PipelineDepthStencilState(depth_stencil_state);
-		auto const color_blend_state            = vulkan::PipelineColorBlendState(blend_state);
+		auto const pipeline_depth_stencil_state = vulkan::PipelineDepthStencilState(render_state.depth_stencil_state);
+		auto const color_blend_state            = vulkan::PipelineColorBlendState(render_state.blend_state);
 
 		std::vector<::VkPipelineShaderStageCreateInfo>	shader_stages;
 		for (auto const& shader : program.GetShaders())
@@ -72,14 +70,14 @@ public:
 		info.flags               = 0;
 		info.stageCount          = static_cast<std::uint32_t>(shader_stages.size());
 		info.pStages             = shader_stages.data();
-		info.pVertexInputState   = vertex_input_state.GetAddressOf();
+		info.pVertexInputState   = &vertex_input_state.Get();
 		info.pInputAssemblyState = &input_assembly_state;
 		info.pTessellationState  = nullptr;
 		info.pViewportState      = &viewport_state;
 		info.pRasterizationState = &rasterization_state;
 		info.pMultisampleState   = &multisample_state;
 		info.pDepthStencilState  = &pipeline_depth_stencil_state;
-		info.pColorBlendState    = color_blend_state.GetAddressOf();
+		info.pColorBlendState    = &color_blend_state.Get();
 		info.pDynamicState       = &dynamic_state;
 		info.layout              = pipeline_layout->Get();
 		info.renderPass          = render_pass->Get();

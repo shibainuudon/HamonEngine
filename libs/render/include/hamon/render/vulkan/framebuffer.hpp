@@ -25,12 +25,12 @@ class Framebuffer
 public:
 	Framebuffer(
 		vulkan::Device* device,
-		VkRenderPass render_pass,
-		std::vector<VkImageView> const& image_views,
-		VkExtent2D const& extent)
+		::VkRenderPass render_pass,
+		std::vector<::VkImageView> const& image_views,
+		::VkExtent2D const& extent)
 		: m_device(device)
 	{
-		VkFramebufferCreateInfo info = {};
+		::VkFramebufferCreateInfo info {};
 		info.sType           = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		info.pNext           = nullptr;
 		info.renderPass      = render_pass;
@@ -47,10 +47,13 @@ public:
 		m_device->DestroyFramebuffer(m_framebuffer);
 	}
 
-	VkFramebuffer const& Get(void) const { return m_framebuffer; }
+	::VkFramebuffer const& Get(void) const
+	{
+		return m_framebuffer;
+	}
 
 private:
-	VkFramebuffer m_framebuffer;
+	::VkFramebuffer m_framebuffer;
 	vulkan::Device* m_device;
 };
 

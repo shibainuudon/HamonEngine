@@ -38,7 +38,7 @@ public:
 
 	void Begin(void)
 	{
-		VkCommandBufferBeginInfo cmd_buf_info = {};
+		::VkCommandBufferBeginInfo cmd_buf_info = {};
 		cmd_buf_info.sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 		cmd_buf_info.pNext            = nullptr;
 		cmd_buf_info.flags            = 0;
@@ -52,12 +52,12 @@ public:
 	}
 
 	void BeginRenderPass(
-		VkRenderPass render_pass,
-		VkFramebuffer framebuffer,
-		VkExtent2D const& extent,
-		ClearValue const& clear_value)
+		::VkRenderPass render_pass,
+		::VkFramebuffer framebuffer,
+		::VkExtent2D const& extent,
+		render::ClearValue const& clear_value)
 	{
-		VkClearValue clear_values[2];
+		::VkClearValue clear_values[2];
 		clear_values[0].color.float32[0] = clear_value.color.r;
 		clear_values[0].color.float32[1] = clear_value.color.g;
 		clear_values[0].color.float32[2] = clear_value.color.b;
@@ -65,7 +65,7 @@ public:
 		clear_values[1].depthStencil.depth = 1.0f;
 		clear_values[1].depthStencil.stencil = 0;
 
-		VkRenderPassBeginInfo info;
+		::VkRenderPassBeginInfo info;
 		info.sType             = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 		info.pNext             = nullptr;
 		info.renderPass        = render_pass;
@@ -85,8 +85,8 @@ public:
 	void BindVertexBuffers(
 		std::uint32_t         first_binding,
 		std::uint32_t         binding_count,
-		const ::VkBuffer*     buffers,
-		const ::VkDeviceSize* offsets)
+		::VkBuffer const*     buffers,
+		::VkDeviceSize const* offsets)
 	{
 		::vkCmdBindVertexBuffers(m_command_buffer, first_binding, binding_count, buffers, offsets);
 	}
@@ -104,6 +104,24 @@ public:
 		::VkPipeline          pipeline)
 	{
 		::vkCmdBindPipeline(m_command_buffer, pipeline_bind_point, pipeline);
+	}
+
+	void BindDescriptorSets(
+		::VkPipelineBindPoint    pipeline_bind_point,
+		::VkPipelineLayout       layout,
+		std::uint32_t            first_set,
+		std::vector<::VkDescriptorSet> const& descriptor_sets,
+		std::vector<std::uint32_t> const& dynamic_offsets)
+	{
+		::vkCmdBindDescriptorSets(
+			m_command_buffer,
+			pipeline_bind_point,
+			layout,
+			first_set,
+			static_cast<std::uint32_t>(descriptor_sets.size()),
+			descriptor_sets.empty() ? nullptr : descriptor_sets.data(),
+			static_cast<std::uint32_t>(dynamic_offsets.size()),
+			dynamic_offsets.empty() ? nullptr : dynamic_offsets.data());
 	}
 
 	void Draw(
@@ -147,11 +165,14 @@ public:
 		::vkCmdSetScissor(m_command_buffer, first_scissor, scissor_count, scissors);
 	}
 
-	VkCommandBuffer const& Get(void) const { return m_command_buffer; }
+	::VkCommandBuffer const& Get(void) const
+	{
+		return m_command_buffer;
+	}
 
 private:
-	VkCommandBuffer m_command_buffer;
-	vulkan::CommandPool* m_command_pool;
+	::VkCommandBuffer		m_command_buffer;
+	vulkan::CommandPool*	m_command_pool;
 };
 
 }	// namespace vulkan

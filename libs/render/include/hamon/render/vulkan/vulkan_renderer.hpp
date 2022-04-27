@@ -25,9 +25,10 @@
 #include <hamon/render/vulkan/buffer.hpp>
 #include <hamon/render/vulkan/device_memory.hpp>
 #include <hamon/render/vulkan/geometry.hpp>
-#include <hamon/render/vulkan/shader.hpp>
 #include <hamon/render/vulkan/program.hpp>
 #include <hamon/render/vulkan/graphics_pipeline.hpp>
+#include <hamon/render/vulkan/descriptor_pool.hpp>
+#include <hamon/render/vulkan/descriptor_set_layout.hpp>
 #include <hamon/render/vulkan/vulkan.hpp>
 #include <hamon/render/render_state.hpp>
 #include <hamon/render/render_pass_state.hpp>
@@ -45,7 +46,7 @@ inline namespace render
 class VulkanRenderer : public Renderer
 {
 private:
-	static const char* GetReportBitString(VkDebugReportFlagsEXT flags)
+	static const char* GetReportBitString(::VkDebugReportFlagsEXT flags)
 	{
 		if ((flags & VK_DEBUG_REPORT_INFORMATION_BIT_EXT) != 0)
 		{
@@ -72,8 +73,8 @@ private:
 
 	static VKAPI_ATTR VkBool32 VKAPI_CALL
 	DebugCallback(
-		VkDebugReportFlagsEXT      flags,
-		VkDebugReportObjectTypeEXT /*objectType*/,
+		::VkDebugReportFlagsEXT      flags,
+		::VkDebugReportObjectTypeEXT /*objectType*/,
 		std::uint64_t              /*object*/,
 		std::size_t                /*location*/,
 		std::int32_t               /*messageCode*/,
@@ -163,10 +164,13 @@ public:
 		m_command_buffers.push_back(std::make_unique<vulkan::CommandBuffer>(
 			m_command_pool.get()));
 
+		m_descriptor_pool = std::make_unique<vulkan::DescriptorPool>(
+			m_device.get());
+
 		m_surface = std::make_unique<vulkan::Surface>(
 			m_instance.get(), window.GetNativeHandle());
 
-		std::vector<VkBool32> supports_present;
+		std::vector<::VkBool32> supports_present;
 		for (std::uint32_t i = 0; i < queue_props.size(); i++)
 		{
 			supports_present.push_back(
@@ -245,8 +249,6 @@ public:
 		}
 
 		m_draw_fence = std::make_unique<vulkan::Fence>(m_device.get());
-
-		m_pipeline_layout = std::make_unique<vulkan::PipelineLayout>(m_device.get());
 	}
 
 	~VulkanRenderer()
@@ -260,6 +262,7 @@ public:
 			m_image_acquired_semaphore->Get(),
 			VK_NULL_HANDLE);
 
+		m_descriptor_pool->Reset();
 		m_command_buffers[0]->Begin();
 	}
 
@@ -272,7 +275,7 @@ public:
 			m_image_acquired_semaphore->Get(),
 			m_draw_fence->Get());
 		
-		VkResult res;
+		::VkResult res;
 		do {
 			res = m_draw_fence->Wait(VK_TRUE, FENCE_TIMEOUT);
 		} while (res == VK_TIMEOUT);
@@ -336,33 +339,47 @@ public:
 	void Render(
 		Geometry const& geometry,
 		Program const& program,
-		Uniforms const& /*uniforms*/,
+		Uniforms const& uniforms,
 		RenderState const& render_state) override
 	{
 		auto vulkan_geometry = GetOrCreate<vulkan::Geometry>(
 			m_geometry_map, geometry.GetID(), m_device.get(), geometry);
 		auto vulkan_program = GetOrCreate<vulkan::Program>(
 			m_program_map, program.GetID(), m_device.get(), program);
+		auto pipeline_layout = GetOrCreate<vulkan::PipelineLayout>(
+			m_pipeline_layout_map, program.GetID(), m_device.get(), vulkan_program->GetDescriptorSetLayouts());
+
+		auto descriptor_sets = m_descriptor_pool->AllocateDescriptorSets(
+			vulkan_program->GetDescriptorSetLayouts());
+		
+		auto writes = vulkan_program->CreateWriteDescriptorSets(descriptor_sets);
+		m_device->UpdateDescriptorSets(writes, {});
 
 		auto id = render::detail::HashCombine(
 			geometry.GetID(),
 			program.GetID(),
-			render_state.rasterizer_state,
-			render_state.blend_state,
-			render_state.depth_stencil_state);
+			render_state);
 		auto vulkan_graphics_pipeline = GetOrCreate<vulkan::GraphicsPipeline>(
 			m_graphics_pipeline_map,
 			id,
 			m_device.get(),
-			m_pipeline_layout.get(),
+			pipeline_layout.get(),
 			m_render_pass.get(),
 			*vulkan_program,
 			geometry,
-			render_state.rasterizer_state,
-			render_state.blend_state,
-			render_state.depth_stencil_state);
+			render_state);
 
 		vulkan_graphics_pipeline->Bind(m_command_buffers[0].get());
+
+		m_command_buffers[0]->BindDescriptorSets(
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			pipeline_layout->Get(),
+			0,
+			descriptor_sets,
+			{});
+
+		vulkan_program->LoadUniforms(uniforms);
+
 		vulkan_geometry->Draw(m_command_buffers[0].get());
 	}
 
@@ -383,11 +400,11 @@ private:
 	std::unique_ptr<vulkan::Queue>						m_graphics_queue;
 	std::unique_ptr<vulkan::Queue>						m_present_queue;
 	std::uint32_t										m_frame_index;
-
-	std::unique_ptr<vulkan::PipelineLayout>				m_pipeline_layout;
+	std::unique_ptr<vulkan::DescriptorPool>				m_descriptor_pool;
 
 	std::unordered_map<detail::Identifier, std::shared_ptr<vulkan::Program>>	m_program_map;
 	std::unordered_map<detail::Identifier, std::shared_ptr<vulkan::Geometry>>	m_geometry_map;
+	std::unordered_map<detail::Identifier, std::shared_ptr<vulkan::PipelineLayout>>	m_pipeline_layout_map;
 	std::unordered_map<std::size_t, std::shared_ptr<vulkan::GraphicsPipeline>>	m_graphics_pipeline_map;
 };
 

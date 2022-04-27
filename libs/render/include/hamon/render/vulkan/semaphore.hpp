@@ -25,7 +25,7 @@ public:
 	Semaphore(vulkan::Device* device)
 		: m_device(device)
 	{
-		VkSemaphoreCreateInfo info;
+		::VkSemaphoreCreateInfo info{};
 		info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 		info.pNext = nullptr;
 		info.flags = 0;
@@ -37,11 +37,14 @@ public:
 		m_device->DestroySemaphore(m_semaphore);
 	}
 
-	VkSemaphore const& Get(void) const { return m_semaphore; }
+	::VkSemaphore const& Get(void) const
+	{
+		return m_semaphore;
+	}
 
 private:
-	VkSemaphore     m_semaphore;
-	vulkan::Device* m_device;
+	::VkSemaphore	m_semaphore;
+	vulkan::Device*	m_device;
 };
 
 }	// namespace vulkan

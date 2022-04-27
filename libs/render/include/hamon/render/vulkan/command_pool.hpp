@@ -27,7 +27,7 @@ public:
 	CommandPool(vulkan::Device* device, std::uint32_t queue_family_index)
 		: m_device(device)
 	{
-		VkCommandPoolCreateInfo info = {};
+		::VkCommandPoolCreateInfo info = {};
 		info.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 		info.pNext            = nullptr;
 		info.queueFamilyIndex = queue_family_index;
@@ -40,11 +40,11 @@ public:
 		m_device->DestroyCommandPool(m_command_pool);
 	}
 
-	std::vector<VkCommandBuffer> AllocateCommandBuffers(
-		VkCommandBufferLevel level,
+	std::vector<::VkCommandBuffer> AllocateCommandBuffers(
+		::VkCommandBufferLevel level,
 		std::uint32_t count)
 	{
-		VkCommandBufferAllocateInfo info = {};
+		::VkCommandBufferAllocateInfo info = {};
 		info.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		info.pNext              = nullptr;
 		info.commandPool        = m_command_pool;
@@ -53,13 +53,13 @@ public:
 		return m_device->AllocateCommandBuffers(info);
 	}
 
-	void FreeCommandBuffers(std::vector<VkCommandBuffer> const& command_buffers)
+	void FreeCommandBuffers(std::vector<::VkCommandBuffer> const& command_buffers)
 	{
 		m_device->FreeCommandBuffers(m_command_pool, command_buffers);
 	}
 
 private:
-	VkCommandPool m_command_pool;
+	::VkCommandPool m_command_pool;
 	vulkan::Device* m_device;
 };
 

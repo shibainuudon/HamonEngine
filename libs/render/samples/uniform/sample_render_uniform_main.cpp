@@ -159,7 +159,7 @@ int main()
 		programs.push_back(GetHLSLProgram());
 	}
 #endif
-#if 0//defined(HAMON_HAS_VULKAN)
+#if defined(HAMON_HAS_VULKAN)
 	{
 		auto window = std::make_unique<hamon::Window>(width, height, "sample_render_uniform Vulkan");
 		auto renderer = std::make_unique<hamon::VulkanRenderer>(*window);

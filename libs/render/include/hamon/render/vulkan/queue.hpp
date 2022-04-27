@@ -23,7 +23,7 @@ namespace vulkan
 class Queue
 {
 public:
-	Queue(VkQueue queue)
+	Queue(::VkQueue queue)
 		: m_queue(queue)
 	{
 	}
@@ -32,12 +32,12 @@ public:
 	{
 	}
 
-	void Submit(VkCommandBuffer command_buffer, VkSemaphore semaphore, VkFence fence)
+	void Submit(::VkCommandBuffer command_buffer, ::VkSemaphore semaphore, ::VkFence fence)
 	{
-		VkPipelineStageFlags const pipe_stage_flags =
+		::VkPipelineStageFlags const pipe_stage_flags =
 			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 		
-		VkSubmitInfo info = {};
+		::VkSubmitInfo info{};
 		info.pNext                = nullptr;
 		info.sType                = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 		info.waitSemaphoreCount   = 1;
@@ -50,9 +50,9 @@ public:
 		ThrowIfFailed(vkQueueSubmit(m_queue, 1, &info, fence));
 	}
 
-	void Present(VkSwapchainKHR swapchain, std::uint32_t image_index)
+	void Present(::VkSwapchainKHR swapchain, std::uint32_t image_index)
 	{
-		VkPresentInfoKHR info;
+		::VkPresentInfoKHR info{};
 		info.sType              = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 		info.pNext              = nullptr;
 		info.swapchainCount     = 1;
@@ -65,7 +65,7 @@ public:
 	}
 
 private:
-	VkQueue m_queue;
+	::VkQueue m_queue;
 };
 
 }	// namespace vulkan

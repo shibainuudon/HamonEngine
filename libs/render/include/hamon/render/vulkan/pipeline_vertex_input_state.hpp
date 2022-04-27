@@ -54,7 +54,10 @@ public:
 		m_info.pVertexAttributeDescriptions    = m_attributes.data();
 	}
 
-	::VkPipelineVertexInputStateCreateInfo const* GetAddressOf(void) const { return &m_info; }
+	::VkPipelineVertexInputStateCreateInfo const& Get(void) const
+	{
+		return m_info;
+	}
 
 private:
 	::VkPipelineVertexInputStateCreateInfo				m_info{};

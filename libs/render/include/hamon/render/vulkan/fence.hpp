@@ -25,7 +25,7 @@ public:
 	Fence(vulkan::Device* device)
 		: m_device(device)
 	{
-		VkFenceCreateInfo info;
+		::VkFenceCreateInfo info{};
 		info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 		info.pNext = nullptr;
 		info.flags = 0;
@@ -37,7 +37,7 @@ public:
 		m_device->DestroyFence(m_fence);
 	}
 
-	VkResult Wait(VkBool32 wait_all, std::uint64_t timeout)
+	::VkResult Wait(::VkBool32 wait_all, std::uint64_t timeout)
 	{
 		return m_device->WaitForFences(1, &m_fence, wait_all, timeout);
 	}
@@ -47,10 +47,13 @@ public:
 		m_device->ResetFences(1, &m_fence);
 	}
 
-	VkFence const& Get(void) const { return m_fence; }
+	::VkFence const& Get(void) const
+	{
+		return m_fence;
+	}
 
 private:
-	VkFence m_fence;
+	::VkFence		m_fence;
 	vulkan::Device* m_device;
 };
 

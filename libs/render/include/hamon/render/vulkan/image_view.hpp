@@ -22,10 +22,10 @@ namespace vulkan
 class ImageView
 {
 public:
-	ImageView(vulkan::Device* device, VkImage image, VkFormat format)
+	ImageView(vulkan::Device* device, ::VkImage image, ::VkFormat format)
 		: m_device(device)
 	{
-		VkImageViewCreateInfo info = {};
+		::VkImageViewCreateInfo info {};
 		info.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 		info.pNext                           = nullptr;
 		info.flags                           = 0;
@@ -50,10 +50,13 @@ public:
 		m_device->DestroyImageView(m_image_view);
 	}
 
-	VkImageView const& Get(void) const { return m_image_view; }
+	::VkImageView const& Get(void) const
+	{
+		return m_image_view;
+	}
 
 private:
-	VkImageView m_image_view;
+	::VkImageView	m_image_view;
 	vulkan::Device* m_device;
 };
 

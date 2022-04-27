@@ -54,7 +54,10 @@ public:
 		m_info.blendConstants[3] = 1.0f;
 	}
 	
-	::VkPipelineColorBlendStateCreateInfo const* GetAddressOf(void) const { return &m_info; }
+	::VkPipelineColorBlendStateCreateInfo const& Get(void) const
+	{
+		return m_info;
+	}
 
 private:
 	::VkPipelineColorBlendStateCreateInfo				m_info{};

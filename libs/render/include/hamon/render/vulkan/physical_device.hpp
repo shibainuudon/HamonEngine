@@ -24,7 +24,7 @@ namespace vulkan
 class PhysicalDevice
 {
 public:
-	PhysicalDevice(VkPhysicalDevice physical_device)
+	PhysicalDevice(::VkPhysicalDevice physical_device)
 		: m_physical_device(physical_device)
 	{
 	}
@@ -45,43 +45,43 @@ public:
 		vkDestroyDevice(device, nullptr);
 	}
 
-	std::vector<VkQueueFamilyProperties> GetQueueFamilyProperties(void) const
+	std::vector<::VkQueueFamilyProperties> GetQueueFamilyProperties(void) const
 	{
 		std::uint32_t count;
 		vkGetPhysicalDeviceQueueFamilyProperties(m_physical_device, &count, nullptr);
-		std::vector<VkQueueFamilyProperties> props(count);
+		std::vector<::VkQueueFamilyProperties> props(count);
 		vkGetPhysicalDeviceQueueFamilyProperties(m_physical_device, &count, props.data());
 		return props;
 	}
 
-	std::vector<VkSurfaceFormatKHR> GetSurfaceFormats(VkSurfaceKHR surface) const
+	std::vector<::VkSurfaceFormatKHR> GetSurfaceFormats(VkSurfaceKHR surface) const
 	{
 		std::uint32_t count;
 		ThrowIfFailed(vkGetPhysicalDeviceSurfaceFormatsKHR(m_physical_device, surface, &count, nullptr));
-		std::vector<VkSurfaceFormatKHR> formats(count);
+		std::vector<::VkSurfaceFormatKHR> formats(count);
 		ThrowIfFailed(vkGetPhysicalDeviceSurfaceFormatsKHR(m_physical_device, surface, &count, formats.data()));
 		return formats;
 	}
 
-	VkSurfaceCapabilitiesKHR GetSurfaceCapabilities(VkSurfaceKHR surface) const
+	::VkSurfaceCapabilitiesKHR GetSurfaceCapabilities(::VkSurfaceKHR surface) const
 	{
-		VkSurfaceCapabilitiesKHR capabilities;
+		::VkSurfaceCapabilitiesKHR capabilities;
 		ThrowIfFailed(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_physical_device, surface, &capabilities));
 		return capabilities;
 	}
 
-	std::vector<VkPresentModeKHR> GetSurfacePresentModes(VkSurfaceKHR surface) const
+	std::vector<::VkPresentModeKHR> GetSurfacePresentModes(::VkSurfaceKHR surface) const
 	{
 		std::uint32_t count;
 		ThrowIfFailed(vkGetPhysicalDeviceSurfacePresentModesKHR(m_physical_device, surface, &count, nullptr));
-		std::vector<VkPresentModeKHR> present_modes(count);
+		std::vector<::VkPresentModeKHR> present_modes(count);
 		ThrowIfFailed(vkGetPhysicalDeviceSurfacePresentModesKHR(m_physical_device, surface, &count, present_modes.data()));
 		return present_modes;
 	}
 
-	VkBool32 GetSurfaceSupport(std::uint32_t queue_family_index, VkSurfaceKHR surface) const
+	::VkBool32 GetSurfaceSupport(std::uint32_t queue_family_index, ::VkSurfaceKHR surface) const
 	{
-		VkBool32 supported;
+		::VkBool32 supported;
 		ThrowIfFailed(vkGetPhysicalDeviceSurfaceSupportKHR(
 			m_physical_device, queue_family_index, surface, &supported));
 		return supported;
@@ -94,10 +94,13 @@ public:
 		return memory_properties;
 	}
 
-	VkPhysicalDevice const& Get(void) const { return m_physical_device; }
+	::VkPhysicalDevice const& Get(void) const
+	{
+		return m_physical_device;
+	}
 
 private:
-	VkPhysicalDevice m_physical_device;
+	::VkPhysicalDevice m_physical_device;
 };
 
 }	// namespace vulkan

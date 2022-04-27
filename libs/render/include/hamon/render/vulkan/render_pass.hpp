@@ -22,10 +22,10 @@ namespace vulkan
 class RenderPass
 {
 public:
-	RenderPass(vulkan::Device* device, VkFormat format, VkSampleCountFlagBits samples)
+	RenderPass(vulkan::Device* device, ::VkFormat format, ::VkSampleCountFlagBits samples)
 		: m_device(device)
 	{
-		VkAttachmentDescription attachment;
+		::VkAttachmentDescription attachment{};
 		attachment.format         = format;
 		attachment.samples        = samples;
 		attachment.loadOp         = VK_ATTACHMENT_LOAD_OP_CLEAR;
@@ -36,11 +36,11 @@ public:
 		attachment.finalLayout    = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 		attachment.flags          = 0;
 
-		VkAttachmentReference color_reference = {};
+		::VkAttachmentReference color_reference{};
 		color_reference.attachment = 0;
 		color_reference.layout     = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-		VkSubpassDescription subpass = {};
+		::VkSubpassDescription subpass{};
 		subpass.pipelineBindPoint       = VK_PIPELINE_BIND_POINT_GRAPHICS;
 		subpass.flags                   = 0;
 		subpass.inputAttachmentCount    = 0;
@@ -52,7 +52,7 @@ public:
 		subpass.preserveAttachmentCount = 0;
 		subpass.pPreserveAttachments    = nullptr;
 
-		VkSubpassDependency subpass_dependency = {};
+		::VkSubpassDependency subpass_dependency{};
 		subpass_dependency.srcSubpass      = VK_SUBPASS_EXTERNAL;
 		subpass_dependency.dstSubpass      = 0;
 		subpass_dependency.srcStageMask    = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
@@ -61,7 +61,7 @@ public:
 		subpass_dependency.dstAccessMask   = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 		subpass_dependency.dependencyFlags = 0;
 
-		VkRenderPassCreateInfo info = {};
+		::VkRenderPassCreateInfo info{};
 		info.sType           = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 		info.pNext           = nullptr;
 		info.attachmentCount = 1;
@@ -78,10 +78,13 @@ public:
 		m_device->DestroyRenderPass(m_render_pass);
 	}
 
-	VkRenderPass const& Get(void) const { return m_render_pass; }
+	::VkRenderPass const& Get(void) const
+	{
+		return m_render_pass;
+	}
 
 private:
-	VkRenderPass m_render_pass;
+	::VkRenderPass	m_render_pass;
 	vulkan::Device* m_device;
 };
 

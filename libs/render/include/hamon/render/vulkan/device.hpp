@@ -32,13 +32,13 @@ public:
 		: m_phycical_device(phycical_device)
 	{
 		float queue_priorities[1] = { 0.0 };
-		VkDeviceQueueCreateInfo queue_info = {};
+		::VkDeviceQueueCreateInfo queue_info {};
 		queue_info.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		queue_info.pNext            = nullptr;
 		queue_info.queueCount       = 1;
 		queue_info.pQueuePriorities = queue_priorities;
 
-		VkDeviceCreateInfo info = {};
+		::VkDeviceCreateInfo info {};
 		info.sType                   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 		info.pNext                   = nullptr;
 		info.queueCreateInfoCount    = 1;
@@ -57,30 +57,30 @@ public:
 		m_phycical_device->DestroyDevice(m_device);
 	}
 
-	VkCommandPool CreateCommandPool(VkCommandPoolCreateInfo const& info)
+	::VkCommandPool CreateCommandPool(::VkCommandPoolCreateInfo const& info)
 	{
-		VkCommandPool command_pool;
+		::VkCommandPool command_pool;
 		ThrowIfFailed(vkCreateCommandPool(m_device, &info, nullptr, &command_pool));
 		return command_pool;
 	}
 
-	void DestroyCommandPool(VkCommandPool command_pool)
+	void DestroyCommandPool(::VkCommandPool command_pool)
 	{
 		vkDestroyCommandPool(m_device, command_pool, nullptr);
 	}
 
-	std::vector<VkCommandBuffer> AllocateCommandBuffers(
-		VkCommandBufferAllocateInfo const& info)
+	std::vector<::VkCommandBuffer> AllocateCommandBuffers(
+		::VkCommandBufferAllocateInfo const& info)
 	{
 		// TODO info.commandBufferCount が０のときどうするか
-		std::vector<VkCommandBuffer> command_buffers(info.commandBufferCount);
+		std::vector<::VkCommandBuffer> command_buffers(info.commandBufferCount);
 		ThrowIfFailed(vkAllocateCommandBuffers(m_device, &info, command_buffers.data()));
 		return command_buffers;
 	}
 
 	void FreeCommandBuffers(
-		VkCommandPool command_pool,
-		std::vector<VkCommandBuffer> const& command_buffers)
+		::VkCommandPool command_pool,
+		std::vector<::VkCommandBuffer> const& command_buffers)
 	{
 		vkFreeCommandBuffers(
 			m_device,
@@ -89,99 +89,99 @@ public:
 			command_buffers.empty() ? nullptr : command_buffers.data());
 	}
 
-	VkQueue GetDeviceQueue(std::uint32_t queue_family_index, std::uint32_t queue_index)
+	::VkQueue GetDeviceQueue(std::uint32_t queue_family_index, std::uint32_t queue_index)
 	{
-		VkQueue queue;
+		::VkQueue queue;
 		vkGetDeviceQueue(m_device, queue_family_index, queue_index, &queue);
 		return queue;
 	}
 
-	VkSwapchainKHR CreateSwapchain(VkSwapchainCreateInfoKHR const& info)
+	::VkSwapchainKHR CreateSwapchain(::VkSwapchainCreateInfoKHR const& info)
 	{
-		VkSwapchainKHR swapchain;
+		::VkSwapchainKHR swapchain;
 		ThrowIfFailed(vkCreateSwapchainKHR(m_device, &info, nullptr, &swapchain));
 		return swapchain;
 	}
 
-	void DestroySwapchain(VkSwapchainKHR swapchain)
+	void DestroySwapchain(::VkSwapchainKHR swapchain)
 	{
 		vkDestroySwapchainKHR(m_device, swapchain, nullptr);
 	}
 
-	std::vector<VkImage> GetSwapchainImages(VkSwapchainKHR swapchain) const
+	std::vector<::VkImage> GetSwapchainImages(::VkSwapchainKHR swapchain) const
 	{
 		std::uint32_t image_count;
 		ThrowIfFailed(vkGetSwapchainImagesKHR(m_device, swapchain, &image_count, nullptr));
-		std::vector<VkImage> swapchain_images(image_count);
+		std::vector<::VkImage> swapchain_images(image_count);
 		ThrowIfFailed(vkGetSwapchainImagesKHR(m_device, swapchain, &image_count, swapchain_images.data()));
 		return swapchain_images;
 	}
 
-	VkImageView CreateImageView(VkImageViewCreateInfo const& info)
+	::VkImageView CreateImageView(::VkImageViewCreateInfo const& info)
 	{
-		VkImageView image_view;
+		::VkImageView image_view;
 		ThrowIfFailed(vkCreateImageView(m_device, &info, nullptr, &image_view));
 		return image_view;
 	}
 
-	void DestroyImageView(VkImageView image_view)
+	void DestroyImageView(::VkImageView image_view)
 	{
 		vkDestroyImageView(m_device, image_view, nullptr);
 	}
 
-	VkSemaphore CreateSemaphore(VkSemaphoreCreateInfo const& info)
+	::VkSemaphore CreateSemaphore(::VkSemaphoreCreateInfo const& info)
 	{
-		VkSemaphore semaphore;
+		::VkSemaphore semaphore;
 		ThrowIfFailed(vkCreateSemaphore(m_device, &info, nullptr, &semaphore));
 		return semaphore;
 	}
 
-	void DestroySemaphore(VkSemaphore semaphore)
+	void DestroySemaphore(::VkSemaphore semaphore)
 	{
 		vkDestroySemaphore(m_device, semaphore, nullptr);
 	}
 
-	VkRenderPass CreateRenderPass(VkRenderPassCreateInfo const& info)
+	::VkRenderPass CreateRenderPass(::VkRenderPassCreateInfo const& info)
 	{
-		VkRenderPass render_pass;
+		::VkRenderPass render_pass;
 		ThrowIfFailed(vkCreateRenderPass(m_device, &info, nullptr, &render_pass));
 		return render_pass;
 	}
 
-	void DestroyRenderPass(VkRenderPass render_pass)
+	void DestroyRenderPass(::VkRenderPass render_pass)
 	{
 		vkDestroyRenderPass(m_device, render_pass, nullptr);
 	}
 
-	VkFramebuffer CreateFramebuffer(VkFramebufferCreateInfo const& info)
+	::VkFramebuffer CreateFramebuffer(::VkFramebufferCreateInfo const& info)
 	{
-		VkFramebuffer framebuffer;
+		::VkFramebuffer framebuffer;
 		ThrowIfFailed(vkCreateFramebuffer(m_device, &info, nullptr, &framebuffer));
 		return framebuffer;
 	}
 
-	void DestroyFramebuffer(VkFramebuffer framebuffer)
+	void DestroyFramebuffer(::VkFramebuffer framebuffer)
 	{
 		vkDestroyFramebuffer(m_device, framebuffer, nullptr);
 	}
 
-	VkFence CreateFence(VkFenceCreateInfo const& info)
+	::VkFence CreateFence(::VkFenceCreateInfo const& info)
 	{
-		VkFence fence;
+		::VkFence fence;
 		ThrowIfFailed(vkCreateFence(m_device, &info, nullptr, &fence));
 		return fence;
 	}
 	
-	void DestroyFence(VkFence fence)
+	void DestroyFence(::VkFence fence)
 	{
 		vkDestroyFence(m_device, fence, nullptr);
 	}
 
 	std::uint32_t AcquireNextImage(
-		VkSwapchainKHR swapchain,
+		::VkSwapchainKHR swapchain,
 		std::uint64_t timeout,
-		VkSemaphore semaphore,
-		VkFence fence)
+		::VkSemaphore semaphore,
+		::VkFence fence)
 	{
 		std::uint32_t image_index;
 		ThrowIfFailed(vkAcquireNextImageKHR(
@@ -194,18 +194,18 @@ public:
 		return image_index;
 	}
 
-	VkResult WaitForFences(
-		std::uint32_t  fence_count,
-		const VkFence* fences,
-		VkBool32       wait_all,
-		uint64_t       timeout)
+	::VkResult WaitForFences(
+		std::uint32_t    fence_count,
+		::VkFence const* fences,
+		::VkBool32       wait_all,
+		std::uint64_t    timeout)
 	{
 		return ThrowIfFailed(vkWaitForFences(m_device, fence_count, fences, wait_all, timeout));
 	}
 	
-	VkResult ResetFences(
-		uint32_t       fence_count,
-		const VkFence* fences)
+	::VkResult ResetFences(
+		std::uint32_t    fence_count,
+		::VkFence const* fences)
 	{
 		return ThrowIfFailed(vkResetFences(m_device, fence_count, fences));
 	}
@@ -309,10 +309,75 @@ public:
 		::vkDestroyPipeline(m_device, pipeline, nullptr);
 	}
 
-	vulkan::PhysicalDevice* GetPhysicalDevice(void) const { return m_phycical_device; }
+	::VkDescriptorPool CreateDescriptorPool(
+		::VkDescriptorPoolCreateInfo const& create_info)
+	{
+		::VkDescriptorPool pool;
+		ThrowIfFailed(::vkCreateDescriptorPool(
+			m_device,
+			&create_info,
+			nullptr,
+			&pool));
+		return pool;
+	}
+
+	void DestroyDescriptorPool(::VkDescriptorPool pool)
+	{
+		::vkDestroyDescriptorPool(m_device, pool, nullptr);
+	}
+
+	void ResetDescriptorPool(::VkDescriptorPool pool)
+	{
+		ThrowIfFailed(::vkResetDescriptorPool(m_device, pool, 0));
+	}
+
+	std::vector<::VkDescriptorSet>
+	AllocateDescriptorSets(::VkDescriptorSetAllocateInfo const& info)
+	{
+		std::vector<::VkDescriptorSet> descriptor_sets(info.descriptorSetCount);
+		ThrowIfFailed(::vkAllocateDescriptorSets(
+			m_device,
+			&info,
+			descriptor_sets.data()));
+		return descriptor_sets;
+	}
+
+	::VkDescriptorSetLayout CreateDescriptorSetLayout(
+		::VkDescriptorSetLayoutCreateInfo const& create_info)
+	{
+		::VkDescriptorSetLayout layout;
+		ThrowIfFailed(::vkCreateDescriptorSetLayout(
+			m_device,
+			&create_info,
+			nullptr,
+			&layout));
+		return layout;
+	}
+	
+	void DestroyDescriptorSetLayout(::VkDescriptorSetLayout layout)
+	{
+		::vkDestroyDescriptorSetLayout(m_device, layout, nullptr);
+	}
+
+	void UpdateDescriptorSets(
+		std::vector<::VkWriteDescriptorSet>	const& descriptor_writes,
+		std::vector<::VkCopyDescriptorSet>	const& descriptor_copies)
+	{
+		::vkUpdateDescriptorSets(
+			m_device,
+			static_cast<std::uint32_t>(descriptor_writes.size()),
+			descriptor_writes.empty() ? nullptr : descriptor_writes.data(),
+			static_cast<std::uint32_t>(descriptor_copies.size()),
+			descriptor_copies.empty() ? nullptr : descriptor_copies.data());
+	}
+
+	vulkan::PhysicalDevice* GetPhysicalDevice(void) const
+	{
+		return m_phycical_device;
+	}
 
 private:
-	VkDevice m_device;
+	::VkDevice              m_device;
 	vulkan::PhysicalDevice* m_phycical_device;
 };
 

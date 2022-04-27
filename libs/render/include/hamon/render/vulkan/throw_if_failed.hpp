@@ -23,12 +23,12 @@ namespace vulkan
 class ResultException : public std::runtime_error
 {
 public:
-	explicit ResultException(VkResult res)
+	explicit ResultException(::VkResult res)
 		: std::runtime_error(ToString(res))
 	{}
 
 private:
-	static std::string ToString(VkResult res)
+	static std::string ToString(::VkResult res)
 	{
 #define HAMON_VK_RESULT_KVP(x)	case x: return #x
 		switch (res)
@@ -73,7 +73,7 @@ private:
 	}
 };
 
-inline VkResult ThrowIfFailed(VkResult res)
+inline ::VkResult ThrowIfFailed(::VkResult res)
 {
 	if (res < 0)
 	{

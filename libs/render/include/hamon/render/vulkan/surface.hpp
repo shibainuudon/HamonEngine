@@ -26,27 +26,27 @@ public:
 		: m_instance(instance)
 	{
 #ifdef _WIN32
-		VkWin32SurfaceCreateInfoKHR info = {};
+		::VkWin32SurfaceCreateInfoKHR info{};
 		info.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
 		info.pNext = nullptr;
 		info.hinstance = GetModuleHandle(nullptr);
 		info.hwnd = hwnd;
 #elif defined(__ANDROID__)
-		VkAndroidSurfaceCreateInfoKHR info;
+		::VkAndroidSurfaceCreateInfoKHR info{};
 		info.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
 		info.pNext = nullptr;
 		info.flags = 0;
 		info.window = AndroidGetApplicationWindow();
 		res = vkCreateAndroidSurfaceKHR(info.inst, &info, nullptr, &m_surface);
 #elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
-		VkWaylandSurfaceCreateInfoKHR info = {};
+		::VkWaylandSurfaceCreateInfoKHR info{};
 		info.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
 		info.pNext = nullptr;
 		info.display = info.display;
 		info.surface = info.window;
 		res = vkCreateWaylandSurfaceKHR(info.inst, &info, nullptr, &m_surface);
 #else
-		VkXcbSurfaceCreateInfoKHR info = {};
+		::VkXcbSurfaceCreateInfoKHR info{};
 		info.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
 		info.pNext = nullptr;
 		info.connection = info.connection;
@@ -61,11 +61,14 @@ public:
 		m_instance->DestroySurface(m_surface);
 	}
 
-	VkSurfaceKHR const& Get(void) const { return m_surface; }
+	::VkSurfaceKHR const& Get(void) const
+	{
+		return m_surface;
+	}
 
 private:
-	VkSurfaceKHR m_surface;
-	vulkan::Instance* m_instance;
+	::VkSurfaceKHR		m_surface;
+	vulkan::Instance*	m_instance;
 };
 
 }	// namespace vulkan

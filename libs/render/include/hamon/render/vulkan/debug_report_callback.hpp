@@ -24,11 +24,11 @@ class DebugReportCallback
 public:
 	DebugReportCallback(
 		vulkan::Instance* instance,
-		VkDebugReportFlagsEXT flags,
-		PFN_vkDebugReportCallbackEXT callback)
+		::VkDebugReportFlagsEXT flags,
+		::PFN_vkDebugReportCallbackEXT callback)
 		: m_instance(instance)
 	{
-		VkDebugReportCallbackCreateInfoEXT info{};
+		::VkDebugReportCallbackCreateInfoEXT info{};
 		info.sType       = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
 		info.flags       = flags;
 		info.pfnCallback = callback;
@@ -41,8 +41,8 @@ public:
 	}
 
 private:
-	VkDebugReportCallbackEXT m_callback;
-	vulkan::Instance* m_instance;
+	::VkDebugReportCallbackEXT	m_callback;
+	vulkan::Instance*			m_instance;
 };
 
 }	// namespace vulkan

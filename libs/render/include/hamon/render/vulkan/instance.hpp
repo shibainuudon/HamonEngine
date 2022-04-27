@@ -30,7 +30,7 @@ public:
 		std::vector<const char*> const& layer_names,
 		std::vector<const char*> const& extension_names)
 	{
-		VkApplicationInfo app_info = {};
+		::VkApplicationInfo app_info {};
 		app_info.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 		app_info.pNext              = nullptr;
 		app_info.pApplicationName   = app_name;
@@ -39,7 +39,7 @@ public:
 		app_info.engineVersion      = 1;
 		app_info.apiVersion         = VK_API_VERSION_1_0;
 
-		VkInstanceCreateInfo inst_info = {};
+		::VkInstanceCreateInfo inst_info {};
 		inst_info.sType                   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 		inst_info.pNext                   = nullptr;
 		inst_info.flags                   = 0;
@@ -57,44 +57,44 @@ public:
 		vkDestroyInstance(m_instance, nullptr);
 	}
 
-	std::vector<VkPhysicalDevice> EnumeratePhysicalDevices()
+	std::vector<::VkPhysicalDevice> EnumeratePhysicalDevices()
 	{
 		std::uint32_t gpu_count;
 		ThrowIfFailed(vkEnumeratePhysicalDevices(m_instance, &gpu_count, nullptr));
-		std::vector<VkPhysicalDevice> gpus(gpu_count);
+		std::vector<::VkPhysicalDevice> gpus(gpu_count);
 		ThrowIfFailed(vkEnumeratePhysicalDevices(m_instance, &gpu_count, gpus.data()));
 		return gpus;
 	}
 
-	VkDebugReportCallbackEXT CreateDebugReportCallback(
-		VkDebugReportCallbackCreateInfoEXT const& info)
+	::VkDebugReportCallbackEXT CreateDebugReportCallback(
+		::VkDebugReportCallbackCreateInfoEXT const& info)
 	{
-		VkDebugReportCallbackEXT callback;
+		::VkDebugReportCallbackEXT callback;
 		ThrowIfFailed(vulkan::vkCreateDebugReportCallbackEXT(m_instance, &info, nullptr, &callback));
 		return callback;
 	}
 	
-	void DestroyDebugReportCallback(VkDebugReportCallbackEXT const& callback)
+	void DestroyDebugReportCallback(::VkDebugReportCallbackEXT const& callback)
 	{
 		vulkan::vkDestroyDebugReportCallbackEXT(m_instance, callback, nullptr);
 	}
 
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
-	VkSurfaceKHR CreateSurface(VkWin32SurfaceCreateInfoKHR const& info)
+	::VkSurfaceKHR CreateSurface(::VkWin32SurfaceCreateInfoKHR const& info)
 	{
-		VkSurfaceKHR surface;
+		::VkSurfaceKHR surface;
 		ThrowIfFailed(vkCreateWin32SurfaceKHR(m_instance, &info, nullptr, &surface));
 		return surface;
 	}
 #endif
 
-	void DestroySurface(VkSurfaceKHR const& surface)
+	void DestroySurface(::VkSurfaceKHR const& surface)
 	{
 		vkDestroySurfaceKHR(m_instance, surface, nullptr);
 	}
 
 private:
-	VkInstance m_instance;
+	::VkInstance m_instance;
 };
 
 }	// namespace vulkan

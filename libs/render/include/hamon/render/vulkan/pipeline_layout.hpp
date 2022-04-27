@@ -23,7 +23,9 @@ namespace vulkan
 class PipelineLayout
 {
 public:
-	explicit PipelineLayout(vulkan::Device* device)
+	explicit PipelineLayout(
+		vulkan::Device* device,
+		std::vector<::VkDescriptorSetLayout> const& descriptor_set_layouts)
 		: m_device(device)
 	{
 		::VkPipelineLayoutCreateInfo info = {};
@@ -31,8 +33,8 @@ public:
 		info.pNext                  = nullptr;
 		info.pushConstantRangeCount = 0;
 		info.pPushConstantRanges    = nullptr;
-		info.setLayoutCount         = 0;
-		info.pSetLayouts            = nullptr;
+		info.setLayoutCount         = static_cast<std::uint32_t>(descriptor_set_layouts.size());
+		info.pSetLayouts            = descriptor_set_layouts.data();
 
 		m_pipeline_layout = m_device->CreatePipelineLayout(info);
 	}
@@ -42,11 +44,14 @@ public:
 		m_device->DestroyPipelineLayout(m_pipeline_layout);
 	}
 
-	::VkPipelineLayout Get(void) const { return m_pipeline_layout; }
+	::VkPipelineLayout Get(void) const
+	{
+		return m_pipeline_layout;
+	}
 
 private:
 	::VkPipelineLayout m_pipeline_layout;
-	vulkan::Device* m_device;
+	vulkan::Device*    m_device;
 };
 
 }	// namespace vulkan

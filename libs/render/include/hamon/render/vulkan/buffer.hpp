@@ -57,7 +57,10 @@ public:
 		device_memory->BindBufferMemory(m_buffer, memory_offset);
 	}
 
-	::VkBuffer const& Get(void) const { return m_buffer; }
+	::VkBuffer const& Get(void) const
+	{
+		return m_buffer;
+	}
 
 private:
 	::VkBuffer		m_buffer;

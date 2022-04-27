@@ -29,9 +29,9 @@ public:
 		: m_device(device)
 	{
 		::VkMemoryAllocateInfo info{};
-		info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-		info.pNext = nullptr;
-		info.allocationSize = mem_reqs.size;
+		info.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		info.pNext           = nullptr;
+		info.allocationSize  = mem_reqs.size;
 		info.memoryTypeIndex = GetMemoryTypeIndex(
 			m_device->GetPhysicalDevice()->GetMemoryProperties(),
 			mem_reqs.memoryTypeBits,

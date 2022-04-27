@@ -24,12 +24,12 @@ namespace vulkan
 class ShaderModule
 {
 public:
-	explicit ShaderModule(vulkan::Device* device, std::vector<std::uint32_t> const& spv)
+	explicit ShaderModule(vulkan::Device* device, std::vector<unsigned int> const& spv)
 		: m_device(device)
 	{
 		::VkShaderModuleCreateInfo info{};
 		info.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-		info.codeSize = spv.size() * sizeof(std::uint32_t);
+		info.codeSize = spv.size() * sizeof(unsigned int);
 		info.pCode    = spv.data();
 
 		m_shader_module = m_device->CreateShaderModule(info);
@@ -37,13 +37,32 @@ public:
 
 	~ShaderModule()
 	{
-		m_device->DestroyShaderModule(m_shader_module);
+		if (m_device)
+		{
+			m_device->DestroyShaderModule(m_shader_module);
+		}
 	}
 
-	::VkShaderModule		Get(void) const { return m_shader_module; }
+	ShaderModule(ShaderModule const&) = delete;
+	ShaderModule& operator=(ShaderModule const&) = delete;
+
+	ShaderModule(ShaderModule && rhs)
+		: m_shader_module(rhs.m_shader_module)
+		, m_device(rhs.m_device)
+	{
+		rhs.m_shader_module = VK_NULL_HANDLE;
+		rhs.m_device = nullptr;
+	}
+
+	ShaderModule& operator=(ShaderModule &&) = delete;
+
+	::VkShaderModule Get(void) const
+	{
+		return m_shader_module;
+	}
 
 private:
-	::VkShaderModule		m_shader_module;
+	::VkShaderModule		m_shader_module = VK_NULL_HANDLE;
 	vulkan::Device*			m_device;
 };
 
