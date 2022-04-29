@@ -33,6 +33,14 @@ struct BlendState
 	LogicOperation	logic_operation  { LogicOperation::Noop };
 
 	std::uint32_t	color_write_mask { ColorWriteMask::All };
+
+	struct
+	{
+		float         r;
+		float         g;
+		float         b;
+		float         a;
+	}				constant_color{1, 1, 1, 1};
 };
 
 }	// inline namespace render

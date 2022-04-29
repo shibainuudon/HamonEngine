@@ -62,6 +62,12 @@ public:
 			state.color_write_mask & ColorWriteMask::Green,
 			state.color_write_mask & ColorWriteMask::Blue,
 			state.color_write_mask & ColorWriteMask::Alpha);
+
+		gl::glBlendColor(
+			state.constant_color.r,
+			state.constant_color.g,
+			state.constant_color.b,
+			state.constant_color.a);
 	}
 };
 

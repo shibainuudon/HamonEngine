@@ -144,9 +144,16 @@ public:
 			m_device_context->RSSetState(state.Get());
 		}
 		{
+			auto const& blend_state = render_state.blend_state;
 			auto state = m_device->CreateBlendState(
-				d3d11::BlendState(render_state.blend_state));
-			float const blend_factor[4] {};
+				d3d11::BlendState(blend_state));
+			float const blend_factor[4]
+			{
+				blend_state.constant_color.r,
+				blend_state.constant_color.g,
+				blend_state.constant_color.b,
+				blend_state.constant_color.a,
+			};
 			::UINT const sample_mask = 0xffffffff;
 			m_device_context->OMSetBlendState(state.Get(), blend_factor, sample_mask);
 		}

@@ -134,6 +134,11 @@ public:
 		m_command_list->OMSetStencilRef(stencil_ref);
 	}
 
+	void OMSetBlendFactor(::FLOAT const blend_factor[4])
+	{
+		m_command_list->OMSetBlendFactor(blend_factor);
+	}
+
 	void ClearRenderTargetView(
 		::D3D12_CPU_DESCRIPTOR_HANDLE const& render_target_view,
 		::FLOAT const*                       color_rgba,

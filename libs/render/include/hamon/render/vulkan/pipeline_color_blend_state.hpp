@@ -48,10 +48,10 @@ public:
 		m_info.pAttachments      = m_attachments.data();
 		m_info.logicOpEnable     = state.logic_op_enable;
 		m_info.logicOp           = vulkan::LogicOperation(state.logic_operation);
-		m_info.blendConstants[0] = 1.0f;
-		m_info.blendConstants[1] = 1.0f;
-		m_info.blendConstants[2] = 1.0f;
-		m_info.blendConstants[3] = 1.0f;
+		m_info.blendConstants[0] = state.constant_color.r;
+		m_info.blendConstants[1] = state.constant_color.g;
+		m_info.blendConstants[2] = state.constant_color.b;
+		m_info.blendConstants[3] = state.constant_color.a;
 	}
 	
 	::VkPipelineColorBlendStateCreateInfo const& Get(void) const

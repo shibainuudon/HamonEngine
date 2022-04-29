@@ -230,6 +230,16 @@ public:
 			render_state);
 
 		m_command_list->OMSetStencilRef(render_state.depth_stencil_state.stencil.reference);
+		{
+			float const blend_factor[]
+			{
+				render_state.blend_state.constant_color.r,
+				render_state.blend_state.constant_color.g,
+				render_state.blend_state.constant_color.b,
+				render_state.blend_state.constant_color.a,
+			};
+			m_command_list->OMSetBlendFactor(blend_factor);
+		}
 		m_command_list->SetGraphicsRootSignature(d3d12_program->GetRootSignature());
 		m_command_list->SetPipelineState(d3d12_pipeline->Get());
 

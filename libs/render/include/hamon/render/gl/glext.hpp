@@ -42,7 +42,11 @@ inline void APIENTRY glBlendFuncSeparate(GLenum sfactorRGB, GLenum dfactorRGB, G
 //GLAPI void APIENTRY glPointParameterfv (GLenum pname, const GLfloat *params);
 //GLAPI void APIENTRY glPointParameteri (GLenum pname, GLint param);
 //GLAPI void APIENTRY glPointParameteriv (GLenum pname, const GLint *params);
-//GLAPI void APIENTRY glBlendColor (GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
+inline void APIENTRY glBlendColor (GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
+{
+	static auto func = (PFNGLBLENDCOLORPROC)GET_PROC_ADDRESS("glBlendColor");
+	return func(red, green, blue, alpha);
+}
 //GLAPI void APIENTRY glBlendEquation (GLenum mode);
 
 /* GL_VERSION_1_5 */
