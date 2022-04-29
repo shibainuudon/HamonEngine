@@ -1,5 +1,6 @@
 ﻿add_subdirectory(clear)
 add_subdirectory(color_write_mask)
+add_subdirectory(cull_mode)
 add_subdirectory(indexed)
 add_subdirectory(triangle)
 add_subdirectory(uniform)
