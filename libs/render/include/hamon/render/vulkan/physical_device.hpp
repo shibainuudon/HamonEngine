@@ -86,8 +86,15 @@ public:
 			m_physical_device, queue_family_index, surface, &supported));
 		return supported;
 	}
+	
+	auto GetProperties(void) const
+	{
+		::VkPhysicalDeviceProperties properties;
+		::vkGetPhysicalDeviceProperties(m_physical_device, &properties);
+		return properties;
+	}
 
-	::VkPhysicalDeviceMemoryProperties GetMemoryProperties(void) const
+	auto GetMemoryProperties(void) const
 	{
 		::VkPhysicalDeviceMemoryProperties memory_properties;
 		::vkGetPhysicalDeviceMemoryProperties(m_physical_device, &memory_properties);

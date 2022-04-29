@@ -27,13 +27,13 @@ public:
 	{
 		::VkDescriptorPoolSize type_count[1];
 		type_count[0].type            = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		type_count[0].descriptorCount = 1;
+		type_count[0].descriptorCount = 1024;	// TODO
 
 		::VkDescriptorPoolCreateInfo info {};
 		info.sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 		info.pNext         = NULL;
 		info.flags         = 0;
-		info.maxSets       = 1;	// TODO
+		info.maxSets       = 100;	// TODO
 		info.poolSizeCount = 1;
 		info.pPoolSizes    = type_count;
 

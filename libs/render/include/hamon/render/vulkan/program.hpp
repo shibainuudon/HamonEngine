@@ -10,6 +10,7 @@
 #include <hamon/render/vulkan/shader.hpp>
 #include <hamon/render/vulkan/descriptor_set_layout.hpp>
 #include <hamon/render/vulkan/uniform_buffer.hpp>
+#include <hamon/render/vulkan/uniform_buffer_descriptor.hpp>
 #include <hamon/render/vulkan/spirv_program.hpp>
 #include <hamon/render/vulkan/spirv_reflection.hpp>
 #include <hamon/render/program.hpp>
@@ -40,16 +41,17 @@ public:
 
 		for (auto const& uniform_buffer : reflection.GetUniformBuffers())
 		{
-			m_uniform_buffers.emplace_back(device, uniform_buffer);
+			m_uniform_buffer_descriptors.emplace_back(uniform_buffer);
 		}
 	}
 	
 	void LoadUniforms(
+		vulkan::UniformBuffer* uniform_buffer,
 		render::Uniforms const& uniforms)
 	{
-		for (auto& uniform_buffer : m_uniform_buffers)
+		for (auto& uniform_buffer_descriptor : m_uniform_buffer_descriptors)
 		{
-			uniform_buffer.LoadUniforms(uniforms);
+			uniform_buffer_descriptor.LoadUniforms(uniform_buffer, uniforms);
 		}
 	}
 
@@ -71,9 +73,9 @@ public:
 	auto CreateWriteDescriptorSets(std::vector<::VkDescriptorSet> const& descriptor_sets)
 	{
 		std::vector<::VkWriteDescriptorSet> writes;
-		for (auto const& uniform_buffer : m_uniform_buffers)
+		for (auto& uniform_buffer_descriptor : m_uniform_buffer_descriptors)
 		{
-			writes.push_back(uniform_buffer.CreateWriteDescriptorSet(descriptor_sets));
+			writes.push_back(uniform_buffer_descriptor.CreateWriteDescriptorSet(descriptor_sets));
 		}
 		return writes;
 	}
@@ -105,10 +107,10 @@ private:
 	}
 
 private:
-	vulkan::SpirvProgram						m_spirv_program;
-	std::vector<vulkan::Shader>					m_shaders;
-	std::vector<vulkan::DescriptorSetLayout>	m_descriptor_set_layouts;
-	std::vector<vulkan::UniformBuffer>			m_uniform_buffers;
+	vulkan::SpirvProgram							m_spirv_program;
+	std::vector<vulkan::Shader>						m_shaders;
+	std::vector<vulkan::DescriptorSetLayout>		m_descriptor_set_layouts;
+	std::vector<vulkan::UniformBufferDescriptor>	m_uniform_buffer_descriptors;
 };
 
 }	// namespace vulkan

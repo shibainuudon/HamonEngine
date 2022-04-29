@@ -249,6 +249,10 @@ public:
 		}
 
 		m_draw_fence = std::make_unique<vulkan::Fence>(m_device.get());
+
+		m_uniform_buffer = std::make_unique<vulkan::UniformBuffer>(
+			m_device.get(),
+			1024 * 1024);	// TODO
 	}
 
 	~VulkanRenderer()
@@ -262,6 +266,7 @@ public:
 			m_image_acquired_semaphore->Get(),
 			VK_NULL_HANDLE);
 
+		m_uniform_buffer->Reset();
 		m_descriptor_pool->Reset();
 		m_command_buffers[0]->Begin();
 	}
@@ -349,9 +354,11 @@ public:
 		auto pipeline_layout = GetOrCreate<vulkan::PipelineLayout>(
 			m_pipeline_layout_map, program.GetID(), m_device.get(), vulkan_program->GetDescriptorSetLayouts());
 
+		vulkan_program->LoadUniforms(m_uniform_buffer.get(), uniforms);
+
 		auto descriptor_sets = m_descriptor_pool->AllocateDescriptorSets(
 			vulkan_program->GetDescriptorSetLayouts());
-		
+
 		auto writes = vulkan_program->CreateWriteDescriptorSets(descriptor_sets);
 		m_device->UpdateDescriptorSets(writes, {});
 
@@ -378,8 +385,6 @@ public:
 			descriptor_sets,
 			{});
 
-		vulkan_program->LoadUniforms(uniforms);
-
 		vulkan_geometry->Draw(m_command_buffers[0].get());
 	}
 
@@ -401,6 +406,7 @@ private:
 	std::unique_ptr<vulkan::Queue>						m_present_queue;
 	std::uint32_t										m_frame_index;
 	std::unique_ptr<vulkan::DescriptorPool>				m_descriptor_pool;
+	std::unique_ptr<vulkan::UniformBuffer>				m_uniform_buffer;
 
 	std::unordered_map<detail::Identifier, std::shared_ptr<vulkan::Program>>	m_program_map;
 	std::unordered_map<detail::Identifier, std::shared_ptr<vulkan::Geometry>>	m_geometry_map;
