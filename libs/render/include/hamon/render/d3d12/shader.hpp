@@ -171,7 +171,7 @@ private:
 			nullptr,	// source_name
 			nullptr,	// defines
 			nullptr,	// include
-			"main",
+			shader.GetEntryPoint().c_str(),
 			target,
 			flags1,
 			0,			// flags2

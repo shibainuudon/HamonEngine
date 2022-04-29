@@ -175,6 +175,7 @@ private:
 
 		glslang::TShader shader(esh_stage);
 		shader.setStrings(&source, 1);
+		shader.setEntryPoint(glsl_shader.GetEntryPoint().c_str());
 
 		if (!shader.parse(&resources, 100, false, messages))
 		{
