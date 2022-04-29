@@ -310,11 +310,23 @@ inline void APIENTRY glUniformMatrix4x3fv (GLint location, GLsizei count, GLbool
 }
 
 /* GL_VERSION_3_0 */
-//GLAPI void APIENTRY glColorMaski(GLuint index, GLboolean r, GLboolean g, GLboolean b, GLboolean a);
+inline void APIENTRY glColorMaski(GLuint index, GLboolean r, GLboolean g, GLboolean b, GLboolean a)
+{
+	static auto func = (PFNGLCOLORMASKIPROC)GET_PROC_ADDRESS("glColorMaski");
+	return func(index, r, g, b, a);
+}
 //GLAPI void APIENTRY glGetBooleani_v(GLenum target, GLuint index, GLboolean* data);
 //GLAPI void APIENTRY glGetIntegeri_v(GLenum target, GLuint index, GLint* data);
-//GLAPI void APIENTRY glEnablei(GLenum target, GLuint index);
-//GLAPI void APIENTRY glDisablei(GLenum target, GLuint index);
+inline void APIENTRY glEnablei(GLenum target, GLuint index)
+{
+	static auto func = (PFNGLENABLEIPROC)GET_PROC_ADDRESS("glEnablei");
+	return func(target, index);
+}
+inline void APIENTRY glDisablei(GLenum target, GLuint index)
+{
+	static auto func = (PFNGLDISABLEIPROC)GET_PROC_ADDRESS("glDisablei");
+	return func(target, index);
+}
 //GLAPI GLboolean APIENTRY glIsEnabledi(GLenum target, GLuint index);
 //GLAPI void APIENTRY glBeginTransformFeedback(GLenum primitiveMode);
 //GLAPI void APIENTRY glEndTransformFeedback(void);
@@ -456,9 +468,17 @@ inline void APIENTRY glUniformBlockBinding (GLuint program, GLuint uniformBlockI
 /* GL_VERSION_4_0 */
 //GLAPI void APIENTRY glMinSampleShading (GLfloat value);
 //GLAPI void APIENTRY glBlendEquationi (GLuint buf, GLenum mode);
-//GLAPI void APIENTRY glBlendEquationSeparatei (GLuint buf, GLenum modeRGB, GLenum modeAlpha);
+inline void APIENTRY glBlendEquationSeparatei (GLuint buf, GLenum modeRGB, GLenum modeAlpha)
+{
+	static auto func = (PFNGLBLENDEQUATIONSEPARATEIPROC)GET_PROC_ADDRESS("glBlendEquationSeparatei");
+	return func(buf, modeRGB, modeAlpha);
+}
 //GLAPI void APIENTRY glBlendFunci (GLuint buf, GLenum src, GLenum dst);
-//GLAPI void APIENTRY glBlendFuncSeparatei (GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha);
+inline void APIENTRY glBlendFuncSeparatei (GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha)
+{
+	static auto func = (PFNGLBLENDFUNCSEPARATEIPROC)GET_PROC_ADDRESS("glBlendFuncSeparatei");
+	return func(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
+}
 //GLAPI void APIENTRY glDrawArraysIndirect (GLenum mode, const void *indirect);
 //GLAPI void APIENTRY glDrawElementsIndirect (GLenum mode, GLenum type, const void *indirect);
 //GLAPI void APIENTRY glUniform1d (GLint location, GLdouble x);

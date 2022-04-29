@@ -21,18 +21,21 @@ inline namespace render
 
 struct BlendState
 {
-	bool			blend_enable     { false };
-	BlendFactor		color_src_factor { BlendFactor::One };
-	BlendFactor		color_dest_factor{ BlendFactor::Zero };
-	BlendOperation	color_operation  { BlendOperation::Add };
-	BlendFactor		alpha_src_factor { BlendFactor::One };
-	BlendFactor		alpha_dest_factor{ BlendFactor::Zero };
-	BlendOperation	alpha_operation  { BlendOperation::Add };
+	bool independent_blend_enable {false};
+	struct
+	{
+		bool			blend_enable     { false };
+		BlendFactor		color_src_factor { BlendFactor::One };
+		BlendFactor		color_dest_factor{ BlendFactor::Zero };
+		BlendOperation	color_operation  { BlendOperation::Add };
+		BlendFactor		alpha_src_factor { BlendFactor::One };
+		BlendFactor		alpha_dest_factor{ BlendFactor::Zero };
+		BlendOperation	alpha_operation  { BlendOperation::Add };
+		std::uint32_t	color_write_mask { ColorWriteMask::All };
+	} render_target[8];
 
 	bool			logic_op_enable  { false };
 	LogicOperation	logic_operation  { LogicOperation::Noop };
-
-	std::uint32_t	color_write_mask { ColorWriteMask::All };
 
 	struct
 	{
@@ -40,7 +43,7 @@ struct BlendState
 		float         g;
 		float         b;
 		float         a;
-	}				constant_color{1, 1, 1, 1};
+	} constant_color{1, 1, 1, 1};
 };
 
 }	// inline namespace render
@@ -58,17 +61,26 @@ struct hash<hamon::render::BlendState>
 {
 	std::size_t operator()(hamon::render::BlendState const& arg) const
 	{
-		return hamon::render::detail::HashCombine(
-			arg.blend_enable,
-			arg.color_src_factor,
-			arg.color_dest_factor,
-			arg.color_operation,
-			arg.alpha_src_factor,
-			arg.alpha_dest_factor,
-			arg.alpha_operation,
+		std::size_t h = hamon::render::detail::HashCombine(arg.independent_blend_enable);
+		for (auto const& r : arg.render_target)
+		{
+			h = hamon::render::detail::HashCombine(h,
+				r.blend_enable,
+				r.color_src_factor,
+				r.color_dest_factor,
+				r.color_operation,
+				r.alpha_src_factor,
+				r.alpha_dest_factor,
+				r.alpha_operation,
+				r.color_write_mask);
+		}
+		return hamon::render::detail::HashCombine(h,
 			arg.logic_op_enable,
 			arg.logic_operation,
-			arg.color_write_mask);
+			arg.constant_color.r,
+			arg.constant_color.g,
+			arg.constant_color.b,
+			arg.constant_color.a);
 	}
 };
 

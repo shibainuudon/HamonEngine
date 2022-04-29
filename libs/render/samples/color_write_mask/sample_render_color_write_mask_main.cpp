@@ -171,8 +171,8 @@ int main()
 	};
 
 	hamon::RenderState render_state;
-
-	render_state.blend_state.color_write_mask = hamon::ColorWriteMask::Blue;
+	auto& blend_state = render_state.blend_state.render_target[0];
+	blend_state.color_write_mask = hamon::ColorWriteMask::Blue;
 	int count = 0;
 	for (;;)
 	{
@@ -197,31 +197,31 @@ int main()
 		switch ((count / 60) % 8)
 		{
 		case 0:
-			render_state.blend_state.color_write_mask = 0;
+			blend_state.color_write_mask = 0;
 			break;
 		case 1:
-			render_state.blend_state.color_write_mask = hamon::ColorWriteMask::Red;
+			blend_state.color_write_mask = hamon::ColorWriteMask::Red;
 			break;
 		case 2:
-			render_state.blend_state.color_write_mask = hamon::ColorWriteMask::Green;
+			blend_state.color_write_mask = hamon::ColorWriteMask::Green;
 			break;
 		case 3:
-			render_state.blend_state.color_write_mask = hamon::ColorWriteMask::Blue;
+			blend_state.color_write_mask = hamon::ColorWriteMask::Blue;
 			break;
 		case 4:
-			render_state.blend_state.color_write_mask =
+			blend_state.color_write_mask =
 				hamon::ColorWriteMask::Red | hamon::ColorWriteMask::Green;
 			break;
 		case 5:
-			render_state.blend_state.color_write_mask =
+			blend_state.color_write_mask =
 				hamon::ColorWriteMask::Green | hamon::ColorWriteMask::Blue;
 			break;
 		case 6:
-			render_state.blend_state.color_write_mask =
+			blend_state.color_write_mask =
 				hamon::ColorWriteMask::Blue | hamon::ColorWriteMask::Red;
 			break;
 		case 7:
-			render_state.blend_state.color_write_mask = hamon::ColorWriteMask::All;
+			blend_state.color_write_mask = hamon::ColorWriteMask::All;
 			break;
 		}
 

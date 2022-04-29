@@ -28,16 +28,21 @@ class PipelineColorBlendState
 public:
 	explicit PipelineColorBlendState(render::BlendState const& state)
 	{
+		//for (auto const& s : state.render_target)
 		{
+			// TODO m_attachmentsの数はRenderPassの設定と合わせなければならない
+			auto const& s = state.render_target[0];
+
 			::VkPipelineColorBlendAttachmentState att;
-			att.blendEnable         = state.blend_enable;
-			att.srcColorBlendFactor = vulkan::BlendFactor(state.color_src_factor);
-			att.dstColorBlendFactor = vulkan::BlendFactor(state.color_dest_factor);
-			att.colorBlendOp        = vulkan::BlendOperation(state.color_operation);
-			att.srcAlphaBlendFactor = vulkan::BlendFactor(state.alpha_src_factor);
-			att.dstAlphaBlendFactor = vulkan::BlendFactor(state.alpha_dest_factor);
-			att.alphaBlendOp        = vulkan::BlendOperation(state.alpha_operation);
-			att.colorWriteMask      = vulkan::ColorWriteMask(state.color_write_mask);
+			att.blendEnable         = s.blend_enable;
+			att.srcColorBlendFactor = vulkan::BlendFactor(s.color_src_factor);
+			att.dstColorBlendFactor = vulkan::BlendFactor(s.color_dest_factor);
+			att.colorBlendOp        = vulkan::BlendOperation(s.color_operation);
+			att.srcAlphaBlendFactor = vulkan::BlendFactor(s.alpha_src_factor);
+			att.dstAlphaBlendFactor = vulkan::BlendFactor(s.alpha_dest_factor);
+			att.alphaBlendOp        = vulkan::BlendOperation(s.alpha_operation);
+			att.colorWriteMask      = vulkan::ColorWriteMask(s.color_write_mask);
+
 			m_attachments.push_back(att);
 		}
 

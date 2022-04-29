@@ -27,24 +27,38 @@ class BlendState
 public:
 	static void Apply(render::BlendState const& state)
 	{
-		if (state.blend_enable)
+		for (std::size_t i = 0; i < std::ranges::size(state.render_target); ++i)
 		{
-			::glEnable(GL_BLEND);
-		}
-		else
-		{
-			::glDisable(GL_BLEND);
-		}
+			auto const index = static_cast<::GLuint>(i);
+			auto const& rt = state.render_target[i];
+			if (rt.blend_enable)
+			{
+				gl::glEnablei(GL_BLEND, index);
+			}
+			else
+			{
+				gl::glDisablei(GL_BLEND, index);
+			}
 
-		gl::glBlendFuncSeparate(
-			gl::BlendFactor(state.color_src_factor),
-			gl::BlendFactor(state.color_dest_factor),
-			gl::BlendFactor(state.alpha_src_factor),
-			gl::BlendFactor(state.alpha_dest_factor));
+			gl::glBlendFuncSeparatei(
+				index,
+				gl::BlendFactor(rt.color_src_factor),
+				gl::BlendFactor(rt.color_dest_factor),
+				gl::BlendFactor(rt.alpha_src_factor),
+				gl::BlendFactor(rt.alpha_dest_factor));
 
-		gl::glBlendEquationSeparate(
-			gl::BlendOperation(state.color_operation),
-			gl::BlendOperation(state.alpha_operation));
+			gl::glBlendEquationSeparatei(
+				index,
+				gl::BlendOperation(rt.color_operation),
+				gl::BlendOperation(rt.alpha_operation));
+
+			gl::glColorMaski(
+				index,
+				rt.color_write_mask & ColorWriteMask::Red,
+				rt.color_write_mask & ColorWriteMask::Green,
+				rt.color_write_mask & ColorWriteMask::Blue,
+				rt.color_write_mask & ColorWriteMask::Alpha);
+		}
 
 		if (state.logic_op_enable)
 		{
@@ -56,12 +70,6 @@ public:
 		}
 
 		::glLogicOp(gl::LogicOperation(state.logic_operation));
-
-		::glColorMask(
-			state.color_write_mask & ColorWriteMask::Red,
-			state.color_write_mask & ColorWriteMask::Green,
-			state.color_write_mask & ColorWriteMask::Blue,
-			state.color_write_mask & ColorWriteMask::Alpha);
 
 		gl::glBlendColor(
 			state.constant_color.r,

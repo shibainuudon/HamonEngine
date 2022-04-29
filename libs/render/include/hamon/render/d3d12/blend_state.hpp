@@ -27,21 +27,24 @@ inline ::D3D12_BLEND_DESC BlendState(render::BlendState const& blend_state)
 {
 	::D3D12_BLEND_DESC desc{};
 	desc.AlphaToCoverageEnable  = FALSE;
-	desc.IndependentBlendEnable = FALSE;
-	for (auto& rt : desc.RenderTarget)
+	desc.IndependentBlendEnable = blend_state.independent_blend_enable;
+	for (std::size_t i = 0; i < std::ranges::size(blend_state.render_target); ++i)
 	{
-		rt.BlendEnable           = blend_state.blend_enable;
-		rt.SrcBlend              = d3d12::BlendFactor(blend_state.color_src_factor);
-		rt.DestBlend             = d3d12::BlendFactor(blend_state.color_dest_factor);
-		rt.BlendOp               = d3d12::BlendOperation(blend_state.color_operation);
-		rt.SrcBlendAlpha         = d3d12::BlendFactor(blend_state.alpha_src_factor);
-		rt.DestBlendAlpha        = d3d12::BlendFactor(blend_state.alpha_dest_factor);
-		rt.BlendOpAlpha          = d3d12::BlendOperation(blend_state.alpha_operation);
+		auto& rt = desc.RenderTarget[i];
+		auto const& s = blend_state.render_target[i];
+		rt.BlendEnable           = s.blend_enable;
+		rt.SrcBlend              = d3d12::BlendFactor(s.color_src_factor);
+		rt.DestBlend             = d3d12::BlendFactor(s.color_dest_factor);
+		rt.BlendOp               = d3d12::BlendOperation(s.color_operation);
+		rt.SrcBlendAlpha         = d3d12::BlendFactor(s.alpha_src_factor);
+		rt.DestBlendAlpha        = d3d12::BlendFactor(s.alpha_dest_factor);
+		rt.BlendOpAlpha          = d3d12::BlendOperation(s.alpha_operation);
 
+		rt.RenderTargetWriteMask = d3d12::ColorWriteMask(s.color_write_mask);
+
+		// LogicOpは全て同じ
 		rt.LogicOpEnable         = blend_state.logic_op_enable;
 		rt.LogicOp               = d3d12::LogicOperation(blend_state.logic_operation);
-			
-		rt.RenderTargetWriteMask = d3d12::ColorWriteMask(blend_state.color_write_mask);
 	}
 
 	return desc;
