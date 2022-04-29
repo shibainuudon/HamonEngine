@@ -129,7 +129,7 @@ public:
 				1, 0, 0, 0,
 				0, 1, 0, 0,
 				0, 0, 1, 0,
-				x, y, 0, 1,
+				x, y, 0.5f, 1,	// depth clippingされないようにZを0.5オフセット
 		};
 		m_uniforms["uTransMat"] = trans_mat;
 

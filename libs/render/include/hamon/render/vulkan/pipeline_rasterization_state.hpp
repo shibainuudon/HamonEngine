@@ -32,7 +32,7 @@ PipelineRasterizationState(render::RasterizerState const& state)
 	info.polygonMode             = vulkan::FillMode(state.fill_mode);
 	info.cullMode                = vulkan::CullMode(state.cull_mode);
 	info.frontFace               = vulkan::FrontFace(state.front_face);
-	info.depthClampEnable        = VK_TRUE;
+	info.depthClampEnable        = VK_FALSE;
 	info.rasterizerDiscardEnable = VK_FALSE;
 	info.depthBiasEnable         = VK_FALSE;
 	info.depthBiasConstantFactor = 0;
