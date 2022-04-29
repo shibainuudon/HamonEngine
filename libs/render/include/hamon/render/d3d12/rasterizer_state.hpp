@@ -31,7 +31,7 @@ RasterizerState(render::RasterizerState const& rasterizer_state)
 	desc.DepthBias             = D3D12_DEFAULT_DEPTH_BIAS;
 	desc.DepthBiasClamp        = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
 	desc.SlopeScaledDepthBias  = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
-	desc.DepthClipEnable       = TRUE;
+	desc.DepthClipEnable       = FALSE;
 	desc.MultisampleEnable     = FALSE;
 	desc.AntialiasedLineEnable = FALSE;
 	desc.ForcedSampleCount     = 0;

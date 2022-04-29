@@ -32,12 +32,16 @@ public:
 	{
 		for (auto const& shader : program.GetShaders())
 		{
-			m_shaders.emplace_back(device, shader);
+			m_shaders.emplace_back(shader);
 		}
 
 		for (auto const& shader : m_shaders)
 		{
 			auto const& descriptor_ranges = shader.GetDescriptorRanges(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			if (descriptor_ranges.empty())
+			{
+				continue;
+			}
 
 			::D3D12_ROOT_PARAMETER1 root_param;
 			root_param.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
@@ -53,11 +57,12 @@ public:
 	void LoadUniforms(
 		d3d12::Device* device,
 		d3d12::DescriptorHeap* descriptor_heap,
+		d3d12::ConstantBuffer* constant_buffer,
 		render::Uniforms const& uniforms)
 	{
 		for (auto& shader : m_shaders)
 		{
-			shader.LoadUniforms(device, descriptor_heap, uniforms);
+			shader.LoadUniforms(device, descriptor_heap, constant_buffer, uniforms);
 		}
 	}
 

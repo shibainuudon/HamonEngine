@@ -90,6 +90,11 @@ public:
 		m_fence->WaitForGpu(m_command_queue.get(), m_frame_index);
 
 		m_render_target_view = std::make_unique<d3d12::RenderTargetView>(m_device.get(), m_swap_chain.get());
+
+		m_constant_buffer =
+			std::make_unique<d3d12::ConstantBuffer>(
+				m_device.get(),
+				1024 * 1024);	// TODO
 	}
 
 	~D3D12Renderer()
@@ -123,6 +128,8 @@ public:
 		m_command_list->SetDescriptorHeaps(
 			static_cast<::UINT>(heaps.size()),
 			heaps.data());
+
+		m_constant_buffer->Reset();
 	}
 
 	void End(void) override
@@ -240,6 +247,7 @@ public:
 		d3d12_program->LoadUniforms(
 			m_device.get(),
 			m_descriptor_heaps[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV].get(),
+			m_constant_buffer.get(),
 			uniforms);
 		d3d12_geometry->Draw(m_command_list.get());
 	}
@@ -255,6 +263,7 @@ private:
 	std::unique_ptr<d3d12::Fence>				m_fence;
 	std::unique_ptr<d3d12::RenderTargetView>	m_render_target_view;
 	::UINT										m_frame_index;
+	std::unique_ptr<d3d12::ConstantBuffer>		m_constant_buffer;
 
 	std::unordered_map<detail::Identifier, std::shared_ptr<d3d12::Program>>		m_program_map;
 	std::unordered_map<detail::Identifier, std::shared_ptr<d3d12::Geometry>>	m_geometry_map;

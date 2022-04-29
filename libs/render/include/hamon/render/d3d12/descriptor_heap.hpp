@@ -42,14 +42,16 @@ public:
 
 	auto AssignGpuDescriptorHandle(void)
 	{
+		auto handle = m_gpu_handle;
 		m_gpu_handle.ptr += m_handle_increment_size;
-		return m_gpu_handle;
+		return handle;
 	}
 
 	auto AssignCpuDescriptorHandle(void)
 	{
+		auto handle = m_cpu_handle;
 		m_cpu_handle.ptr += m_handle_increment_size;
-		return m_cpu_handle;
+		return handle;
 	}
 
 	void Reset(void)

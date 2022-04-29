@@ -9,7 +9,7 @@
 
 #include <hamon/render/d3d12/shader_reflection.hpp>
 #include <hamon/render/d3d12/shader_visibility.hpp>
-#include <hamon/render/d3d12/constant_buffer.hpp>
+#include <hamon/render/d3d12/constant_buffer_descriptor.hpp>
 #include <hamon/render/d3d12/device.hpp>
 #include <hamon/render/d3d12/descriptor_heap.hpp>
 #include <hamon/render/d3d/d3d12.hpp>
@@ -32,23 +32,24 @@ namespace d3d12
 class Shader
 {
 public:
-	explicit Shader(d3d12::Device* device, render::Shader const& shader)
+	explicit Shader(render::Shader const& shader)
 		: m_stage(shader.GetStage())
 	{
 		m_micro_code = Compile(shader);
 		d3d12::ShaderReflection reflection(m_micro_code.Get());
 		CreateDescriptorRanges(reflection);
-		CreateConstantBuffers(device, reflection);
+		CreateConstantBufferDescriptors(reflection);
 	}
 
 	void LoadUniforms(
 		d3d12::Device* device,
 		d3d12::DescriptorHeap* descriptor_heap,
+		d3d12::ConstantBuffer* constant_buffer,
 		render::Uniforms const& uniforms)
 	{
-		for (auto& constant_buffer : m_constant_buffers)
+		for (auto& constant_buffer_descriptor : m_constant_buffer_descriptors)
 		{
-			constant_buffer.LoadUniforms(device, descriptor_heap, uniforms);
+			constant_buffer_descriptor.LoadUniforms(device, descriptor_heap, constant_buffer, uniforms);
 		}
 	}
 
@@ -121,7 +122,7 @@ private:
 		}
 	}
 
-	void CreateConstantBuffers(d3d12::Device* device, d3d12::ShaderReflection const& reflection)
+	void CreateConstantBufferDescriptors(d3d12::ShaderReflection const& reflection)
 	{
 		auto const shader_desc = reflection.GetDesc();
 
@@ -134,7 +135,7 @@ private:
 			case D3D_SIT_CBUFFER:
 				{
 					auto cbuffer = reflection.GetConstantBufferByName(input_bind_desc.Name);
-					m_constant_buffers.emplace_back(device, cbuffer);
+					m_constant_buffer_descriptors.emplace_back(cbuffer);
 				}
 				break;
 			}
@@ -191,10 +192,10 @@ private:
 	}
 
 private:
-	render::ShaderStage						m_stage;
-	ComPtr<::ID3DBlob>						m_micro_code;
-	std::vector<::D3D12_DESCRIPTOR_RANGE1>	m_descriptor_ranges[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
-	std::vector<d3d12::ConstantBuffer>		m_constant_buffers;
+	render::ShaderStage								m_stage;
+	ComPtr<::ID3DBlob>								m_micro_code;
+	std::vector<::D3D12_DESCRIPTOR_RANGE1>			m_descriptor_ranges[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
+	std::vector<d3d12::ConstantBufferDescriptor>	m_constant_buffer_descriptors;
 };
 
 }	// namespace d3d12
