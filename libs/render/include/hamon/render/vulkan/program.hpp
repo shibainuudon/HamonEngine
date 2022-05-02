@@ -11,6 +11,7 @@
 #include <hamon/render/vulkan/descriptor_set_layout.hpp>
 #include <hamon/render/vulkan/uniform_buffer.hpp>
 #include <hamon/render/vulkan/uniform_buffer_descriptor.hpp>
+#include <hamon/render/vulkan/combined_image_sampler_descriptor.hpp>
 #include <hamon/render/vulkan/spirv_program.hpp>
 #include <hamon/render/vulkan/spirv_reflection.hpp>
 #include <hamon/render/program.hpp>
@@ -43,15 +44,28 @@ public:
 		{
 			m_uniform_buffer_descriptors.emplace_back(uniform_buffer);
 		}
+
+		for (auto const& combined_image_sampler : reflection.GetCombinedImageSamplers())
+		{
+			m_combined_image_sampler_descriptors.emplace_back(combined_image_sampler);
+		}
 	}
 	
 	void LoadUniforms(
+		vulkan::Device* device,
+		vulkan::CommandPool* command_pool,
+		vulkan::ResourceMap* resource_map,
 		vulkan::UniformBuffer* uniform_buffer,
 		render::Uniforms const& uniforms)
 	{
 		for (auto& uniform_buffer_descriptor : m_uniform_buffer_descriptors)
 		{
 			uniform_buffer_descriptor.LoadUniforms(uniform_buffer, uniforms);
+		}
+
+		for (auto& combined_image_sampler_descriptor : m_combined_image_sampler_descriptors)
+		{
+			combined_image_sampler_descriptor.LoadUniforms(device, command_pool, resource_map, uniforms);
 		}
 	}
 
@@ -77,6 +91,10 @@ public:
 		{
 			writes.push_back(uniform_buffer_descriptor.CreateWriteDescriptorSet(descriptor_sets));
 		}
+		for (auto& combined_image_sampler_descriptor : m_combined_image_sampler_descriptors)
+		{
+			writes.push_back(combined_image_sampler_descriptor.CreateWriteDescriptorSet(descriptor_sets));
+		}
 		return writes;
 	}
 
@@ -98,6 +116,18 @@ private:
 			layout_binding_mat[uniform_buffer.set].push_back(layout_binding);
 		}
 
+		for (auto const& combined_image_sampler : reflection.GetCombinedImageSamplers())
+		{
+			::VkDescriptorSetLayoutBinding layout_binding{};
+			layout_binding.binding            = combined_image_sampler.binding;
+			layout_binding.descriptorType     = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			layout_binding.descriptorCount    = 1;
+			layout_binding.stageFlags         = vulkan::ShaderStage(combined_image_sampler.stage);
+			layout_binding.pImmutableSamplers = NULL;
+			
+			layout_binding_mat[combined_image_sampler.set].push_back(layout_binding);
+		}
+
 		for (auto const& layout_bindings : layout_binding_mat)
 		{
 			m_descriptor_set_layouts.emplace_back(
@@ -111,6 +141,7 @@ private:
 	std::vector<vulkan::Shader>						m_shaders;
 	std::vector<vulkan::DescriptorSetLayout>		m_descriptor_set_layouts;
 	std::vector<vulkan::UniformBufferDescriptor>	m_uniform_buffer_descriptors;
+	std::vector<vulkan::CombinedImageSamplerDescriptor>	m_combined_image_sampler_descriptors;
 };
 
 }	// namespace vulkan

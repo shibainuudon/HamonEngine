@@ -18,19 +18,15 @@ inline namespace render
 namespace detail
 {
 
+// ユニークなIDを取得できるクラスのベース
+// このクラスを継承したクラスはイミュータブルにしなければいけない
+// (つまりコンストラクタで値を設定し、その後変更されない)
+// コピーをされる可能性はあるので、コピーされても問題ないようにしなければいけない
 class Identifiable
 {
 public:
 	Identifiable() = default;
 	
-	// noncopyable
-	Identifiable(Identifiable const&) = delete;
-	Identifiable& operator=(Identifiable const&) = delete;
-	
-	// movable
-	Identifiable(Identifiable &&) = default;
-	Identifiable& operator=(Identifiable &&) = default;
-
 	Identifier const& GetID(void) const { return m_id; }
 
 private:

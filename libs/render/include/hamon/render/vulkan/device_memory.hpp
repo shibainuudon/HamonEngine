@@ -64,6 +64,13 @@ public:
 	{
 		m_device->BindBufferMemory(buffer, m_device_memory, memory_offset);
 	}
+	
+	void BindImageMemory(
+		::VkImage      image,
+		::VkDeviceSize memory_offset)
+	{
+		m_device->BindImageMemory(image, m_device_memory, memory_offset);
+	}
 
 private:
 	static std::uint32_t GetMemoryTypeIndex(

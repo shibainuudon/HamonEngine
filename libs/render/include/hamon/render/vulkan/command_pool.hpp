@@ -9,6 +9,7 @@
 
 #include <hamon/render/vulkan/vulkan.hpp>
 #include <hamon/render/vulkan/device.hpp>
+#include <hamon/render/vulkan/queue.hpp>
 #include <cstdint>
 #include <vector>
 
@@ -26,6 +27,7 @@ class CommandPool
 public:
 	CommandPool(vulkan::Device* device, std::uint32_t queue_family_index)
 		: m_device(device)
+		, m_queue_family_index(queue_family_index)
 	{
 		::VkCommandPoolCreateInfo info = {};
 		info.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -38,6 +40,11 @@ public:
 	~CommandPool()
 	{
 		m_device->DestroyCommandPool(m_command_pool);
+	}
+
+	vulkan::Queue GetQueue(void) const
+	{
+		return m_device->GetDeviceQueue(m_queue_family_index, 0);
 	}
 
 	std::vector<::VkCommandBuffer> AllocateCommandBuffers(
@@ -61,6 +68,7 @@ public:
 private:
 	::VkCommandPool m_command_pool;
 	vulkan::Device* m_device;
+	std::uint32_t	m_queue_family_index;
 };
 
 }	// namespace vulkan

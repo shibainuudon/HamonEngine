@@ -40,8 +40,11 @@ public:
 		::VkSubmitInfo info{};
 		info.pNext                = nullptr;
 		info.sType                = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-		info.waitSemaphoreCount   = 1;
-		info.pWaitSemaphores      = &semaphore;
+		if (semaphore != VK_NULL_HANDLE)
+		{
+			info.waitSemaphoreCount   = 1;
+			info.pWaitSemaphores      = &semaphore;
+		}
 		info.pWaitDstStageMask    = &pipe_stage_flags;
 		info.commandBufferCount   = 1;
 		info.pCommandBuffers      = &command_buffer;

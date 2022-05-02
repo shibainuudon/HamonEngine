@@ -371,6 +371,55 @@ public:
 			descriptor_copies.empty() ? nullptr : descriptor_copies.data());
 	}
 
+	::VkSampler CreateSampler(
+		::VkSamplerCreateInfo const& create_info)
+	{
+		::VkSampler sampler;
+		ThrowIfFailed(::vkCreateSampler(
+			m_device,
+			&create_info,
+			nullptr,
+			&sampler));
+		return sampler;
+	}
+
+	void DestroySampler(::VkSampler sampler)
+	{
+		::vkDestroySampler(m_device, sampler, nullptr);
+	}
+
+	VkImage CreateImage(::VkImageCreateInfo const& create_info)
+	{
+		::VkImage image;
+		ThrowIfFailed(::vkCreateImage(
+			m_device,
+			&create_info,
+			nullptr,
+			&image));
+		return image;
+	}
+
+	void DestroyImage(::VkImage image)
+	{
+		::vkDestroyImage(m_device, image, nullptr);
+	}
+
+	::VkMemoryRequirements
+	GetImageMemoryRequirements(::VkImage image)
+	{
+		::VkMemoryRequirements requirements;
+		::vkGetImageMemoryRequirements(m_device, image, &requirements);
+		return requirements;
+	}
+
+	void BindImageMemory(
+		::VkImage        image,
+		::VkDeviceMemory memory,
+		::VkDeviceSize   memory_offset)
+	{
+		ThrowIfFailed(::vkBindImageMemory(m_device, image, memory, memory_offset));
+	}
+
 	vulkan::PhysicalDevice* GetPhysicalDevice(void) const
 	{
 		return m_phycical_device;

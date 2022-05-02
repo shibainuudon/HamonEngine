@@ -62,11 +62,15 @@ public:
 		}
 	}
 
-	void LoadUniforms(DeviceContext* device_context, render::Uniforms const& uniforms)
+	void LoadUniforms(
+		d3d11::Device* device,
+		DeviceContext* device_context,
+		d3d11::ResourceMap* resource_map,
+		render::Uniforms const& uniforms)
 	{
 		for (auto const& shader : m_shaders)
 		{
-			shader->LoadUniforms(device_context, uniforms);
+			shader->LoadUniforms(device, device_context, resource_map, uniforms);
 		}
 	}
 

@@ -17,6 +17,8 @@
 #include <hamon/render/gl/depth_stencil_state.hpp>
 #include <hamon/render/gl/clear_value.hpp>
 #include <hamon/render/gl/viewport.hpp>
+#include <hamon/render/gl/sampler.hpp>
+#include <hamon/render/gl/resource_map.hpp>
 #include <hamon/render/renderer.hpp>
 #include <hamon/render/rasterizer_state.hpp>
 #include <hamon/render/clear_value.hpp>
@@ -77,24 +79,6 @@ public:
 	{
 	}
 
-private:
-	template <typename T, typename Map, typename Id, typename... Args>
-	typename Map::mapped_type
-	GetOrCreate(Map& map, Id const& id, Args&&... args)
-	{
-		auto it = map.find(id);
-		if (it != map.end())
-		{
-			return it->second;
-		}
-		else
-		{
-			auto p = std::make_shared<T>(std::forward<Args>(args)...);
-			map[id] = p;
-			return p;
-		}
-	}
-
 public:
 	void Render(
 		Geometry const& geometry,
@@ -106,13 +90,11 @@ public:
 		gl::BlendState::Apply(render_state.blend_state);
 		gl::DepthStencilState::Apply(render_state.depth_stencil_state);
 
-		auto gl_geometry = GetOrCreate<gl::Geometry>(
-			m_geometry_map, geometry.GetID(), geometry);
-		auto gl_program = GetOrCreate<gl::Program>(
-			m_program_map, program.GetID(), program);
+		auto gl_geometry = m_resource_map.GetGeometry(geometry);
+		auto gl_program = m_resource_map.GetProgram(program);
 
 		gl_program->Use();
-		gl_program->LoadUniforms(uniforms);
+		gl_program->LoadUniforms(uniforms, &m_resource_map);
 		gl_geometry->Draw();
 		gl_program->Unuse();
 	}
@@ -132,8 +114,7 @@ private:
 
 private:
 	std::unique_ptr<gl::Context>	m_context;
-	std::unordered_map<detail::Identifier, std::shared_ptr<gl::Program>>	m_program_map;
-	std::unordered_map<detail::Identifier, std::shared_ptr<gl::Geometry>>	m_geometry_map;
+	gl::ResourceMap					m_resource_map;
 };
 
 }	// inline namespace render

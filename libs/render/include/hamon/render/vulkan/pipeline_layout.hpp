@@ -10,6 +10,7 @@
 #include <hamon/render/vulkan/vulkan.hpp>
 #include <hamon/render/vulkan/throw_if_failed.hpp>
 #include <hamon/render/vulkan/device.hpp>
+#include <hamon/render/vulkan/program.hpp>
 
 namespace hamon
 {
@@ -25,9 +26,11 @@ class PipelineLayout
 public:
 	explicit PipelineLayout(
 		vulkan::Device* device,
-		std::vector<::VkDescriptorSetLayout> const& descriptor_set_layouts)
+		vulkan::Program* program)
 		: m_device(device)
 	{
+		auto descriptor_set_layouts = program->GetDescriptorSetLayouts();
+
 		::VkPipelineLayoutCreateInfo info = {};
 		info.sType                  = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		info.pNext                  = nullptr;

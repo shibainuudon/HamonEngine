@@ -465,6 +465,56 @@ inline void APIENTRY glUniformBlockBinding (GLuint program, GLuint uniformBlockI
 	return func(program, uniformBlockIndex, uniformBlockBinding);
 }
 
+/* GL_VERSION_3_3 */
+//GLAPI void APIENTRY glBindFragDataLocationIndexed (GLuint program, GLuint colorNumber, GLuint index, const GLchar *name);
+//GLAPI GLint APIENTRY glGetFragDataIndex (GLuint program, const GLchar *name);
+//GLAPI void APIENTRY glGenSamplers (GLsizei count, GLuint *samplers);
+inline void APIENTRY glDeleteSamplers (GLsizei count, const GLuint *samplers)
+{
+	static auto func = (PFNGLDELETESAMPLERSPROC)GET_PROC_ADDRESS("glDeleteSamplers");
+	return func(count, samplers);
+}
+//GLAPI GLboolean APIENTRY glIsSampler (GLuint sampler);
+inline void APIENTRY glBindSampler (GLuint unit, GLuint sampler)
+{
+	static auto func = (PFNGLBINDSAMPLERPROC)GET_PROC_ADDRESS("glBindSampler");
+	return func(unit, sampler);
+}
+inline void APIENTRY glSamplerParameteri (GLuint sampler, GLenum pname, GLint param)
+{
+	static auto func = (PFNGLSAMPLERPARAMETERIPROC)GET_PROC_ADDRESS("glSamplerParameteri");
+	return func(sampler, pname, param);
+}
+//GLAPI void APIENTRY glSamplerParameteriv (GLuint sampler, GLenum pname, const GLint *param);
+inline void APIENTRY glSamplerParameterf (GLuint sampler, GLenum pname, GLfloat param)
+{
+	static auto func = (PFNGLSAMPLERPARAMETERFPROC)GET_PROC_ADDRESS("glSamplerParameterf");
+	return func(sampler, pname, param);
+}
+inline void APIENTRY glSamplerParameterfv (GLuint sampler, GLenum pname, const GLfloat *param)
+{
+	static auto func = (PFNGLSAMPLERPARAMETERFVPROC)GET_PROC_ADDRESS("glSamplerParameterfv");
+	return func(sampler, pname, param);
+}
+//GLAPI void APIENTRY glSamplerParameterIiv (GLuint sampler, GLenum pname, const GLint *param);
+//GLAPI void APIENTRY glSamplerParameterIuiv (GLuint sampler, GLenum pname, const GLuint *param);
+//GLAPI void APIENTRY glGetSamplerParameteriv (GLuint sampler, GLenum pname, GLint *params);
+//GLAPI void APIENTRY glGetSamplerParameterIiv (GLuint sampler, GLenum pname, GLint *params);
+//GLAPI void APIENTRY glGetSamplerParameterfv (GLuint sampler, GLenum pname, GLfloat *params);
+//GLAPI void APIENTRY glGetSamplerParameterIuiv (GLuint sampler, GLenum pname, GLuint *params);
+//GLAPI void APIENTRY glQueryCounter (GLuint id, GLenum target);
+//GLAPI void APIENTRY glGetQueryObjecti64v (GLuint id, GLenum pname, GLint64 *params);
+//GLAPI void APIENTRY glGetQueryObjectui64v (GLuint id, GLenum pname, GLuint64 *params);
+//GLAPI void APIENTRY glVertexAttribDivisor (GLuint index, GLuint divisor);
+//GLAPI void APIENTRY glVertexAttribP1ui (GLuint index, GLenum type, GLboolean normalized, GLuint value);
+//GLAPI void APIENTRY glVertexAttribP1uiv (GLuint index, GLenum type, GLboolean normalized, const GLuint *value);
+//GLAPI void APIENTRY glVertexAttribP2ui (GLuint index, GLenum type, GLboolean normalized, GLuint value);
+//GLAPI void APIENTRY glVertexAttribP2uiv (GLuint index, GLenum type, GLboolean normalized, const GLuint *value);
+//GLAPI void APIENTRY glVertexAttribP3ui (GLuint index, GLenum type, GLboolean normalized, GLuint value);
+//GLAPI void APIENTRY glVertexAttribP3uiv (GLuint index, GLenum type, GLboolean normalized, const GLuint *value);
+//GLAPI void APIENTRY glVertexAttribP4ui (GLuint index, GLenum type, GLboolean normalized, GLuint value);
+//GLAPI void APIENTRY glVertexAttribP4uiv (GLuint index, GLenum type, GLboolean normalized, const GLuint *value);
+
 /* GL_VERSION_4_0 */
 //GLAPI void APIENTRY glMinSampleShading (GLfloat value);
 //GLAPI void APIENTRY glBlendEquationi (GLuint buf, GLenum mode);
@@ -773,16 +823,28 @@ inline void APIENTRY glNamedBufferSubData(GLuint buffer, GLintptr offset, GLsize
 //GLAPI void APIENTRY glNamedRenderbufferStorage(GLuint renderbuffer, GLenum internalformat, GLsizei width, GLsizei height);
 //GLAPI void APIENTRY glNamedRenderbufferStorageMultisample(GLuint renderbuffer, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);
 //GLAPI void APIENTRY glGetNamedRenderbufferParameteriv(GLuint renderbuffer, GLenum pname, GLint* params);
-//GLAPI void APIENTRY glCreateTextures(GLenum target, GLsizei n, GLuint* textures);
+inline void APIENTRY glCreateTextures(GLenum target, GLsizei n, GLuint* textures)
+{
+	static auto func = (PFNGLCREATETEXTURESPROC)GET_PROC_ADDRESS("glCreateTextures");
+	return func(target, n, textures);
+}
 //GLAPI void APIENTRY glTextureBuffer(GLuint texture, GLenum internalformat, GLuint buffer);
 //GLAPI void APIENTRY glTextureBufferRange(GLuint texture, GLenum internalformat, GLuint buffer, GLintptr offset, GLsizeiptr size);
 //GLAPI void APIENTRY glTextureStorage1D(GLuint texture, GLsizei levels, GLenum internalformat, GLsizei width);
-//GLAPI void APIENTRY glTextureStorage2D(GLuint texture, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
+inline void APIENTRY glTextureStorage2D(GLuint texture, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height)
+{
+	static auto func = (PFNGLTEXTURESTORAGE2DPROC)GET_PROC_ADDRESS("glTextureStorage2D");
+	return func(texture, levels, internalformat, width, height);
+}
 //GLAPI void APIENTRY glTextureStorage3D(GLuint texture, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth);
 //GLAPI void APIENTRY glTextureStorage2DMultisample(GLuint texture, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations);
 //GLAPI void APIENTRY glTextureStorage3DMultisample(GLuint texture, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLboolean fixedsamplelocations);
 //GLAPI void APIENTRY glTextureSubImage1D(GLuint texture, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, const void* pixels);
-//GLAPI void APIENTRY glTextureSubImage2D(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels);
+inline void APIENTRY glTextureSubImage2D(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels)
+{
+	static auto func = (PFNGLTEXTURESUBIMAGE2DPROC)GET_PROC_ADDRESS("glTextureSubImage2D");
+	return func(texture, level, xoffset, yoffset, width, height, format, type, pixels);
+}
 //GLAPI void APIENTRY glTextureSubImage3D(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void* pixels);
 //GLAPI void APIENTRY glCompressedTextureSubImage1D(GLuint texture, GLint level, GLint xoffset, GLsizei width, GLenum format, GLsizei imageSize, const void* data);
 //GLAPI void APIENTRY glCompressedTextureSubImage2D(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, const void* data);
@@ -797,7 +859,11 @@ inline void APIENTRY glNamedBufferSubData(GLuint buffer, GLintptr offset, GLsize
 //GLAPI void APIENTRY glTextureParameterIuiv(GLuint texture, GLenum pname, const GLuint* params);
 //GLAPI void APIENTRY glTextureParameteriv(GLuint texture, GLenum pname, const GLint* param);
 //GLAPI void APIENTRY glGenerateTextureMipmap(GLuint texture);
-//GLAPI void APIENTRY glBindTextureUnit(GLuint unit, GLuint texture);
+inline void APIENTRY glBindTextureUnit(GLuint unit, GLuint texture)
+{
+	static auto func = (PFNGLBINDTEXTUREUNITPROC)GET_PROC_ADDRESS("glBindTextureUnit");
+	return func(unit, texture);
+}
 //GLAPI void APIENTRY glGetTextureImage(GLuint texture, GLint level, GLenum format, GLenum type, GLsizei bufSize, void* pixels);
 //GLAPI void APIENTRY glGetCompressedTextureImage(GLuint texture, GLint level, GLsizei bufSize, void* pixels);
 //GLAPI void APIENTRY glGetTextureLevelParameterfv(GLuint texture, GLint level, GLenum pname, GLfloat* params);
@@ -844,7 +910,11 @@ inline void APIENTRY glVertexArrayAttribFormat(GLuint vaobj, GLuint attribindex,
 //GLAPI void APIENTRY glGetVertexArrayiv(GLuint vaobj, GLenum pname, GLint* param);
 //GLAPI void APIENTRY glGetVertexArrayIndexediv(GLuint vaobj, GLuint index, GLenum pname, GLint* param);
 //GLAPI void APIENTRY glGetVertexArrayIndexed64iv(GLuint vaobj, GLuint index, GLenum pname, GLint64* param);
-//GLAPI void APIENTRY glCreateSamplers(GLsizei n, GLuint* samplers);
+inline void APIENTRY glCreateSamplers(GLsizei n, GLuint* samplers)
+{
+	static auto func = (PFNGLCREATESAMPLERSPROC)GET_PROC_ADDRESS("glCreateSamplers");
+	return func(n, samplers);
+}
 //GLAPI void APIENTRY glCreateProgramPipelines(GLsizei n, GLuint* pipelines);
 //GLAPI void APIENTRY glCreateQueries(GLenum target, GLsizei n, GLuint* ids);
 //GLAPI void APIENTRY glGetQueryBufferObjecti64v(GLuint id, GLuint buffer, GLenum pname, GLintptr offset);

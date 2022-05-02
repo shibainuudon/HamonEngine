@@ -29,6 +29,7 @@
 #include <hamon/render/vulkan/graphics_pipeline.hpp>
 #include <hamon/render/vulkan/descriptor_pool.hpp>
 #include <hamon/render/vulkan/descriptor_set_layout.hpp>
+#include <hamon/render/vulkan/resource_map.hpp>
 #include <hamon/render/vulkan/vulkan.hpp>
 #include <hamon/render/render_state.hpp>
 #include <hamon/render/render_pass_state.hpp>
@@ -268,7 +269,7 @@ public:
 
 		m_uniform_buffer->Reset();
 		m_descriptor_pool->Reset();
-		m_command_buffers[0]->Begin();
+		m_command_buffers[0]->Begin(0);
 	}
 
 	void End(void) override
@@ -322,39 +323,22 @@ public:
 		m_command_buffers[0]->EndRenderPass();
 	}
 
-private:
-	template <typename T, typename Map, typename Id, typename... Args>
-	typename Map::mapped_type
-	GetOrCreate(Map& map, Id const& id, Args&&... args)
-	{
-		auto it = map.find(id);
-		if (it != map.end())
-		{
-			return it->second;
-		}
-		else
-		{
-			auto p = std::make_shared<T>(std::forward<Args>(args)...);
-			map[id] = p;
-			return p;
-		}
-	}
-
-public:
 	void Render(
 		Geometry const& geometry,
 		Program const& program,
 		Uniforms const& uniforms,
 		RenderState const& render_state) override
 	{
-		auto vulkan_geometry = GetOrCreate<vulkan::Geometry>(
-			m_geometry_map, geometry.GetID(), m_device.get(), geometry);
-		auto vulkan_program = GetOrCreate<vulkan::Program>(
-			m_program_map, program.GetID(), m_device.get(), program);
-		auto pipeline_layout = GetOrCreate<vulkan::PipelineLayout>(
-			m_pipeline_layout_map, program.GetID(), m_device.get(), vulkan_program->GetDescriptorSetLayouts());
+		auto vulkan_geometry = m_resource_map.GetGeometry(m_device.get(), geometry);
+		auto vulkan_program = m_resource_map.GetProgram(m_device.get(), program);
+		auto pipeline_layout = m_resource_map.GetPipelineLayout(m_device.get(), program);
 
-		vulkan_program->LoadUniforms(m_uniform_buffer.get(), uniforms);
+		vulkan_program->LoadUniforms(
+			m_device.get(),
+			m_command_pool.get(),
+			&m_resource_map,
+			m_uniform_buffer.get(),
+			uniforms);
 
 		auto descriptor_sets = m_descriptor_pool->AllocateDescriptorSets(
 			vulkan_program->GetDescriptorSetLayouts());
@@ -362,18 +346,11 @@ public:
 		auto writes = vulkan_program->CreateWriteDescriptorSets(descriptor_sets);
 		m_device->UpdateDescriptorSets(writes, {});
 
-		auto id = render::detail::HashCombine(
-			geometry.GetID(),
-			program.GetID(),
-			render_state);
-		auto vulkan_graphics_pipeline = GetOrCreate<vulkan::GraphicsPipeline>(
-			m_graphics_pipeline_map,
-			id,
+		auto vulkan_graphics_pipeline = m_resource_map.GetGraphicsPipeline(
 			m_device.get(),
-			pipeline_layout.get(),
 			m_render_pass.get(),
-			*vulkan_program,
 			geometry,
+			program,
 			render_state);
 
 		vulkan_graphics_pipeline->Bind(m_command_buffers[0].get());
@@ -407,11 +384,7 @@ private:
 	std::uint32_t										m_frame_index;
 	std::unique_ptr<vulkan::DescriptorPool>				m_descriptor_pool;
 	std::unique_ptr<vulkan::UniformBuffer>				m_uniform_buffer;
-
-	std::unordered_map<detail::Identifier, std::shared_ptr<vulkan::Program>>	m_program_map;
-	std::unordered_map<detail::Identifier, std::shared_ptr<vulkan::Geometry>>	m_geometry_map;
-	std::unordered_map<detail::Identifier, std::shared_ptr<vulkan::PipelineLayout>>	m_pipeline_layout_map;
-	std::unordered_map<std::size_t, std::shared_ptr<vulkan::GraphicsPipeline>>	m_graphics_pipeline_map;
+	vulkan::ResourceMap									m_resource_map;
 };
 
 }	// inline namespace render

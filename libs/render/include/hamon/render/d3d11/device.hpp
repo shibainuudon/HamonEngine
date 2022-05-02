@@ -200,6 +200,34 @@ public:
 		return shader;
 	}
 
+	ComPtr<::ID3D11SamplerState>
+	CreateSamplerState(::D3D11_SAMPLER_DESC const& sampler_desc)
+	{
+		ComPtr<::ID3D11SamplerState> sampler;
+		ThrowIfFailed(m_device->CreateSamplerState(&sampler_desc, &sampler));
+		return sampler;
+	}
+	
+	ComPtr<::ID3D11Texture2D>
+	CreateTexture2D(
+		::D3D11_TEXTURE2D_DESC const& desc,
+		::D3D11_SUBRESOURCE_DATA const* initial_data)
+	{
+		ComPtr<::ID3D11Texture2D> texture;
+		ThrowIfFailed(m_device->CreateTexture2D(&desc, initial_data, &texture));
+		return texture;
+	}
+
+	ComPtr<::ID3D11ShaderResourceView>
+	CreateShaderResourceView(
+		::ID3D11Resource*	resource,
+		::D3D11_SHADER_RESOURCE_VIEW_DESC const& desc)
+	{
+		ComPtr<::ID3D11ShaderResourceView> view;
+		ThrowIfFailed(m_device->CreateShaderResourceView(resource, &desc, &view));
+		return view;
+	}
+
 	::ID3D11Device5* Get(void) const { return m_device.Get(); }
 
 private:

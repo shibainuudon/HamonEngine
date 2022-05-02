@@ -68,6 +68,10 @@ public:
 		m_command_list      = std::make_unique<d3d12::CommandList>(m_device.get(), m_command_allocators[0].get());
 		m_fence             = std::make_unique<d3d12::Fence>(m_device.get(), buffer_count);
 
+		m_command_list->Close();
+
+		m_resource_map = std::make_unique<d3d12::ResourceMap>(m_device.get());
+
 		m_descriptor_heaps[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV] =
 			std::make_unique<d3d12::DescriptorHeap>(
 				m_device.get(),
@@ -75,7 +79,12 @@ public:
 				100,
 				D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 
-		m_command_list->Close();
+		m_descriptor_heaps[D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER] =
+			std::make_unique<d3d12::DescriptorHeap>(
+				m_device.get(),
+				D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER,
+				100,
+				D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 
 		m_swap_chain = std::make_unique<DXGISwapChain>(
 			m_factory.get(), m_command_queue->Get(), buffer_count, width, height, hwnd);
@@ -185,49 +194,20 @@ public:
 	{
 	}
 
-private:
-	template <typename T, typename Map, typename Id, typename... Args>
-	typename Map::mapped_type
-	GetOrCreate(Map& map, Id const& id, Args&&... args)
-	{
-		auto it = map.find(id);
-		if (it != map.end())
-		{
-			return it->second;
-		}
-		else
-		{
-			auto p = std::make_shared<T>(std::forward<Args>(args)...);
-			map[id] = p;
-			return p;
-		}
-	}
-
-public:
 	void Render(
 		Geometry const& geometry,
 		Program const& program,
 		Uniforms const& uniforms,
 		RenderState const& render_state) override
 	{
-		auto d3d12_geometry = GetOrCreate<d3d12::Geometry>(
-			m_geometry_map, geometry.GetID(), m_device.get(), geometry);
-		auto d3d12_program = GetOrCreate<d3d12::Program>(
-			m_program_map, program.GetID(), m_device.get(), program);
+		auto d3d12_geometry = m_resource_map->GetGeometry(m_device.get(), geometry);
+		auto d3d12_program = m_resource_map->GetProgram(m_device.get(), program);
 
 		d3d12::InputLayout input_layout(geometry.GetLayout());
 
-		auto id = render::detail::HashCombine(
-			geometry.GetID(),
-			program.GetID(),
-			render_state);
-		auto d3d12_pipeline = GetOrCreate<d3d12::PipelineState>(
-			m_pipeline_state_map,
-			id,
-			m_device.get(),
-			*d3d12_geometry,
-			*d3d12_program,
-			render_state);
+		auto d3d12_pipeline = m_resource_map->GetPipelineState(
+			m_device.get(), geometry, program, render_state);
+
 
 		m_command_list->OMSetStencilRef(render_state.depth_stencil_state.stencil.reference);
 		{
@@ -244,10 +224,12 @@ public:
 		m_command_list->SetPipelineState(d3d12_pipeline->Get());
 
 		{
-			auto& root_parameters = d3d12_program->GetRootParameters();
+			auto const& descriptor_heap_types = d3d12_program->GetDescriptorHeapTypes();
+			auto const& root_parameters = d3d12_program->GetRootParameters();
 			for (std::size_t i = 0; i < root_parameters.size(); ++i)
 			{
-				auto& descriptor_heap = m_descriptor_heaps[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV];
+				auto const descriptor_heap_type = descriptor_heap_types[i];
+				auto& descriptor_heap = m_descriptor_heaps[descriptor_heap_type];
 				m_command_list->SetGraphicsRootDescriptorTable(
 					static_cast<::UINT>(i),
 					descriptor_heap->AssignGpuDescriptorHandle());
@@ -256,7 +238,9 @@ public:
 
 		d3d12_program->LoadUniforms(
 			m_device.get(),
+			m_resource_map.get(),
 			m_descriptor_heaps[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV].get(),
+			m_descriptor_heaps[D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER].get(),
 			m_constant_buffer.get(),
 			uniforms);
 		d3d12_geometry->Draw(m_command_list.get());
@@ -274,10 +258,7 @@ private:
 	std::unique_ptr<d3d12::RenderTargetView>	m_render_target_view;
 	::UINT										m_frame_index;
 	std::unique_ptr<d3d12::ConstantBuffer>		m_constant_buffer;
-
-	std::unordered_map<detail::Identifier, std::shared_ptr<d3d12::Program>>		m_program_map;
-	std::unordered_map<detail::Identifier, std::shared_ptr<d3d12::Geometry>>	m_geometry_map;
-	std::unordered_map<std::size_t, std::shared_ptr<d3d12::PipelineState>>		m_pipeline_state_map;
+	std::unique_ptr<d3d12::ResourceMap>			m_resource_map;
 };
 
 }	// inline namespace render

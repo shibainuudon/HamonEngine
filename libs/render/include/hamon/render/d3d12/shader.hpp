@@ -10,14 +10,19 @@
 #include <hamon/render/d3d12/shader_reflection.hpp>
 #include <hamon/render/d3d12/shader_visibility.hpp>
 #include <hamon/render/d3d12/constant_buffer_descriptor.hpp>
+#include <hamon/render/d3d12/texture_descriptor.hpp>
+#include <hamon/render/d3d12/sampler_descriptor.hpp>
 #include <hamon/render/d3d12/device.hpp>
 #include <hamon/render/d3d12/descriptor_heap.hpp>
+#include <hamon/render/d3d12/resource_map.hpp>
 #include <hamon/render/d3d/d3d12.hpp>
 #include <hamon/render/d3d/d3dcompiler.hpp>
 #include <hamon/render/d3d/throw_if_failed.hpp>
 #include <hamon/render/d3d/com_ptr.hpp>
 #include <hamon/render/shader.hpp>
 #include <hamon/render/uniforms.hpp>
+#include <hamon/render/sampler.hpp>
+#include <hamon/render/texture.hpp>
 #include <vector>
 
 namespace hamon
@@ -38,18 +43,30 @@ public:
 		m_micro_code = Compile(shader);
 		d3d12::ShaderReflection reflection(m_micro_code.Get());
 		CreateDescriptorRanges(reflection);
-		CreateConstantBufferDescriptors(reflection);
+		CreateDescriptors(reflection);
 	}
 
 	void LoadUniforms(
 		d3d12::Device* device,
+		d3d12::ResourceMap* resource_map,
 		d3d12::DescriptorHeap* descriptor_heap,
+		d3d12::DescriptorHeap* sampler_descriptor_heap,
 		d3d12::ConstantBuffer* constant_buffer,
 		render::Uniforms const& uniforms)
 	{
 		for (auto& constant_buffer_descriptor : m_constant_buffer_descriptors)
 		{
 			constant_buffer_descriptor.LoadUniforms(device, descriptor_heap, constant_buffer, uniforms);
+		}
+
+		for (auto& sampler_desc : m_sampler_descriptors)
+		{
+			sampler_desc.LoadUniforms(device, resource_map, sampler_descriptor_heap, uniforms);
+		}
+
+		for (auto& texture_desc : m_texture_descriptors)
+		{
+			texture_desc.LoadUniforms(device, resource_map, descriptor_heap, uniforms);
 		}
 	}
 
@@ -122,7 +139,7 @@ private:
 		}
 	}
 
-	void CreateConstantBufferDescriptors(d3d12::ShaderReflection const& reflection)
+	void CreateDescriptors(d3d12::ShaderReflection const& reflection)
 	{
 		auto const shader_desc = reflection.GetDesc();
 
@@ -137,6 +154,12 @@ private:
 					auto cbuffer = reflection.GetConstantBufferByName(input_bind_desc.Name);
 					m_constant_buffer_descriptors.emplace_back(cbuffer);
 				}
+				break;
+			case D3D_SIT_TEXTURE:
+				m_texture_descriptors.emplace_back(input_bind_desc);
+				break;
+			case D3D_SIT_SAMPLER:
+				m_sampler_descriptors.emplace_back(input_bind_desc);
 				break;
 			}
 		}
@@ -196,6 +219,8 @@ private:
 	ComPtr<::ID3DBlob>								m_micro_code;
 	std::vector<::D3D12_DESCRIPTOR_RANGE1>			m_descriptor_ranges[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
 	std::vector<d3d12::ConstantBufferDescriptor>	m_constant_buffer_descriptors;
+	std::vector<d3d12::TextureDescriptor>			m_texture_descriptors;
+	std::vector<d3d12::SamplerDescriptor>			m_sampler_descriptors;
 };
 
 }	// namespace d3d12

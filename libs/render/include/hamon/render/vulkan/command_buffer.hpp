@@ -36,12 +36,12 @@ public:
 		m_command_pool->FreeCommandBuffers({m_command_buffer});
 	}
 
-	void Begin(void)
+	void Begin(::VkCommandBufferUsageFlags flags)
 	{
 		::VkCommandBufferBeginInfo cmd_buf_info = {};
 		cmd_buf_info.sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 		cmd_buf_info.pNext            = nullptr;
-		cmd_buf_info.flags            = 0;
+		cmd_buf_info.flags            = flags;
 		cmd_buf_info.pInheritanceInfo = nullptr;
 		ThrowIfFailed(vkBeginCommandBuffer(m_command_buffer, &cmd_buf_info));
 	}
@@ -163,6 +163,46 @@ public:
 		::VkRect2D const* scissors)
 	{
 		::vkCmdSetScissor(m_command_buffer, first_scissor, scissor_count, scissors);
+	}
+
+	void PipelineBarrier(
+		::VkPipelineStageFlags         src_stage_mask,
+		::VkPipelineStageFlags         dst_stage_mask,
+		::VkDependencyFlags            dependency_flags,
+		std::uint32_t                  memory_barrier_count,
+		::VkMemoryBarrier const*       memory_barriers,
+		std::uint32_t                  buffer_memory_barrier_count,
+		::VkBufferMemoryBarrier const* buffer_memory_barriers,
+		std::uint32_t                  image_memory_barrier_count,
+		::VkImageMemoryBarrier const*  image_memory_barriers)
+	{	
+		::vkCmdPipelineBarrier(
+			m_command_buffer,
+			src_stage_mask,
+			dst_stage_mask,
+			dependency_flags,
+			memory_barrier_count,
+			memory_barriers,
+			buffer_memory_barrier_count,
+			buffer_memory_barriers,
+			image_memory_barrier_count,
+			image_memory_barriers);
+	}
+
+	void CopyBufferToImage(
+		::VkBuffer                 src_buffer,
+		::VkImage                  dst_image,
+		::VkImageLayout            dst_image_layout,
+		std::uint32_t              region_count,
+		::VkBufferImageCopy const* regions)
+	{
+		::vkCmdCopyBufferToImage(
+			m_command_buffer,
+			src_buffer,
+			dst_image,
+			dst_image_layout,
+			region_count,
+			regions);
 	}
 
 	::VkCommandBuffer const& Get(void) const

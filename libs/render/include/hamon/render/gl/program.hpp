@@ -100,7 +100,7 @@ public:
 		gl::glUseProgram(0u);
 	}
 
-	void LoadUniforms(render::Uniforms const& uniforms)
+	void LoadUniforms(render::Uniforms const& uniforms, gl::ResourceMap* resource_map)
 	{
 		for (auto& uniform_block : m_uniform_blocks)
 		{
@@ -109,7 +109,7 @@ public:
 
 		for (auto& uniform : m_uniforms)
 		{
-			uniform.LoadUniforms(uniforms);
+			uniform.LoadUniforms(uniforms, resource_map);
 		}
 	}
 

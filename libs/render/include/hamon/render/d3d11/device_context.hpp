@@ -181,6 +181,102 @@ public:
 		m_device_context->CSSetConstantBuffers(start_slot, num_buffers, constant_buffers);
 	}
 
+	void VSSetSamplers(
+		::UINT                       start_slot,
+		::UINT                       num_samplers,
+		::ID3D11SamplerState* const* samplers)
+	{
+		m_device_context->VSSetSamplers(start_slot, num_samplers, samplers);
+	}
+
+	void PSSetSamplers(
+		::UINT                       start_slot,
+		::UINT                       num_samplers,
+		::ID3D11SamplerState* const* samplers)
+	{
+		m_device_context->PSSetSamplers(start_slot, num_samplers, samplers);
+	}
+
+	void GSSetSamplers(
+		::UINT                       start_slot,
+		::UINT                       num_samplers,
+		::ID3D11SamplerState* const* samplers)
+	{
+		m_device_context->GSSetSamplers(start_slot, num_samplers, samplers);
+	}
+
+	void HSSetSamplers(
+		::UINT                       start_slot,
+		::UINT                       num_samplers,
+		::ID3D11SamplerState* const* samplers)
+	{
+		m_device_context->HSSetSamplers(start_slot, num_samplers, samplers);
+	}
+
+	void DSSetSamplers(
+		::UINT                       start_slot,
+		::UINT                       num_samplers,
+		::ID3D11SamplerState* const* samplers)
+	{
+		m_device_context->DSSetSamplers(start_slot, num_samplers, samplers);
+	}
+
+	void CSSetSamplers(
+		::UINT                       start_slot,
+		::UINT                       num_samplers,
+		::ID3D11SamplerState* const* samplers)
+	{
+		m_device_context->CSSetSamplers(start_slot, num_samplers, samplers);
+	}
+
+	void VSSetShaderResources(
+		::UINT                             start_slot,
+		::UINT                             num_views,
+		::ID3D11ShaderResourceView* const* shader_resource_views)
+	{
+		m_device_context->VSSetShaderResources(start_slot, num_views, shader_resource_views);
+	}
+
+	void PSSetShaderResources(
+		::UINT                             start_slot,
+		::UINT                             num_views,
+		::ID3D11ShaderResourceView* const* shader_resource_views)
+	{
+		m_device_context->PSSetShaderResources(start_slot, num_views, shader_resource_views);
+	}
+
+	void GSSetShaderResources(
+		::UINT                             start_slot,
+		::UINT                             num_views,
+		::ID3D11ShaderResourceView* const* shader_resource_views)
+	{
+		m_device_context->GSSetShaderResources(start_slot, num_views, shader_resource_views);
+	}
+
+	void HSSetShaderResources(
+		::UINT                             start_slot,
+		::UINT                             num_views,
+		::ID3D11ShaderResourceView* const* shader_resource_views)
+	{
+		m_device_context->HSSetShaderResources(start_slot, num_views, shader_resource_views);
+	}
+
+	void DSSetShaderResources(
+		::UINT                             start_slot,
+		::UINT                             num_views,
+		::ID3D11ShaderResourceView* const* shader_resource_views)
+	{
+		m_device_context->DSSetShaderResources(start_slot, num_views, shader_resource_views);
+	}
+
+	void CSSetShaderResources(
+		::UINT                             start_slot,
+		::UINT                             num_views,
+		::ID3D11ShaderResourceView* const* shader_resource_views)
+	{
+		m_device_context->CSSetShaderResources(start_slot, num_views, shader_resource_views);
+	}
+
 	void UpdateSubresource(
 		::ID3D11Resource*  dst_resource,
 		::UINT             dst_subresource,

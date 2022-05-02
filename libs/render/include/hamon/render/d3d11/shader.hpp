@@ -8,10 +8,13 @@
 #define HAMON_RENDER_D3D11_SHADER_HPP
 
  #include <hamon/render/shader.hpp>
+ #include <hamon/render/texture.hpp>
+ #include <hamon/render/sampler.hpp>
  #include <hamon/render/d3d11/device.hpp>
  #include <hamon/render/d3d11/device_context.hpp>
  #include <hamon/render/d3d11/constant_buffer.hpp>
  #include <hamon/render/d3d11/shader_reflection.hpp>
+ #include <hamon/render/d3d11/resource_map.hpp>
  #include <hamon/render/d3d/d3d11.hpp>
  #include <hamon/render/d3d/d3dcompiler.hpp>
  #include <hamon/render/d3d/com_ptr.hpp>
@@ -41,9 +44,13 @@ public:
 
 	virtual ~Shader(){}
 
-	virtual void Bind(DeviceContext* device_context) = 0;
+	virtual void Bind(d3d11::DeviceContext* device_context) = 0;
 
-	void LoadUniforms(DeviceContext* device_context, render::Uniforms const& uniforms)
+	void LoadUniforms(
+		d3d11::Device* device,
+		d3d11::DeviceContext* device_context,
+		d3d11::ResourceMap* resource_map,
+		render::Uniforms const& uniforms)
 	{
 		for (auto& constant_buffer : m_constant_buffers)
 		{
@@ -54,6 +61,44 @@ public:
 				constant_buffer.GetBindPoint(),
 				1,
 				&buffer);
+		}
+
+		for (auto const& sampler_desc : m_samplers)
+		{
+			auto uniform = uniforms[sampler_desc.Name];
+			if (uniform == nullptr)
+			{
+				continue;
+			}
+
+			using type = render::Sampler;
+			auto data = static_cast<type const*>(uniform->GetData());
+			auto sampler = resource_map->GetSampler(device, *data);
+			auto sampler_state = sampler->GetState();
+			this->SetSamplers(
+				device_context,
+				sampler_desc.BindPoint,
+				1,
+				&sampler_state);
+		}
+
+		for (auto const& texture_desc : m_textures)
+		{
+			auto uniform = uniforms[texture_desc.Name];
+			if (uniform == nullptr)
+			{
+				continue;
+			}
+
+			using type = render::Texture;
+			auto data = static_cast<type const*>(uniform->GetData());
+			auto texture = resource_map->GetTexture(device, *data);
+			auto srv = texture->GetShaderResourceView();
+			this->SetShaderResources(
+				device_context,
+				texture_desc.BindPoint,
+				1,
+				&srv);
 		}
 	}
 
@@ -70,6 +115,18 @@ private:
 		::UINT                 start_slot,
 		::UINT                 num_buffers,
 		::ID3D11Buffer* const* constant_buffers) = 0;
+	
+	virtual void SetSamplers(
+		DeviceContext*               device_context,
+		::UINT                       start_slot,
+		::UINT                       num_samplers,
+		::ID3D11SamplerState* const* samplers) = 0;
+
+	virtual void SetShaderResources(
+		DeviceContext*					   device_context,
+		::UINT                             start_slot,
+		::UINT                             num_views,
+		::ID3D11ShaderResourceView* const* shader_resource_views) = 0;
 
 private:
 	static ComPtr<::ID3DBlob>
@@ -130,12 +187,20 @@ private:
 						input_bind_desc.BindPoint);
 				}
 				break;
+			case D3D_SIT_TEXTURE:
+				m_textures.push_back(input_bind_desc);
+				break;
+			case D3D_SIT_SAMPLER:
+				m_samplers.push_back(input_bind_desc);
+				break;
 			}
 		}
 	}
 
 private:
 	std::vector<d3d11::ConstantBuffer>		m_constant_buffers;
+	std::vector<::D3D11_SHADER_INPUT_BIND_DESC>	m_textures;
+	std::vector<::D3D11_SHADER_INPUT_BIND_DESC>	m_samplers;
 };
 
 class VertexShader : public Shader
@@ -168,6 +233,24 @@ private:
 		::ID3D11Buffer* const* constant_buffers) override
 	{
 		device_context->VSSetConstantBuffers(start_slot, num_buffers, constant_buffers);
+	}
+
+	void SetSamplers(
+		DeviceContext*               device_context,
+		::UINT                       start_slot,
+		::UINT                       num_samplers,
+		::ID3D11SamplerState* const* samplers) override
+	{
+		device_context->VSSetSamplers(start_slot, num_samplers, samplers);
+	}
+
+	void SetShaderResources(
+		DeviceContext*					   device_context,
+		::UINT                             start_slot,
+		::UINT                             num_views,
+		::ID3D11ShaderResourceView* const* shader_resource_views) override
+	{
+		device_context->VSSetShaderResources(start_slot, num_views, shader_resource_views);
 	}
 
 private:
@@ -279,6 +362,24 @@ private:
 		device_context->GSSetConstantBuffers(start_slot, num_buffers, constant_buffers);
 	}
 
+	void SetSamplers(
+		DeviceContext*               device_context,
+		::UINT                       start_slot,
+		::UINT                       num_samplers,
+		::ID3D11SamplerState* const* samplers) override
+	{
+		device_context->GSSetSamplers(start_slot, num_samplers, samplers);
+	}
+
+	void SetShaderResources(
+		DeviceContext*					   device_context,
+		::UINT                             start_slot,
+		::UINT                             num_views,
+		::ID3D11ShaderResourceView* const* shader_resource_views) override
+	{
+		device_context->GSSetShaderResources(start_slot, num_views, shader_resource_views);
+	}
+
 private:
 	ComPtr<::ID3D11GeometryShader>	m_shader;
 };
@@ -311,6 +412,24 @@ private:
 		::ID3D11Buffer* const* constant_buffers) override
 	{
 		device_context->PSSetConstantBuffers(start_slot, num_buffers, constant_buffers);
+	}
+
+	void SetSamplers(
+		DeviceContext*               device_context,
+		::UINT                       start_slot,
+		::UINT                       num_samplers,
+		::ID3D11SamplerState* const* samplers) override
+	{
+		device_context->PSSetSamplers(start_slot, num_samplers, samplers);
+	}
+
+	void SetShaderResources(
+		DeviceContext*					   device_context,
+		::UINT                             start_slot,
+		::UINT                             num_views,
+		::ID3D11ShaderResourceView* const* shader_resource_views) override
+	{
+		device_context->PSSetShaderResources(start_slot, num_views, shader_resource_views);
 	}
 
 private:
@@ -347,6 +466,24 @@ private:
 		device_context->HSSetConstantBuffers(start_slot, num_buffers, constant_buffers);
 	}
 
+	void SetSamplers(
+		DeviceContext*               device_context,
+		::UINT                       start_slot,
+		::UINT                       num_samplers,
+		::ID3D11SamplerState* const* samplers) override
+	{
+		device_context->HSSetSamplers(start_slot, num_samplers, samplers);
+	}
+
+	void SetShaderResources(
+		DeviceContext*					   device_context,
+		::UINT                             start_slot,
+		::UINT                             num_views,
+		::ID3D11ShaderResourceView* const* shader_resource_views) override
+	{
+		device_context->HSSetShaderResources(start_slot, num_views, shader_resource_views);
+	}
+
 private:
 	ComPtr<::ID3D11HullShader>		m_shader;
 };
@@ -381,6 +518,24 @@ private:
 		device_context->DSSetConstantBuffers(start_slot, num_buffers, constant_buffers);
 	}
 
+	void SetSamplers(
+		DeviceContext*               device_context,
+		::UINT                       start_slot,
+		::UINT                       num_samplers,
+		::ID3D11SamplerState* const* samplers) override
+	{
+		device_context->DSSetSamplers(start_slot, num_samplers, samplers);
+	}
+
+	void SetShaderResources(
+		DeviceContext*					   device_context,
+		::UINT                             start_slot,
+		::UINT                             num_views,
+		::ID3D11ShaderResourceView* const* shader_resource_views) override
+	{
+		device_context->DSSetShaderResources(start_slot, num_views, shader_resource_views);
+	}
+
 private:
 	ComPtr<::ID3D11DomainShader>		m_shader;
 };
@@ -413,6 +568,24 @@ private:
 		::ID3D11Buffer* const* constant_buffers) override
 	{
 		device_context->CSSetConstantBuffers(start_slot, num_buffers, constant_buffers);
+	}
+
+	void SetSamplers(
+		DeviceContext*               device_context,
+		::UINT                       start_slot,
+		::UINT                       num_samplers,
+		::ID3D11SamplerState* const* samplers) override
+	{
+		device_context->CSSetSamplers(start_slot, num_samplers, samplers);
+	}
+
+	void SetShaderResources(
+		DeviceContext*					   device_context,
+		::UINT                             start_slot,
+		::UINT                             num_views,
+		::ID3D11ShaderResourceView* const* shader_resource_views) override
+	{
+		device_context->CSSetShaderResources(start_slot, num_views, shader_resource_views);
 	}
 
 private:

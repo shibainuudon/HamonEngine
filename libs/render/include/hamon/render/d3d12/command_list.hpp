@@ -178,6 +178,23 @@ public:
 		m_command_list->SetPipelineState(pipeline_state);
 	}
 
+	void CopyTextureRegion(
+		::D3D12_TEXTURE_COPY_LOCATION const* dst,
+		::UINT                               dst_x,
+		::UINT                               dst_y,
+		::UINT                               dst_z,
+		::D3D12_TEXTURE_COPY_LOCATION const* src,
+		::D3D12_BOX const*                   src_box)
+	{
+		m_command_list->CopyTextureRegion(
+			dst,
+			dst_x,
+			dst_y,
+			dst_z,
+			src,
+			src_box);
+	}
+
 	::ID3D12GraphicsCommandList6* Get(void) const { return m_command_list.Get(); }
 
 private:

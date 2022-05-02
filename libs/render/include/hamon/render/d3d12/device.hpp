@@ -161,7 +161,43 @@ public:
 			IID_PPV_ARGS(&resource)));
 		return resource;
 	}
-		
+
+	void CreateShaderResourceView(
+		::ID3D12Resource* resource,
+		::D3D12_SHADER_RESOURCE_VIEW_DESC const& desc,
+		::D3D12_CPU_DESCRIPTOR_HANDLE            dest_descriptor)
+	{
+		m_device->CreateShaderResourceView(resource, &desc, dest_descriptor);
+	}
+
+	void CreateSampler(
+		::D3D12_SAMPLER_DESC const& desc,
+		::D3D12_CPU_DESCRIPTOR_HANDLE dest_descriptor)
+	{
+		m_device->CreateSampler(&desc, dest_descriptor);
+	}
+
+	void GetCopyableFootprints(
+		::D3D12_RESOURCE_DESC const*          resource_desc,
+		::UINT                                first_subresource,
+		::UINT                                num_subresources,
+		::UINT64                              base_offset,
+		::D3D12_PLACED_SUBRESOURCE_FOOTPRINT* layouts,
+		::UINT*                               num_rows,
+		::UINT64*                             row_size_in_bytes,
+		::UINT64*                             total_bytes)
+	{
+		m_device->GetCopyableFootprints(
+			resource_desc,
+			first_subresource,
+			num_subresources,
+			base_offset,
+			layouts,
+			num_rows,
+			row_size_in_bytes,
+			total_bytes);
+	}
+
 private:
 	ComPtr<::ID3D12Device8>	m_device;
 };

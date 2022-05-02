@@ -7,9 +7,12 @@
 #ifndef HAMON_RENDER_GL_UNIFORM_HPP
 #define HAMON_RENDER_GL_UNIFORM_HPP
 
+#include <hamon/render/gl/sampler.hpp>
+#include <hamon/render/gl/resource_map.hpp>
 #include <hamon/render/gl/gl.hpp>
 #include <hamon/render/gl/glext.hpp>
 #include <hamon/render/uniforms.hpp>
+#include <hamon/render/texture.hpp>
 #include <string>
 #include <vector>
 
@@ -82,7 +85,7 @@ public:
 		}
 	}
 
-	void LoadUniforms(render::Uniforms const& uniforms)
+	void LoadUniforms(render::Uniforms const& uniforms, gl::ResourceMap* resource_map)
 	{
 		auto uniform = uniforms[m_name];
 		if (uniform == nullptr)
@@ -130,6 +133,16 @@ public:
 		case GL_DOUBLE_MAT4x2:		gl::glUniformMatrix4x2dv(m_location, 1, GL_FALSE, static_cast<double const*>(uniform->GetData())); break;
 		case GL_DOUBLE_MAT4x3:		gl::glUniformMatrix4x3dv(m_location, 1, GL_FALSE, static_cast<double const*>(uniform->GetData())); break;
 		case GL_DOUBLE_MAT4:		gl::glUniformMatrix4dv  (m_location, 1, GL_FALSE, static_cast<double const*>(uniform->GetData())); break;
+		case GL_SAMPLER_2D:
+			{
+				using type = std::pair<render::Texture, render::Sampler>;
+				auto data = static_cast<type const*>(uniform->GetData());
+				auto texture = resource_map->GetTexture(data->first);
+				auto sampler = resource_map->GetSampler(data->second);
+				texture->Bind(m_location);
+				sampler->Bind(m_location);
+			}
+			break;
 		}
 	}
 

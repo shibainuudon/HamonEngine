@@ -27,6 +27,9 @@
 #include <hamon/render/d3d11/rasterizer_state.hpp>
 #include <hamon/render/d3d11/blend_state.hpp>
 #include <hamon/render/d3d11/depth_stencil_state.hpp>
+#include <hamon/render/d3d11/sampler.hpp>
+#include <hamon/render/d3d11/texture.hpp>
+#include <hamon/render/d3d11/resource_map.hpp>
 #include <memory>
 #include <vector>
 
@@ -113,25 +116,6 @@ public:
 	{
 	}
 
-private:
-	template <typename T, typename Map, typename Id, typename... Args>
-	typename Map::mapped_type
-	GetOrCreate(Map& map, Id const& id, Args&&... args)
-	{
-		auto it = map.find(id);
-		if (it != map.end())
-		{
-			return it->second;
-		}
-		else
-		{
-			auto p = std::make_shared<T>(std::forward<Args>(args)...);
-			map[id] = p;
-			return p;
-		}
-	}
-
-public:
 	void Render(
 		Geometry const& geometry,
 		Program const& program,
@@ -164,13 +148,11 @@ public:
 				state.Get(), render_state.depth_stencil_state.stencil.reference);
 		}
 
-		auto d3d11_geometry = GetOrCreate<d3d11::Geometry>(
-			m_geometry_map, geometry.GetID(), m_device.get(), geometry);
-		auto d3d11_program = GetOrCreate<d3d11::Program>(
-			m_program_map, program.GetID(), m_device.get(), program);
+		auto d3d11_geometry = m_resource_map.GetGeometry(m_device.get(), geometry);
+		auto d3d11_program = m_resource_map.GetProgram(m_device.get(), program);
 
 		d3d11_program->Bind(m_device_context.get());
-		d3d11_program->LoadUniforms(m_device_context.get(), uniforms);
+		d3d11_program->LoadUniforms(m_device.get(), m_device_context.get(), &m_resource_map, uniforms);
 		d3d11_geometry->Draw(m_device_context.get());
 	}
 
@@ -180,9 +162,7 @@ private:
 	std::unique_ptr<d3d11::Device>				m_device;
 	std::unique_ptr<d3d11::DeviceContext>		m_device_context;
 	std::unique_ptr<d3d11::RenderTargetView>	m_render_target_view;
-
-	std::unordered_map<detail::Identifier, std::shared_ptr<d3d11::Program>>		m_program_map;
-	std::unordered_map<detail::Identifier, std::shared_ptr<d3d11::Geometry>>	m_geometry_map;
+	d3d11::ResourceMap							m_resource_map;
 };
 
 }	// inline namespace render

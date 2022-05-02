@@ -62,7 +62,7 @@ public:
 
 	::ID3D12Resource1* Get(void) const
 	{
-		return	m_resource.Get();
+		return m_resource.Get();
 	}
 
 	void* Map(::UINT subresource, const ::D3D12_RANGE* read_range) const
