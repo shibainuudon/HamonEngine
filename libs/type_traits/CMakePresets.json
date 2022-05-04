@@ -1,0 +1,295 @@
+﻿{
+	"version": 2,
+	"cmakeMinimumRequired": {
+		"major": 3,
+		"minor": 20,
+		"patch": 0
+	},
+	"configurePresets": [
+		{
+			"name": "base",
+			"hidden": true,
+			"generator": "Ninja",
+			"binaryDir": "${sourceDir}/build/${presetName}",
+			"cacheVariables": {
+				"CMAKE_INSTALL_PREFIX": "${sourceDir}/install/${presetName}"
+			}
+		},
+
+		// target
+		{
+			"name": "windows",
+			"inherits": [ "base" ],
+			"hidden": true,
+			"vendor": {
+				"microsoft.com/VisualStudioSettings/CMake/1.0": {
+					"hostOS": [ "Windows" ]
+				}
+			}
+		},
+		{
+			"name": "linux",
+			"inherits": [ "base" ],
+			"hidden": true,
+			"vendor": {
+				"microsoft.com/VisualStudioSettings/CMake/1.0": {
+					"hostOS": [ "Linux" ]
+				}
+			}
+		},
+
+		// toolset
+		{
+			"name": "msvc",
+			"hidden": true,
+			"cacheVariables": {
+				"CMAKE_C_COMPILER": "cl",
+				"CMAKE_CXX_COMPILER": "cl"
+			}
+		},
+		{
+			"name": "clang-cl",
+			"hidden": true,
+			"cacheVariables": {
+				"CMAKE_C_COMPILER": "clang-cl",
+				"CMAKE_CXX_COMPILER": "clang-cl"
+			},
+			"vendor": {
+				"microsoft.com/VisualStudioSettings/CMake/1.0": {
+					"intelliSenseMode": "windows-clang-x64"
+				}
+			}
+		},
+		{
+			"name": "clang",
+			"hidden": true,
+			"cacheVariables": {
+				"CMAKE_C_COMPILER": "clang",
+				"CMAKE_CXX_COMPILER": "clang++"
+			},
+			"vendor": {
+				"microsoft.com/VisualStudioSettings/CMake/1.0": {
+					"intelliSenseMode": "windows-clang-x64"
+				}
+			}
+		},
+		{
+			"name": "gcc",
+			"hidden": true,
+			"cacheVariables": {
+				"CMAKE_C_COMPILER": "gcc",
+				"CMAKE_CXX_COMPILER": "g++"
+			},
+			"vendor": {
+				"microsoft.com/VisualStudioSettings/CMake/1.0": {
+					"intelliSenseMode": "linux-gcc-x64"
+				}
+			}
+		},
+
+		// architecture
+		{
+			"name": "x64",
+			"hidden": true,
+			"architecture": {
+				"value": "x64",
+				"strategy": "external"
+			}
+		},
+		{
+			"name": "x86",
+			"hidden": true,
+			"architecture": {
+				"value": "x86",
+				"strategy": "external"
+			}
+		},
+
+		// CMAKE_CXX_STANDARD
+		{
+			"name": "c++11",
+			"hidden": true,
+			"cacheVariables": {
+				"CMAKE_CXX_STANDARD": "11"
+			}
+		},
+		{
+			"name": "c++14",
+			"hidden": true,
+			"cacheVariables": {
+				"CMAKE_CXX_STANDARD": "14"
+			}
+		},
+		{
+			"name": "c++17",
+			"hidden": true,
+			"cacheVariables": {
+				"CMAKE_CXX_STANDARD": "17"
+			}
+		},
+		{
+			"name": "c++20",
+			"hidden": true,
+			"cacheVariables": {
+				"CMAKE_CXX_STANDARD": "20"
+			}
+		},
+
+		// CMAKE_BUILD_TYPE
+		{
+			"name": "debug",
+			"hidden": true,
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug"
+			}
+		},
+		{
+			"name": "release",
+			"hidden": true,
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Release"
+			}
+		},
+
+		{
+			"name": "win-msvc-x64-c++14-debug",
+			"inherits": [ "windows", "msvc", "x64", "c++14", "debug" ]
+		},
+		{
+			"name": "win-msvc-x64-c++14-release",
+			"inherits": [ "windows", "msvc", "x64", "c++14", "release" ]
+		},
+		{
+			"name": "win-msvc-x64-c++17-debug",
+			"inherits": [ "windows", "msvc", "x64", "c++17", "debug" ]
+		},
+		{
+			"name": "win-msvc-x64-c++17-release",
+			"inherits": [ "windows", "msvc", "x64", "c++17", "release" ]
+		},
+		{
+			"name": "win-msvc-x64-c++20-debug",
+			"inherits": [ "windows", "msvc", "x64", "c++20", "debug" ]
+		},
+		{
+			"name": "win-msvc-x64-c++20-release",
+			"inherits": [ "windows", "msvc", "x64", "c++20", "release" ]
+		},
+
+		{
+			"name": "win-msvc-x86-c++14-debug",
+			"inherits": [ "windows", "msvc", "x86", "c++14", "debug" ]
+		},
+		{
+			"name": "win-msvc-x86-c++14-release",
+			"inherits": [ "windows", "msvc", "x86", "c++14", "release" ]
+		},
+		{
+			"name": "win-msvc-x86-c++17-debug",
+			"inherits": [ "windows", "msvc", "x86", "c++17", "debug" ]
+		},
+		{
+			"name": "win-msvc-x86-c++17-release",
+			"inherits": [ "windows", "msvc", "x86", "c++17", "release" ]
+		},
+		{
+			"name": "win-msvc-x86-c++20-debug",
+			"inherits": [ "windows", "msvc", "x86", "c++20", "debug" ]
+		},
+		{
+			"name": "win-msvc-x86-c++20-release",
+			"inherits": [ "windows", "msvc", "x86", "c++20", "release" ]
+		},
+
+		{
+			"name": "win-clang-x64-c++14-debug",
+			"inherits": [ "windows", "clang-cl", "x64", "c++14", "debug" ]
+		},
+		{
+			"name": "win-clang-x64-c++14-release",
+			"inherits": [ "windows", "clang-cl", "x64", "c++14", "release" ]
+		},
+		{
+			"name": "win-clang-x64-c++17-debug",
+			"inherits": [ "windows", "clang-cl", "x64", "c++17", "debug" ]
+		},
+		{
+			"name": "win-clang-x64-c++17-release",
+			"inherits": [ "windows", "clang-cl", "x64", "c++17", "release" ]
+		},
+		{
+			"name": "win-clang-x64-c++20-debug",
+			"inherits": [ "windows", "clang-cl", "x64", "c++20", "debug" ]
+		},
+		{
+			"name": "win-clang-x64-c++20-release",
+			"inherits": [ "windows", "clang-cl", "x64", "c++20", "release" ]
+		},
+
+		{
+			"name": "linux-gcc-c++11-debug",
+			"inherits": [ "linux", "gcc", "c++11", "debug" ]
+		},
+		{
+			"name": "linux-gcc-c++11-release",
+			"inherits": [ "linux", "gcc", "c++11", "release" ]
+		},
+		{
+			"name": "linux-gcc-c++14-debug",
+			"inherits": [ "linux", "gcc", "c++14", "debug" ]
+		},
+		{
+			"name": "linux-gcc-c++14-release",
+			"inherits": [ "linux", "gcc", "c++14", "release" ]
+		},
+		{
+			"name": "linux-gcc-c++17-debug",
+			"inherits": [ "linux", "gcc", "c++17", "debug" ]
+		},
+		{
+			"name": "linux-gcc-c++17-release",
+			"inherits": [ "linux", "gcc", "c++17", "release" ]
+		},
+		{
+			"name": "linux-gcc-c++20-debug",
+			"inherits": [ "linux", "gcc", "c++20", "debug" ]
+		},
+		{
+			"name": "linux-gcc-c++20-release",
+			"inherits": [ "linux", "gcc", "c++20", "release" ]
+		},
+
+		{
+			"name": "linux-clang-c++11-debug",
+			"inherits": [ "linux", "clang", "c++11", "debug" ]
+		},
+		{
+			"name": "linux-clang-c++11-release",
+			"inherits": [ "linux", "clang", "c++11", "release" ]
+		},
+		{
+			"name": "linux-clang-c++14-debug",
+			"inherits": [ "linux", "clang", "c++14", "debug" ]
+		},
+		{
+			"name": "linux-clang-c++14-release",
+			"inherits": [ "linux", "clang", "c++14", "release" ]
+		},
+		{
+			"name": "linux-clang-c++17-debug",
+			"inherits": [ "linux", "clang", "c++17", "debug" ]
+		},
+		{
+			"name": "linux-clang-c++17-release",
+			"inherits": [ "linux", "clang", "c++17", "release" ]
+		},
+		{
+			"name": "linux-clang-c++20-debug",
+			"inherits": [ "linux", "clang", "c++20", "debug" ]
+		},
+		{
+			"name": "linux-clang-c++20-release",
+			"inherits": [ "linux", "clang", "c++20", "release" ]
+		}
+	]
+}
