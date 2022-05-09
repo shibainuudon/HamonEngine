@@ -29,6 +29,8 @@ class Sampler
 public:
 	explicit Sampler(d3d11::Device* device, render::Sampler const& sampler)
 	{
+		auto const border_color = d3d11::BorderColor(sampler.border_color);
+
 		::D3D11_SAMPLER_DESC desc;
 		desc.Filter         = d3d11::FilterMode(
 			sampler.min_filter,
@@ -41,7 +43,6 @@ public:
 		desc.MipLODBias     = 0;	// TODO sampler.mip_lod_bias;
 		desc.MaxAnisotropy  = 16;	// TODO sampler.max_anisotropy;
 		desc.ComparisonFunc = d3d11::CompareOperation(sampler.compare_operation);
-		auto border_color   = d3d11::BorderColor(sampler.border_color);
 		desc.BorderColor[0] = border_color[0];
 		desc.BorderColor[1] = border_color[1];
 		desc.BorderColor[2] = border_color[2];

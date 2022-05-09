@@ -22,7 +22,7 @@ namespace d3d11
 class DeviceContext
 {
 public:
-	explicit DeviceContext(ComPtr<ID3D11DeviceContext4> device_context)
+	explicit DeviceContext(ComPtr<::ID3D11DeviceContext4> device_context)
 		: m_device_context(device_context)
 	{
 	}
@@ -40,11 +40,11 @@ public:
 	}
 
 	void IASetVertexBuffers(
-		::UINT         start_slot,
-		::UINT         num_buffers,
+		::UINT                 start_slot,
+		::UINT                 num_buffers,
 		::ID3D11Buffer* const* vertex_buffers,
-		const ::UINT* strides,
-		const ::UINT* offsets)
+		::UINT const*          strides,
+		::UINT const*          offsets)
 	{
 		m_device_context->IASetVertexBuffers(start_slot, num_buffers, vertex_buffers, strides, offsets);
 	}
@@ -57,8 +57,7 @@ public:
 		m_device_context->IASetIndexBuffer(index_buffer, format, offset);
 	}
 
-	void IASetPrimitiveTopology(
-		::D3D11_PRIMITIVE_TOPOLOGY topology)
+	void IASetPrimitiveTopology(::D3D11_PRIMITIVE_TOPOLOGY topology)
 	{
 		m_device_context->IASetPrimitiveTopology(topology);
 	}
@@ -120,7 +119,7 @@ public:
 
 	void OMSetBlendState(
 		::ID3D11BlendState* blend_state,
-		const ::FLOAT       blend_factor[4],
+		::FLOAT const       blend_factor[4],
 		::UINT              sample_mask)
 	{
 		m_device_context->OMSetBlendState(blend_state, blend_factor, sample_mask);
@@ -280,8 +279,8 @@ public:
 	void UpdateSubresource(
 		::ID3D11Resource*  dst_resource,
 		::UINT             dst_subresource,
-		const ::D3D11_BOX* dst_box,
-		const void*        src_data,
+		::D3D11_BOX const* dst_box,
+		void const*        src_data,
 		::UINT             src_row_pitch,
 		::UINT             src_depth_pitch)
 	{
@@ -310,7 +309,7 @@ public:
 	}
 
 private:
-	ComPtr<ID3D11DeviceContext4>	m_device_context;
+	ComPtr<::ID3D11DeviceContext4>	m_device_context;
 };
 
 }	// namespace d3d11

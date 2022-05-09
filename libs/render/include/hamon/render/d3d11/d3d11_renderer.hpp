@@ -131,7 +131,7 @@ public:
 			auto const& blend_state = render_state.blend_state;
 			auto state = m_device->CreateBlendState(
 				d3d11::BlendState(blend_state));
-			float const blend_factor[4]
+			float const blend_factor[]
 			{
 				blend_state.constant_color.r,
 				blend_state.constant_color.g,

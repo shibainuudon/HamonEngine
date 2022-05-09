@@ -24,7 +24,7 @@ namespace d3d11
 class RenderTargetView
 {
 public:
-	explicit RenderTargetView(Device* device, DXGISwapChain* swap_chain)
+	explicit RenderTargetView(d3d11::Device* device, DXGISwapChain* swap_chain)
 	{
 		ComPtr<::ID3D11Texture2D> back_buffer;
 		swap_chain->GetBuffer(0, IID_PPV_ARGS(&back_buffer));
@@ -34,7 +34,11 @@ public:
 			nullptr);
 	}
 
-	::ID3D11RenderTargetView1* Get(void) const { return m_render_target_view.Get(); }
+	::ID3D11RenderTargetView1* Get(void) const
+	{
+		return m_render_target_view.Get();
+	}
+
 private:
 	ComPtr<::ID3D11RenderTargetView1>	m_render_target_view;
 };

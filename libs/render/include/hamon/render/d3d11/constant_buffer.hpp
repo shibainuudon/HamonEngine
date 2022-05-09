@@ -79,8 +79,15 @@ public:
 			0);
 	}
 
-	::ID3D11Buffer* GetBuffer(void) const { return m_buffer.Get(); }
-	::UINT GetBindPoint(void) const { return m_bind_point; }
+	::ID3D11Buffer* GetBuffer(void) const
+	{
+		return m_buffer.Get();
+	}
+	
+	::UINT GetBindPoint(void) const
+	{
+		return m_bind_point;
+	}
 
 private:
 	struct Variable

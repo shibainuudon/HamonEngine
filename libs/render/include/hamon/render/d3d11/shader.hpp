@@ -32,7 +32,7 @@ namespace d3d11
 class Shader
 {
 public:
-	void Create(Device* device, render::Shader const& shader)
+	void Create(d3d11::Device* device, render::Shader const& shader)
 	{
 		auto micro_code = Compile(GetTargetString(), shader);
 
@@ -106,24 +106,24 @@ private:
 	virtual const char* GetTargetString(void) = 0;
 
 	virtual void Initialize(
-		Device* device,
+		d3d11::Device* device,
 		::ID3DBlob* micro_code,
 		d3d11::ShaderReflection const& reflection) = 0;
 	
 	virtual void SetConstantBuffers(
-		DeviceContext*         device_context,
+		d3d11::DeviceContext*  device_context,
 		::UINT                 start_slot,
 		::UINT                 num_buffers,
 		::ID3D11Buffer* const* constant_buffers) = 0;
 	
 	virtual void SetSamplers(
-		DeviceContext*               device_context,
+		d3d11::DeviceContext*        device_context,
 		::UINT                       start_slot,
 		::UINT                       num_samplers,
 		::ID3D11SamplerState* const* samplers) = 0;
 
 	virtual void SetShaderResources(
-		DeviceContext*					   device_context,
+		d3d11::DeviceContext*			   device_context,
 		::UINT                             start_slot,
 		::UINT                             num_views,
 		::ID3D11ShaderResourceView* const* shader_resource_views) = 0;
@@ -165,7 +165,7 @@ private:
 		return micro_code;
 	}
 	
-	void CreateConstantBuffers(Device* device, d3d11::ShaderReflection const& reflection)
+	void CreateConstantBuffers(d3d11::Device* device, d3d11::ShaderReflection const& reflection)
 	{
 		auto const shader_desc = reflection.GetDesc();
 
@@ -212,7 +212,7 @@ private:
 	}
 
 	void Initialize(
-		Device* device,
+		d3d11::Device* device,
 		::ID3DBlob* micro_code,
 		d3d11::ShaderReflection const& reflection) override
 	{
@@ -220,14 +220,14 @@ private:
 		m_input_layout = CreateInputLayout(device, micro_code, reflection);
 	}
 
-	void Bind(DeviceContext* device_context) override
+	void Bind(d3d11::DeviceContext* device_context) override
 	{
 		device_context->VSSetShader(m_shader.Get());
 		device_context->IASetInputLayout(m_input_layout.Get());
 	}
 
 	void SetConstantBuffers(
-		DeviceContext*         device_context,
+		d3d11::DeviceContext*  device_context,
 		::UINT                 start_slot,
 		::UINT                 num_buffers,
 		::ID3D11Buffer* const* constant_buffers) override
@@ -236,7 +236,7 @@ private:
 	}
 
 	void SetSamplers(
-		DeviceContext*               device_context,
+		d3d11::DeviceContext*        device_context,
 		::UINT                       start_slot,
 		::UINT                       num_samplers,
 		::ID3D11SamplerState* const* samplers) override
@@ -245,7 +245,7 @@ private:
 	}
 
 	void SetShaderResources(
-		DeviceContext*					   device_context,
+		d3d11::DeviceContext*			   device_context,
 		::UINT                             start_slot,
 		::UINT                             num_views,
 		::ID3D11ShaderResourceView* const* shader_resource_views) override
@@ -281,7 +281,7 @@ private:
 			micro_code);
 	}
 
-	static ::DXGI_FORMAT GetFormat(BYTE mask, D3D_REGISTER_COMPONENT_TYPE component_type)
+	static ::DXGI_FORMAT GetFormat(::BYTE mask, ::D3D_REGISTER_COMPONENT_TYPE component_type)
 	{
 		if (mask == 1)
 		{
@@ -341,20 +341,20 @@ private:
 	}
 
 	void Initialize(
-		Device* device,
+		d3d11::Device* device,
 		::ID3DBlob* micro_code,
 		d3d11::ShaderReflection const& /*reflection*/) override
 	{
 		m_shader = device->CreateGeometryShader(micro_code);
 	}
 
-	void Bind(DeviceContext* device_context) override
+	void Bind(d3d11::DeviceContext* device_context) override
 	{
 		device_context->GSSetShader(m_shader.Get());
 	}
 
 	void SetConstantBuffers(
-		DeviceContext*         device_context,
+		d3d11::DeviceContext*  device_context,
 		::UINT                 start_slot,
 		::UINT                 num_buffers,
 		::ID3D11Buffer* const* constant_buffers) override
@@ -363,7 +363,7 @@ private:
 	}
 
 	void SetSamplers(
-		DeviceContext*               device_context,
+		d3d11::DeviceContext*        device_context,
 		::UINT                       start_slot,
 		::UINT                       num_samplers,
 		::ID3D11SamplerState* const* samplers) override
@@ -372,7 +372,7 @@ private:
 	}
 
 	void SetShaderResources(
-		DeviceContext*					   device_context,
+		d3d11::DeviceContext*			   device_context,
 		::UINT                             start_slot,
 		::UINT                             num_views,
 		::ID3D11ShaderResourceView* const* shader_resource_views) override
@@ -393,20 +393,20 @@ private:
 	}
 
 	void Initialize(
-		Device* device,
+		d3d11::Device* device,
 		::ID3DBlob* micro_code,
 		d3d11::ShaderReflection const& /*reflection*/) override
 	{
 		m_shader = device->CreatePixelShader(micro_code);
 	}
 
-	void Bind(DeviceContext* device_context) override
+	void Bind(d3d11::DeviceContext* device_context) override
 	{
 		device_context->PSSetShader(m_shader.Get());
 	}
 
 	void SetConstantBuffers(
-		DeviceContext*         device_context,
+		d3d11::DeviceContext*  device_context,
 		::UINT                 start_slot,
 		::UINT                 num_buffers,
 		::ID3D11Buffer* const* constant_buffers) override
@@ -415,7 +415,7 @@ private:
 	}
 
 	void SetSamplers(
-		DeviceContext*               device_context,
+		d3d11::DeviceContext*        device_context,
 		::UINT                       start_slot,
 		::UINT                       num_samplers,
 		::ID3D11SamplerState* const* samplers) override
@@ -424,7 +424,7 @@ private:
 	}
 
 	void SetShaderResources(
-		DeviceContext*					   device_context,
+		d3d11::DeviceContext*			   device_context,
 		::UINT                             start_slot,
 		::UINT                             num_views,
 		::ID3D11ShaderResourceView* const* shader_resource_views) override
@@ -445,20 +445,20 @@ private:
 	}
 
 	void Initialize(
-		Device* device,
+		d3d11::Device* device,
 		::ID3DBlob* micro_code,
 		d3d11::ShaderReflection const& /*reflection*/) override
 	{
 		m_shader = device->CreateHullShader(micro_code);
 	}
 
-	void Bind(DeviceContext* device_context) override
+	void Bind(d3d11::DeviceContext* device_context) override
 	{
 		device_context->HSSetShader(m_shader.Get());
 	}
 
 	void SetConstantBuffers(
-		DeviceContext*         device_context,
+		d3d11::DeviceContext*  device_context,
 		::UINT                 start_slot,
 		::UINT                 num_buffers,
 		::ID3D11Buffer* const* constant_buffers) override
@@ -467,7 +467,7 @@ private:
 	}
 
 	void SetSamplers(
-		DeviceContext*               device_context,
+		d3d11::DeviceContext*        device_context,
 		::UINT                       start_slot,
 		::UINT                       num_samplers,
 		::ID3D11SamplerState* const* samplers) override
@@ -476,7 +476,7 @@ private:
 	}
 
 	void SetShaderResources(
-		DeviceContext*					   device_context,
+		d3d11::DeviceContext*			   device_context,
 		::UINT                             start_slot,
 		::UINT                             num_views,
 		::ID3D11ShaderResourceView* const* shader_resource_views) override
@@ -497,20 +497,20 @@ private:
 	}
 
 	void Initialize(
-		Device* device,
+		d3d11::Device* device,
 		::ID3DBlob* micro_code,
 		d3d11::ShaderReflection const& /*reflection*/) override
 	{
 		m_shader = device->CreateDomainShader(micro_code);
 	}
 
-	void Bind(DeviceContext* device_context) override
+	void Bind(d3d11::DeviceContext* device_context) override
 	{
 		device_context->DSSetShader(m_shader.Get());
 	}
 
 	void SetConstantBuffers(
-		DeviceContext*         device_context,
+		d3d11::DeviceContext*  device_context,
 		::UINT                 start_slot,
 		::UINT                 num_buffers,
 		::ID3D11Buffer* const* constant_buffers) override
@@ -519,7 +519,7 @@ private:
 	}
 
 	void SetSamplers(
-		DeviceContext*               device_context,
+		d3d11::DeviceContext*        device_context,
 		::UINT                       start_slot,
 		::UINT                       num_samplers,
 		::ID3D11SamplerState* const* samplers) override
@@ -528,7 +528,7 @@ private:
 	}
 
 	void SetShaderResources(
-		DeviceContext*					   device_context,
+		d3d11::DeviceContext*			   device_context,
 		::UINT                             start_slot,
 		::UINT                             num_views,
 		::ID3D11ShaderResourceView* const* shader_resource_views) override
@@ -549,20 +549,20 @@ private:
 	}
 
 	void Initialize(
-		Device* device,
+		d3d11::Device* device,
 		::ID3DBlob* micro_code,
 		d3d11::ShaderReflection const& /*reflection*/) override
 	{
 		m_shader = device->CreateComputeShader(micro_code);
 	}
 
-	void Bind(DeviceContext* device_context) override
+	void Bind(d3d11::DeviceContext* device_context) override
 	{
 		device_context->CSSetShader(m_shader.Get());
 	}
 
 	void SetConstantBuffers(
-		DeviceContext*         device_context,
+		d3d11::DeviceContext*  device_context,
 		::UINT                 start_slot,
 		::UINT                 num_buffers,
 		::ID3D11Buffer* const* constant_buffers) override
@@ -571,7 +571,7 @@ private:
 	}
 
 	void SetSamplers(
-		DeviceContext*               device_context,
+		d3d11::DeviceContext*        device_context,
 		::UINT                       start_slot,
 		::UINT                       num_samplers,
 		::ID3D11SamplerState* const* samplers) override
@@ -580,7 +580,7 @@ private:
 	}
 
 	void SetShaderResources(
-		DeviceContext*					   device_context,
+		d3d11::DeviceContext*			   device_context,
 		::UINT                             start_slot,
 		::UINT                             num_views,
 		::ID3D11ShaderResourceView* const* shader_resource_views) override

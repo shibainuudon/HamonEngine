@@ -27,7 +27,7 @@ namespace d3d11
 class Program
 {
 public:
-	explicit Program(Device* device, render::Program const& program)
+	explicit Program(d3d11::Device* device, render::Program const& program)
 	{
 		for (auto const& shader : program.GetShaders())
 		{
@@ -39,7 +39,7 @@ public:
 
 private:
 	static std::unique_ptr<d3d11::Shader>
-	CreateShader(ShaderStage stage)
+	CreateShader(render::ShaderStage stage)
 	{
 		switch (stage)
 		{
@@ -54,7 +54,7 @@ private:
 	}
 
 public:
-	void Bind(DeviceContext* device_context)
+	void Bind(d3d11::DeviceContext* device_context)
 	{
 		for (auto const& shader : m_shaders)
 		{
@@ -64,7 +64,7 @@ public:
 
 	void LoadUniforms(
 		d3d11::Device* device,
-		DeviceContext* device_context,
+		d3d11::DeviceContext* device_context,
 		d3d11::ResourceMap* resource_map,
 		render::Uniforms const& uniforms)
 	{

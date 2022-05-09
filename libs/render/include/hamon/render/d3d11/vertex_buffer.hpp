@@ -24,7 +24,7 @@ namespace d3d11
 class VertexBuffer
 {
 public:
-	VertexBuffer(Device* device, render::Geometry const& geometry)
+	VertexBuffer(d3d11::Device* device, render::Geometry const& geometry)
 		: m_buffer(
 			device,
 			static_cast<::UINT>(geometry.GetVertexArrayBytes()),
@@ -36,7 +36,7 @@ public:
 	{
 	}
 
-	void Bind(DeviceContext* device_context)
+	void Bind(d3d11::DeviceContext* device_context)
 	{
 		::ID3D11Buffer* buffers[]
 		{
@@ -45,7 +45,7 @@ public:
 		device_context->IASetVertexBuffers(0, 1, buffers, &m_stride, &m_offset);
 	}
 
-	void Draw(DeviceContext* device_context)
+	void Draw(d3d11::DeviceContext* device_context)
 	{
 		device_context->Draw(m_count, 0);
 	}

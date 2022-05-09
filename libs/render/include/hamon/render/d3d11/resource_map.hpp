@@ -33,26 +33,30 @@ class Program;
 class ResourceMap
 {
 public:
-	std::shared_ptr<d3d11::Program> GetProgram(d3d11::Device* device, render::Program const& program)
+	std::shared_ptr<d3d11::Program>
+	GetProgram(d3d11::Device* device, render::Program const& program)
 	{
 		return GetOrCreate<d3d11::Program>(
 			m_program_map, program.GetID(), device, program);
 	}
 	
-	std::shared_ptr<d3d11::Geometry> GetGeometry(d3d11::Device* device, render::Geometry const& geometry)
+	std::shared_ptr<d3d11::Geometry>
+	GetGeometry(d3d11::Device* device, render::Geometry const& geometry)
 	{
 		return GetOrCreate<d3d11::Geometry>(
 			m_geometry_map, geometry.GetID(), device, geometry);
 	}
 
-	std::shared_ptr<d3d11::Sampler> GetSampler(d3d11::Device* device, render::Sampler const& sampler)
+	std::shared_ptr<d3d11::Sampler>
+	GetSampler(d3d11::Device* device, render::Sampler const& sampler)
 	{
 		auto id = render::detail::HashCombine(sampler);
 		return GetOrCreate<d3d11::Sampler>(
 			m_sampler_map, id, device, sampler);
 	}
 
-	std::shared_ptr<d3d11::Texture> GetTexture(d3d11::Device* device, render::Texture const& texture)
+	std::shared_ptr<d3d11::Texture>
+	GetTexture(d3d11::Device* device, render::Texture const& texture)
 	{
 		return GetOrCreate<d3d11::Texture>(
 			m_texture_map, texture.GetID(), device, texture);

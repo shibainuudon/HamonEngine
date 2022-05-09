@@ -44,4 +44,4 @@ inline ::D3D11_RASTERIZER_DESC RasterizerState(render::RasterizerState const& st
 
 }	// namespace hamon
 
-#endif // HAMON_RENDER_D3D11_rasterizer_state_HPP
+#endif // HAMON_RENDER_D3D11_RASTERIZER_STATE_HPP
