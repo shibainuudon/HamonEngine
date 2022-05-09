@@ -157,15 +157,15 @@ public:
 		for (std::uint32_t i = 0; i < m_mipmap_count; ++i)
 		{
 			::VkBufferImageCopy region{};
-			region.bufferOffset = src_offset;
-			region.bufferRowLength = 0;
-			region.bufferImageHeight = 0;
-			region.imageSubresource.aspectMask = m_aspect_mask;
+			region.bufferOffset                    = src_offset;
+			region.bufferRowLength                 = 0;
+			region.bufferImageHeight               = 0;
+			region.imageSubresource.aspectMask     = m_aspect_mask;
 			region.imageSubresource.baseArrayLayer = 0;
-			region.imageSubresource.layerCount = 1;
-			region.imageSubresource.mipLevel = i;
-			region.imageOffset = {0, 0, 0};
-			region.imageExtent = extent;
+			region.imageSubresource.layerCount     = 1;
+			region.imageSubresource.mipLevel       = i;
+			region.imageOffset                     = {0, 0, 0};
+			region.imageExtent                     = extent;
 
 			command_buffer->CopyBufferToImage(
 				buffer,
@@ -195,13 +195,13 @@ public:
 	}
 
 private:
-	::VkImage		m_image;
-	::VkFormat		m_format;
-	::VkExtent3D	m_extent;
-	std::uint32_t	m_mipmap_count;
+	::VkImage		        m_image;
+	::VkFormat		        m_format;
+	::VkExtent3D	        m_extent;
+	std::uint32_t	        m_mipmap_count;
 	::VkImageAspectFlags	m_aspect_mask;
-	::VkImageLayout	m_layout;
-	vulkan::Device* m_device;
+	::VkImageLayout	        m_layout;
+	vulkan::Device*         m_device;
 };
 
 }	// namespace vulkan
@@ -210,4 +210,4 @@ private:
 
 }	// namespace hamon
 
-#endif // HAMON_RENDER_VULKAN_image_HPP
+#endif // HAMON_RENDER_VULKAN_IMAGE_HPP

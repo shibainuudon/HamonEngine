@@ -14,6 +14,7 @@
 #include <hamon/render/vulkan/image_view.hpp>
 #include <hamon/render/vulkan/command_buffer.hpp>
 #include <hamon/render/vulkan/queue.hpp>
+#include <hamon/render/vulkan/resource.hpp>
 #include <hamon/render/texture.hpp>
 
 namespace hamon
@@ -44,7 +45,7 @@ public:
 			device,
 			device->GetImageMemoryRequirements(m_image->Get()),
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-		m_device_memory->BindImageMemory(m_image->Get(), 0);
+		m_device_memory->BindImage(m_image->Get(), 0);
 
 		m_image_view = std::make_unique<vulkan::ImageView>(
 			device,
@@ -56,20 +57,16 @@ public:
 			texture.GetWidth(),
 			texture.GetHeight(),
 			texture.GetMipmapCount());
-		vulkan::Buffer staging_buffer(
+		vulkan::Resource staging_buffer(
 			device,
 			size,
-			VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-		vulkan::DeviceMemory staging_memory(
-			device,
-			staging_buffer.GetMemoryRequirements(), 
+			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
 			VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-		staging_buffer.BindMemory(&staging_memory, 0);
 		{
-			void* dst = staging_memory.Map(0, size, 0);
+			void* dst = staging_buffer.Map(0, size, 0);
 			std::memcpy(dst, texture.GetData(), size);
-			staging_memory.Unmap();
+			staging_buffer.Unmap();
 		}
 
 		vulkan::CommandBuffer command_buffer(command_pool);
@@ -77,7 +74,7 @@ public:
 		command_buffer.Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 		{
 			m_image->TransitionLayout(&command_buffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-			m_image->CopyFromBuffer(&command_buffer, staging_buffer.Get());
+			m_image->CopyFromBuffer(&command_buffer, staging_buffer.GetBuffer());
 			m_image->TransitionLayout(&command_buffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		}
 		command_buffer.End();

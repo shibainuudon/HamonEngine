@@ -8,10 +8,8 @@
 #define HAMON_RENDER_VULKAN_UNIFORM_BUFFER_HPP
 
 #include <hamon/render/vulkan/device.hpp>
-#include <hamon/render/vulkan/buffer.hpp>
-#include <hamon/render/vulkan/device_memory.hpp>
+#include <hamon/render/vulkan/resource.hpp>
 #include <hamon/render/vulkan/vulkan.hpp>
-#include <memory>
 #include <cstdint>
 
 namespace hamon
@@ -31,21 +29,14 @@ class UniformBuffer
 	}
 public:
 	explicit UniformBuffer(vulkan::Device* device, ::VkDeviceSize size)
-	{
-		m_buffer = std::make_unique<vulkan::Buffer>(
+		: m_resource(
 			device,
 			size,
-			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-
-		m_device_memory = std::make_unique<vulkan::DeviceMemory>(
-			device,
-			m_buffer->GetMemoryRequirements(),
+			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-			VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
-		m_buffer->BindMemory(m_device_memory.get(), 0);
-
-		m_mapped_buffer = static_cast<std::uint8_t*>(m_device_memory->Map(0, size, 0));
+			VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+	{
+		m_mapped_buffer = static_cast<std::uint8_t*>(m_resource.Map(0, size, 0));
 
 		auto physical_device = device->GetPhysicalDevice();
 		auto properties = physical_device->GetProperties();
@@ -76,15 +67,14 @@ public:
 	
 	::VkBuffer const& GetBuffer(void) const
 	{
-		return m_buffer->Get();
+		return m_resource.GetBuffer();
 	}
 
 private:
-	std::unique_ptr<vulkan::Buffer>			m_buffer;
-	std::unique_ptr<vulkan::DeviceMemory>	m_device_memory;
-	std::uint8_t*							m_mapped_buffer;
-	::VkDeviceSize							m_offset{};
-	::VkDeviceSize							m_alignemnt{};
+	vulkan::Resource		m_resource;
+	std::uint8_t*			m_mapped_buffer;
+	::VkDeviceSize			m_offset{};
+	::VkDeviceSize			m_alignemnt{};
 };
 
 }	// namespace vulkan

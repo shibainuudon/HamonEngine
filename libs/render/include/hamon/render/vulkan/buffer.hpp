@@ -50,13 +50,6 @@ public:
 		return m_device->GetBufferMemoryRequirements(m_buffer);
 	}
 
-	void BindMemory(
-		vulkan::DeviceMemory* device_memory,
-		::VkDeviceSize        memory_offset)
-	{
-		device_memory->BindBufferMemory(m_buffer, memory_offset);
-	}
-
 	::VkBuffer const& Get(void) const
 	{
 		return m_buffer;

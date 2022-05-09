@@ -58,14 +58,14 @@ public:
 		return m_device->UnmapMemory(m_device_memory);
 	}
 
-	void BindBufferMemory(
+	void BindBuffer(
 		::VkBuffer     buffer,
 		::VkDeviceSize memory_offset)
 	{
 		m_device->BindBufferMemory(buffer, m_device_memory, memory_offset);
 	}
 	
-	void BindImageMemory(
+	void BindImage(
 		::VkImage      image,
 		::VkDeviceSize memory_offset)
 	{
