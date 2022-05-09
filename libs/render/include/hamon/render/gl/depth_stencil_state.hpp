@@ -10,7 +10,7 @@
 #include <hamon/render/depth_stencil_state.hpp>
 #include <hamon/render/gl/glext.hpp>
 #include <hamon/render/gl/stencil_operation.hpp>
-#include <hamon/render/gl/comparison_func.hpp>
+#include <hamon/render/gl/compare_operation.hpp>
 
 namespace hamon
 {
@@ -35,7 +35,7 @@ public:
 			::glDisable(GL_DEPTH_TEST);
 		}
 		::glDepthMask(state.depth.write);
-		::glDepthFunc(gl::ComparisonFunc(state.depth.func));
+		::glDepthFunc(gl::CompareOperation(state.depth.compare_operation));
 
 		if (state.stencil.enable)
 		{
@@ -46,7 +46,7 @@ public:
 			::glDisable(GL_STENCIL_TEST);
 		}
 		::glStencilFunc(
-			gl::ComparisonFunc(state.stencil.func),
+			gl::CompareOperation(state.stencil.compare_operation),
 			state.stencil.reference,
 			state.stencil.read_mask);
 		::glStencilMask(state.stencil.write_mask);

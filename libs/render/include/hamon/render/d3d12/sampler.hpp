@@ -11,7 +11,7 @@
 #include <hamon/render/d3d/d3d12.hpp>
 #include <hamon/render/d3d12/filter_mode.hpp>
 #include <hamon/render/d3d12/sampler_address_mode.hpp>
-#include <hamon/render/d3d12/comparison_func.hpp>
+#include <hamon/render/d3d12/compare_operation.hpp>
 #include <hamon/render/d3d12/border_color.hpp>
 
 namespace hamon
@@ -28,6 +28,8 @@ class Sampler
 public:
 	explicit Sampler(render::Sampler const& sampler)
 	{
+		auto const border_color = d3d12::BorderColor(sampler.border_color);
+
 		m_desc.Filter         = d3d12::FilterMode(
 			sampler.min_filter,
 			sampler.mag_filter,
@@ -38,8 +40,7 @@ public:
 		m_desc.AddressW       = d3d12::SamplerAddressMode(sampler.address_mode_w);
 		m_desc.MipLODBias     = 0;	// TODO sampler.mip_lod_bias;
 		m_desc.MaxAnisotropy  = 16;	// TODO sampler.max_anisotropy;
-		m_desc.ComparisonFunc = d3d12::ComparisonFunc(sampler.compare_operation);
-		auto border_color   = d3d12::BorderColor(sampler.border_color);
+		m_desc.ComparisonFunc = d3d12::CompareOperation(sampler.compare_operation);
 		m_desc.BorderColor[0] = border_color[0];
 		m_desc.BorderColor[1] = border_color[1];
 		m_desc.BorderColor[2] = border_color[2];

@@ -7,7 +7,7 @@
 #ifndef HAMON_RENDER_DEPTH_STENCIL_STATE_HPP
 #define HAMON_RENDER_DEPTH_STENCIL_STATE_HPP
 
-#include <hamon/render/comparison_func.hpp>
+#include <hamon/render/compare_operation.hpp>
 #include <hamon/render/stencil_operation.hpp>
 #include <cstdint>
 
@@ -21,9 +21,9 @@ struct DepthStencilState
 {
 	struct
 	{
-		bool            enable{true};
-		bool            write {true};
-		ComparisonFunc  func  {ComparisonFunc::Less};
+		bool             enable{true};
+		bool             write {true};
+		CompareOperation compare_operation {CompareOperation::Less};
 	} depth;
 
 	struct
@@ -34,7 +34,7 @@ struct DepthStencilState
 		StencilOperation	fail_operation      {StencilOperation::Keep};
 		StencilOperation	depth_fail_operation{StencilOperation::Keep};
 		StencilOperation	pass_operation      {StencilOperation::Keep};
-		ComparisonFunc		func                {ComparisonFunc::Always};
+		CompareOperation	compare_operation   {CompareOperation::Always};
 		std::uint8_t		reference           {0x00};
 	} stencil;
 };
@@ -58,14 +58,14 @@ struct hash<hamon::render::DepthStencilState>
 		return hamon::render::detail::HashCombine(
 			arg.depth.enable,
 			arg.depth.write,
-			arg.depth.func,
+			arg.depth.compare_operation,
 			arg.stencil.enable,
 			arg.stencil.read_mask,
 			arg.stencil.write_mask,
 			arg.stencil.fail_operation,
 			arg.stencil.depth_fail_operation,
 			arg.stencil.pass_operation,
-			arg.stencil.func,
+			arg.stencil.compare_operation,
 			arg.stencil.reference);
 	}
 };

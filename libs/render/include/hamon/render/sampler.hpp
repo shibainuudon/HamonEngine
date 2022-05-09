@@ -10,7 +10,7 @@
 #include <hamon/render/filter_mode.hpp>
 #include <hamon/render/mipmap_mode.hpp>
 #include <hamon/render/sampler_address_mode.hpp>
-#include <hamon/render/comparison_func.hpp>
+#include <hamon/render/compare_operation.hpp>
 #include <hamon/render/border_color.hpp>
 
 namespace hamon
@@ -21,20 +21,20 @@ inline namespace render
 
 struct Sampler
 {
-	FilterMode			mag_filter{FilterMode::Linear};
-	FilterMode			min_filter{FilterMode::Nearest};
-	MipmapMode			mip_filter{MipmapMode::Disable};
-	SamplerAddressMode	address_mode_u{SamplerAddressMode::Repeat};
-	SamplerAddressMode	address_mode_v{SamplerAddressMode::Repeat};
-	SamplerAddressMode	address_mode_w{SamplerAddressMode::Repeat};
-	float				mip_lod_bias = 0.0f;
-	bool				anisotropy_enable = false;
-	float				max_anisotropy = 0.0f;
-	bool				compare_enable = false;
-	ComparisonFunc		compare_operation = ComparisonFunc::Always;
-	float               min_lod{-1000};
-	float               max_lod{1000};
-	BorderColor			border_color = BorderColor::TransparentBlack;
+	FilterMode			mag_filter        {FilterMode::Linear};
+	FilterMode			min_filter        {FilterMode::Nearest};
+	MipmapMode			mip_filter        {MipmapMode::Disable};
+	SamplerAddressMode	address_mode_u    {SamplerAddressMode::Repeat};
+	SamplerAddressMode	address_mode_v    {SamplerAddressMode::Repeat};
+	SamplerAddressMode	address_mode_w    {SamplerAddressMode::Repeat};
+	float				mip_lod_bias      {0.0f};
+	bool				anisotropy_enable {false};
+	float				max_anisotropy    {0.0f};
+	bool				compare_enable    {false};
+	CompareOperation	compare_operation {CompareOperation::Always};
+	float               min_lod           {-1000};
+	float               max_lod           {1000};
+	BorderColor			border_color      {BorderColor::TransparentBlack};
 //	bool				unnormalized_coordinates;
 };
 

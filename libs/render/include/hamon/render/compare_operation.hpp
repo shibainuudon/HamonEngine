@@ -1,11 +1,11 @@
 ﻿/**
- *	@file	comparison_func.hpp
+ *	@file	compare_operation.hpp
  *
- *	@brief	ComparisonFunc
+ *	@brief	CompareOperation
  */
 
-#ifndef HAMON_RENDER_COMPARISON_FUNC_HPP
-#define HAMON_RENDER_COMPARISON_FUNC_HPP
+#ifndef HAMON_RENDER_COMPARE_OPERATION_HPP
+#define HAMON_RENDER_COMPARE_OPERATION_HPP
 
 #include <cstdint>
 
@@ -15,7 +15,7 @@ namespace hamon
 inline namespace render
 {
 
-enum class ComparisonFunc : std::uint32_t
+enum class CompareOperation : std::uint32_t
 {
 	Never,
 	Less,
@@ -31,4 +31,4 @@ enum class ComparisonFunc : std::uint32_t
 
 }	// namespace hamon
 
-#endif // HAMON_RENDER_COMPARISON_FUNC_HPP
+#endif // HAMON_RENDER_COMPARE_OPERATION_HPP

@@ -12,7 +12,7 @@
 #include <hamon/render/vulkan/filter_mode.hpp>
 #include <hamon/render/vulkan/mipmap_mode.hpp>
 #include <hamon/render/vulkan/sampler_address_mode.hpp>
-#include <hamon/render/vulkan/comparison_func.hpp>
+#include <hamon/render/vulkan/compare_operation.hpp>
 #include <hamon/render/vulkan/border_color.hpp>
 #include <hamon/render/sampler.hpp>
 
@@ -45,7 +45,7 @@ public:
 		info.anisotropyEnable        = sampler.anisotropy_enable;
 		info.maxAnisotropy           = sampler.max_anisotropy;
 		info.compareEnable           = sampler.compare_enable;
-		info.compareOp               = vulkan::ComparisonFunc(sampler.compare_operation);
+		info.compareOp               = vulkan::CompareOperation(sampler.compare_operation);
 		info.minLod                  = sampler.min_lod;
 		info.maxLod                  = sampler.max_lod;
 		info.borderColor             = vulkan::BorderColor(sampler.border_color);

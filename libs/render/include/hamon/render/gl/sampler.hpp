@@ -11,7 +11,7 @@
 #include <hamon/render/gl/filter_mode.hpp>
 #include <hamon/render/gl/sampler_address_mode.hpp>
 #include <hamon/render/gl/border_color.hpp>
-#include <hamon/render/gl/comparison_func.hpp>
+#include <hamon/render/gl/compare_operation.hpp>
 #include <hamon/render/gl/gl.hpp>
 
 namespace hamon
@@ -46,7 +46,7 @@ public:
 		{
 			gl::glSamplerParameteri(m_id, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 		}
-		gl::glSamplerParameteri(m_id, GL_TEXTURE_COMPARE_FUNC, gl::ComparisonFunc(sampler.compare_operation));
+		gl::glSamplerParameteri(m_id, GL_TEXTURE_COMPARE_FUNC, gl::CompareOperation(sampler.compare_operation));
 
 		// TODO
 		//float				mip_lod_bias;

@@ -8,7 +8,7 @@
 #define HAMON_RENDER_VULKAN_PIPELINE_DEPTH_STENCIL_STATE_HPP
 
 #include <hamon/render/vulkan/vulkan.hpp>
-#include <hamon/render/vulkan/comparison_func.hpp>
+#include <hamon/render/vulkan/compare_operation.hpp>
 #include <hamon/render/vulkan/stencil_operation.hpp>
 #include <hamon/render/depth_stencil_state.hpp>
 
@@ -30,14 +30,14 @@ PipelineDepthStencilState(render::DepthStencilState const& state)
 	info.flags                 = 0;
 	info.depthTestEnable       = state.depth.enable;
 	info.depthWriteEnable      = state.depth.write;
-	info.depthCompareOp        = vulkan::ComparisonFunc(state.depth.func);
+	info.depthCompareOp        = vulkan::CompareOperation(state.depth.compare_operation);
 	info.depthBoundsTestEnable = VK_FALSE;
 	info.minDepthBounds        = 0;
 	info.maxDepthBounds        = 0;
 	info.stencilTestEnable     = state.stencil.enable;
 	info.back.failOp           = vulkan::StencilOperation(state.stencil.fail_operation);
 	info.back.passOp           = vulkan::StencilOperation(state.stencil.pass_operation);
-	info.back.compareOp        = vulkan::ComparisonFunc(state.stencil.func);
+	info.back.compareOp        = vulkan::CompareOperation(state.stencil.compare_operation);
 	info.back.compareMask      = state.stencil.read_mask;
 	info.back.reference        = state.stencil.reference;
 	info.back.depthFailOp      = vulkan::StencilOperation(state.stencil.depth_fail_operation);
