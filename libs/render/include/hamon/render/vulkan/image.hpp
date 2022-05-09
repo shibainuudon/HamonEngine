@@ -130,7 +130,7 @@ public:
 		barrier.pNext                           = nullptr;
 		barrier.srcAccessMask                   = GetAccessMask(old_layout);
 		barrier.dstAccessMask                   = GetAccessMask(new_layout);
-		barrier.oldLayout                       = m_layout;
+		barrier.oldLayout                       = old_layout;
 		barrier.newLayout                       = new_layout;
 		barrier.srcQueueFamilyIndex             = VK_QUEUE_FAMILY_IGNORED;
 		barrier.dstQueueFamilyIndex             = VK_QUEUE_FAMILY_IGNORED;

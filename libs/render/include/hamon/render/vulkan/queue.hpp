@@ -50,7 +50,7 @@ public:
 		info.pCommandBuffers      = &command_buffer;
 		info.signalSemaphoreCount = 0;
 		info.pSignalSemaphores    = nullptr;
-		ThrowIfFailed(vkQueueSubmit(m_queue, 1, &info, fence));
+		ThrowIfFailed(::vkQueueSubmit(m_queue, 1, &info, fence));
 	}
 
 	void Present(::VkSwapchainKHR swapchain, std::uint32_t image_index)
@@ -64,7 +64,12 @@ public:
 		info.pWaitSemaphores    = nullptr;
 		info.waitSemaphoreCount = 0;
 		info.pResults           = nullptr;
-		ThrowIfFailed(vkQueuePresentKHR(m_queue, &info));
+		ThrowIfFailed(::vkQueuePresentKHR(m_queue, &info));
+	}
+
+	void WaitIdle(void)
+	{
+		ThrowIfFailed(::vkQueueWaitIdle(m_queue));
 	}
 
 private:

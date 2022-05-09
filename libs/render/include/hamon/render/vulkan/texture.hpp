@@ -85,6 +85,7 @@ public:
 			command_buffer.Get(),
 			VK_NULL_HANDLE,
 			VK_NULL_HANDLE);
+		queue.WaitIdle();
 	}
 
 	~Texture()
