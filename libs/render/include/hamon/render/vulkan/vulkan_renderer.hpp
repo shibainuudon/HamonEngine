@@ -92,27 +92,29 @@ public:
 	{
 		const char* app_name = "HamonEngine";
 		
-		std::vector<const char*> instance_layer_name =
+		std::vector<const char*> const instance_layer_name =
 		{
 #if defined(_DEBUG)
 			"VK_LAYER_KHRONOS_validation",
 #endif
 		};
 
-		std::vector<const char*> instance_extension_names;
-		instance_extension_names.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
-		instance_extension_names.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
+		std::vector<const char*> const instance_extension_names =
+		{
+			VK_EXT_DEBUG_REPORT_EXTENSION_NAME,
+			VK_KHR_SURFACE_EXTENSION_NAME,
 #ifdef __ANDROID__
-		instance_extension_names.push_back(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
+			VK_KHR_ANDROID_SURFACE_EXTENSION_NAME,
 #elif defined(_WIN32)
-		instance_extension_names.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+			VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
 #elif defined(VK_USE_PLATFORM_METAL_EXT)
-		instance_extension_names.push_back(VK_EXT_METAL_SURFACE_EXTENSION_NAME);
+			VK_EXT_METAL_SURFACE_EXTENSION_NAME,
 #elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
-		instance_extension_names.push_back(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
+			VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME,
 #else
-		instance_extension_names.push_back(VK_KHR_XCB_SURFACE_EXTENSION_NAME);
+			VK_KHR_XCB_SURFACE_EXTENSION_NAME,
 #endif
+		};
 
 		m_instance = std::make_unique<vulkan::Instance>(
 			app_name,
@@ -143,15 +145,17 @@ public:
 			}
 		}
 
-		std::vector<const char*> device_layer_names =
+		std::vector<const char*> const device_layer_names =
 		{
 #if defined(_DEBUG)
 			"VK_LAYER_KHRONOS_validation",
 #endif
 		};
 
-		std::vector<const char*> device_extension_names;
-		device_extension_names.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+		std::vector<const char*> const device_extension_names =
+		{
+			VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+		};
 
 		m_device = std::make_unique<vulkan::Device>(
 			m_physical_device.get(),
@@ -245,7 +249,7 @@ public:
 				std::make_unique<vulkan::Framebuffer>(
 					m_device.get(),
 					m_render_pass->Get(),
-					std::vector<VkImageView>{swapchain_image_view->Get()},
+					swapchain_image_view->Get(),
 					m_swapchain->GetExtent()));
 		}
 
@@ -277,8 +281,9 @@ public:
 		m_command_buffers[0]->End();
 
 		m_graphics_queue->Submit(
-			m_command_buffers[0]->Get(),
 			m_image_acquired_semaphore->Get(),
+			m_command_buffers[0]->Get(),
+			{},
 			m_draw_fence->Get());
 		
 		::VkResult res;
@@ -288,7 +293,7 @@ public:
 
 		m_draw_fence->Reset();
 
-		m_present_queue->Present(m_swapchain->Get(), m_frame_index);
+		m_present_queue->Present({}, m_swapchain->Get(), m_frame_index);
 	}
 
 	void BeginRenderPass(RenderPassState const& render_pass_state) override
@@ -307,14 +312,14 @@ public:
 			vp.height   = -render_pass_state.viewport.height;
 			vp.minDepth = render_pass_state.viewport.min_depth;
 			vp.maxDepth = render_pass_state.viewport.max_depth;
-			m_command_buffers[0]->SetViewport(0, 1, &vp);
+			m_command_buffers[0]->SetViewport(0, vp);
 		}
 		{
 			::VkRect2D scissor;
 			scissor.offset = {0, 0};
 			scissor.extent.width  = static_cast<std::uint32_t>(render_pass_state.viewport.width);
 			scissor.extent.height = static_cast<std::uint32_t>(render_pass_state.viewport.height);
-			m_command_buffers[0]->SetScissor(0, 1, &scissor);
+			m_command_buffers[0]->SetScissor(0, scissor);
 		}
 	}
 
@@ -340,8 +345,8 @@ public:
 			m_uniform_buffer.get(),
 			uniforms);
 
-		auto descriptor_sets = m_descriptor_pool->AllocateDescriptorSets(
-			vulkan_program->GetDescriptorSetLayouts());
+		auto descriptor_set_layouts = vulkan_program->GetDescriptorSetLayouts();
+		auto descriptor_sets = m_descriptor_pool->AllocateDescriptorSets(descriptor_set_layouts);
 
 		auto writes = vulkan_program->CreateWriteDescriptorSets(descriptor_sets);
 		m_device->UpdateDescriptorSets(writes, {});

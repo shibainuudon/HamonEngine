@@ -145,9 +145,9 @@ public:
 			GetPipelineStage(old_layout),
 			GetPipelineStage(new_layout),
 			0,
-			0, nullptr,
-			0, nullptr,
-			1, &barrier);
+			nullptr,
+			nullptr,
+			barrier);
 	}
 
 	void CopyFromBuffer(vulkan::CommandBuffer* command_buffer, ::VkBuffer buffer)
@@ -171,7 +171,7 @@ public:
 				buffer,
 				m_image,
 				m_layout,
-				1, &region);
+				region);
 
 			src_offset += GetSizeInBytes(m_format, extent.width, extent.height);
 			extent.width  = (std::max)(extent.width  / 2, 1u);

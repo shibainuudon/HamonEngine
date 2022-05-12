@@ -10,6 +10,7 @@
 #include <hamon/render/vulkan/vulkan.hpp>
 #include <hamon/render/vulkan/device.hpp>
 #include <hamon/render/vulkan/queue.hpp>
+#include <hamon/render/vulkan/array_proxy.hpp>
 #include <cstdint>
 #include <vector>
 
@@ -60,7 +61,7 @@ public:
 		return m_device->AllocateCommandBuffers(info);
 	}
 
-	void FreeCommandBuffers(std::vector<::VkCommandBuffer> const& command_buffers)
+	void FreeCommandBuffers(vulkan::ArrayProxy<::VkCommandBuffer> command_buffers)
 	{
 		m_device->FreeCommandBuffers(m_command_pool, command_buffers);
 	}

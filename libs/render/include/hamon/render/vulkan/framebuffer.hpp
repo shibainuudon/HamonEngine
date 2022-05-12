@@ -9,6 +9,7 @@
 
 #include <hamon/render/vulkan/vulkan.hpp>
 #include <hamon/render/vulkan/device.hpp>
+#include <hamon/render/vulkan/array_proxy.hpp>
 #include <vector>
 
 namespace hamon
@@ -26,7 +27,7 @@ public:
 	Framebuffer(
 		vulkan::Device* device,
 		::VkRenderPass render_pass,
-		std::vector<::VkImageView> const& image_views,
+		vulkan::ArrayProxy<::VkImageView> image_views,
 		::VkExtent2D const& extent)
 		: m_device(device)
 	{
@@ -34,8 +35,8 @@ public:
 		info.sType           = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		info.pNext           = nullptr;
 		info.renderPass      = render_pass;
-		info.attachmentCount = static_cast<std::uint32_t>(image_views.size());
-		info.pAttachments    = image_views.empty() ? nullptr : image_views.data();
+		info.attachmentCount = image_views.GetSize();
+		info.pAttachments    = image_views.GetData();
 		info.width           = extent.width;
 		info.height          = extent.height;
 		info.layers          = 1;

@@ -8,7 +8,7 @@
 #define HAMON_RENDER_VULKAN_PIPELINE_DYNAMIC_STATE_HPP
 
 #include <hamon/render/vulkan/vulkan.hpp>
-#include <vector>
+#include <hamon/render/vulkan/array_proxy.hpp>
 
 namespace hamon
 {
@@ -20,14 +20,14 @@ namespace vulkan
 {
 
 inline ::VkPipelineDynamicStateCreateInfo
-PipelineDynamicState(std::vector<::VkDynamicState> const& dynamic_state_enables)
+PipelineDynamicState(vulkan::ArrayProxy<::VkDynamicState> dynamic_state_enables)
 {
 	::VkPipelineDynamicStateCreateInfo info {};
 	info.sType             = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
 	info.pNext             = nullptr;
 	info.flags             = 0;
-	info.dynamicStateCount = static_cast<std::uint32_t>(dynamic_state_enables.size());
-	info.pDynamicStates    = dynamic_state_enables.data();
+	info.dynamicStateCount = dynamic_state_enables.GetSize();
+	info.pDynamicStates    = dynamic_state_enables.GetData();
 	return info;
 }
 

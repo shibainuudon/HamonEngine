@@ -10,6 +10,7 @@
 #include <hamon/render/vulkan/vulkan.hpp>
 #include <hamon/render/vulkan/throw_if_failed.hpp>
 #include <hamon/render/vulkan/physical_device.hpp>
+#include <hamon/render/vulkan/array_proxy.hpp>
 #include <vector>
 #include <cstdint>
 
@@ -27,8 +28,8 @@ class Device
 public:
 	Device(
 		vulkan::PhysicalDevice* phycical_device,
-		std::vector<const char*> const& layer_names,
-		std::vector<const char*> const& extension_names)
+		vulkan::ArrayProxy<const char*> layer_names,
+		vulkan::ArrayProxy<const char*> extension_names)
 		: m_phycical_device(phycical_device)
 	{
 		float queue_priorities[1] = { 0.0 };
@@ -43,10 +44,10 @@ public:
 		info.pNext                   = nullptr;
 		info.queueCreateInfoCount    = 1;
 		info.pQueueCreateInfos       = &queue_info;
-		info.enabledExtensionCount   = static_cast<std::uint32_t>(extension_names.size());
-		info.ppEnabledExtensionNames = extension_names.empty() ? nullptr : extension_names.data();
-		info.enabledLayerCount       = static_cast<std::uint32_t>(layer_names.size());
-		info.ppEnabledLayerNames     = layer_names.empty() ? nullptr : layer_names.data();
+		info.enabledExtensionCount   = extension_names.GetSize();
+		info.ppEnabledExtensionNames = extension_names.GetData();
+		info.enabledLayerCount       = layer_names.GetSize();
+		info.ppEnabledLayerNames     = layer_names.GetData();
 		info.pEnabledFeatures        = nullptr;
 		
 		m_device = m_phycical_device->CreateDevice(info);
@@ -80,13 +81,13 @@ public:
 
 	void FreeCommandBuffers(
 		::VkCommandPool command_pool,
-		std::vector<::VkCommandBuffer> const& command_buffers)
+		vulkan::ArrayProxy<::VkCommandBuffer> command_buffers)
 	{
 		vkFreeCommandBuffers(
 			m_device,
 			command_pool,
-			static_cast<std::uint32_t>(command_buffers.size()),
-			command_buffers.empty() ? nullptr : command_buffers.data());
+			command_buffers.GetSize(),
+			command_buffers.GetData());
 	}
 
 	::VkQueue GetDeviceQueue(std::uint32_t queue_family_index, std::uint32_t queue_index)
@@ -195,19 +196,25 @@ public:
 	}
 
 	::VkResult WaitForFences(
-		std::uint32_t    fence_count,
-		::VkFence const* fences,
+		vulkan::ArrayProxy<::VkFence const> fences,
 		::VkBool32       wait_all,
 		std::uint64_t    timeout)
 	{
-		return ThrowIfFailed(vkWaitForFences(m_device, fence_count, fences, wait_all, timeout));
+		return ThrowIfFailed(::vkWaitForFences(
+			m_device,
+			fences.GetSize(),
+			fences.GetData(),
+			wait_all,
+			timeout));
 	}
 	
 	::VkResult ResetFences(
-		std::uint32_t    fence_count,
-		::VkFence const* fences)
+		vulkan::ArrayProxy<::VkFence const> fences)
 	{
-		return ThrowIfFailed(vkResetFences(m_device, fence_count, fences));
+		return ThrowIfFailed(::vkResetFences(
+			m_device,
+			fences.GetSize(),
+			fences.GetData()));
 	}
 
 	::VkPipelineLayout CreatePipelineLayout(::VkPipelineLayoutCreateInfo const& info)
@@ -360,15 +367,15 @@ public:
 	}
 
 	void UpdateDescriptorSets(
-		std::vector<::VkWriteDescriptorSet>	const& descriptor_writes,
-		std::vector<::VkCopyDescriptorSet>	const& descriptor_copies)
+		vulkan::ArrayProxy<::VkWriteDescriptorSet> descriptor_writes,
+		vulkan::ArrayProxy<::VkCopyDescriptorSet>  descriptor_copies)
 	{
 		::vkUpdateDescriptorSets(
 			m_device,
-			static_cast<std::uint32_t>(descriptor_writes.size()),
-			descriptor_writes.empty() ? nullptr : descriptor_writes.data(),
-			static_cast<std::uint32_t>(descriptor_copies.size()),
-			descriptor_copies.empty() ? nullptr : descriptor_copies.data());
+			descriptor_writes.GetSize(),
+			descriptor_writes.GetData(),
+			descriptor_copies.GetSize(),
+			descriptor_copies.GetData());
 	}
 
 	::VkSampler CreateSampler(

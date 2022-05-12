@@ -48,10 +48,10 @@ public:
 		m_info.sType                           = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 		m_info.pNext                           = nullptr;
 		m_info.flags                           = 0;
-		m_info.vertexBindingDescriptionCount   = static_cast<std::uint32_t>(m_bindings.size());
-		m_info.pVertexBindingDescriptions      = m_bindings.data();
-		m_info.vertexAttributeDescriptionCount = static_cast<std::uint32_t>(m_attributes.size());
-		m_info.pVertexAttributeDescriptions    = m_attributes.data();
+		m_info.vertexBindingDescriptionCount   = static_cast<std::uint32_t>(m_bindings.size());	// TODO
+		m_info.pVertexBindingDescriptions      = m_bindings.data();	// TODO
+		m_info.vertexAttributeDescriptionCount = static_cast<std::uint32_t>(m_attributes.size());	// TODO
+		m_info.pVertexAttributeDescriptions    = m_attributes.data();	// TODO
 	}
 
 	::VkPipelineVertexInputStateCreateInfo const& Get(void) const

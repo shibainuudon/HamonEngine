@@ -49,8 +49,8 @@ public:
 		m_info.sType             = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 		m_info.pNext             = nullptr;
 		m_info.flags             = 0;
-		m_info.attachmentCount   = static_cast<std::uint32_t>(m_attachments.size());
-		m_info.pAttachments      = m_attachments.data();
+		m_info.attachmentCount   = static_cast<std::uint32_t>(m_attachments.size());	// TODO
+		m_info.pAttachments      = m_attachments.data();	// TODO
 		m_info.logicOpEnable     = state.logic_op_enable;
 		m_info.logicOp           = vulkan::LogicOperation(state.logic_operation);
 		m_info.blendConstants[0] = state.constant_color.r;

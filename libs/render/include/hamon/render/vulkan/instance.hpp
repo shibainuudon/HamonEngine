@@ -10,6 +10,7 @@
 #include <hamon/render/vulkan/vulkan.hpp>
 #include <hamon/render/vulkan/vulkan_ext.hpp>
 #include <hamon/render/vulkan/throw_if_failed.hpp>
+#include <hamon/render/vulkan/array_proxy.hpp>
 #include <vector>
 #include <cstdint>
 
@@ -27,8 +28,8 @@ class Instance
 public:
 	Instance(
 		const char* app_name,
-		std::vector<const char*> const& layer_names,
-		std::vector<const char*> const& extension_names)
+		vulkan::ArrayProxy<const char*> layer_names,
+		vulkan::ArrayProxy<const char*> extension_names)
 	{
 		::VkApplicationInfo app_info {};
 		app_info.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -44,10 +45,10 @@ public:
 		inst_info.pNext                   = nullptr;
 		inst_info.flags                   = 0;
 		inst_info.pApplicationInfo        = &app_info;
-		inst_info.enabledExtensionCount   = static_cast<std::uint32_t>(extension_names.size());
-		inst_info.ppEnabledExtensionNames = extension_names.empty() ? nullptr : extension_names.data();
-		inst_info.enabledLayerCount       = static_cast<std::uint32_t>(layer_names.size());
-		inst_info.ppEnabledLayerNames     = layer_names.empty() ? nullptr : layer_names.data();
+		inst_info.enabledExtensionCount   = extension_names.GetSize();
+		inst_info.ppEnabledExtensionNames = extension_names.GetData();
+		inst_info.enabledLayerCount       = layer_names.GetSize();
+		inst_info.ppEnabledLayerNames     = layer_names.GetData();
 
 		ThrowIfFailed(vkCreateInstance(&inst_info, nullptr, &m_instance));
 	}

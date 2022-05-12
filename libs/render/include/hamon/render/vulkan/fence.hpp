@@ -39,12 +39,12 @@ public:
 
 	::VkResult Wait(::VkBool32 wait_all, std::uint64_t timeout)
 	{
-		return m_device->WaitForFences(1, &m_fence, wait_all, timeout);
+		return m_device->WaitForFences(m_fence, wait_all, timeout);
 	}
 
 	void Reset()
 	{
-		m_device->ResetFences(1, &m_fence);
+		m_device->ResetFences(m_fence);
 	}
 
 	::VkFence const& Get(void) const

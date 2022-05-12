@@ -68,8 +68,8 @@ public:
 		info.sType               = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 		info.pNext               = nullptr;
 		info.flags               = 0;
-		info.stageCount          = static_cast<std::uint32_t>(shader_stages.size());
-		info.pStages             = shader_stages.data();
+		info.stageCount          = static_cast<std::uint32_t>(shader_stages.size());	// TODO
+		info.pStages             = shader_stages.data();	// TODO
 		info.pVertexInputState   = &vertex_input_state.Get();
 		info.pInputAssemblyState = &input_assembly_state;
 		info.pTessellationState  = nullptr;

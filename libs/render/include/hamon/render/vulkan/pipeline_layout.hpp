@@ -36,8 +36,8 @@ public:
 		info.pNext                  = nullptr;
 		info.pushConstantRangeCount = 0;
 		info.pPushConstantRanges    = nullptr;
-		info.setLayoutCount         = static_cast<std::uint32_t>(descriptor_set_layouts.size());
-		info.pSetLayouts            = descriptor_set_layouts.data();
+		info.setLayoutCount         = static_cast<std::uint32_t>(descriptor_set_layouts.size());	// TODO
+		info.pSetLayouts            = descriptor_set_layouts.data();	// TODO
 
 		m_pipeline_layout = m_device->CreatePipelineLayout(info);
 	}

@@ -9,6 +9,7 @@
 
 #include <hamon/render/vulkan/device.hpp>
 #include <hamon/render/vulkan/vulkan.hpp>
+#include <hamon/render/vulkan/array_proxy.hpp>
 
 namespace hamon
 {
@@ -47,14 +48,14 @@ public:
 
 	std::vector<::VkDescriptorSet>
 	AllocateDescriptorSets(
-		std::vector<::VkDescriptorSetLayout> const& descriptor_set_layouts)
+		vulkan::ArrayProxy<::VkDescriptorSetLayout> descriptor_set_layouts)
 	{
 		::VkDescriptorSetAllocateInfo info{};
 		info.sType              = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 		info.pNext              = NULL;
 		info.descriptorPool     = m_descriptor_pool;
-		info.descriptorSetCount = static_cast<std::uint32_t>(descriptor_set_layouts.size());
-		info.pSetLayouts        = descriptor_set_layouts.data();
+		info.descriptorSetCount = descriptor_set_layouts.GetSize();
+		info.pSetLayouts        = descriptor_set_layouts.GetData();
 		return m_device->AllocateDescriptorSets(info);
 	}
 

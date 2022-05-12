@@ -10,6 +10,7 @@
 #include <hamon/render/vulkan/vulkan.hpp>
 #include <hamon/render/vulkan/command_pool.hpp>
 #include <hamon/render/vulkan/throw_if_failed.hpp>
+#include <hamon/render/vulkan/array_proxy.hpp>
 #include <hamon/render/clear_value.hpp>
 
 namespace hamon
@@ -33,7 +34,7 @@ public:
 
 	~CommandBuffer()
 	{
-		m_command_pool->FreeCommandBuffers({m_command_buffer});
+		m_command_pool->FreeCommandBuffers(m_command_buffer);
 	}
 
 	void Begin(::VkCommandBufferUsageFlags flags)
@@ -107,21 +108,21 @@ public:
 	}
 
 	void BindDescriptorSets(
-		::VkPipelineBindPoint    pipeline_bind_point,
-		::VkPipelineLayout       layout,
-		std::uint32_t            first_set,
-		std::vector<::VkDescriptorSet> const& descriptor_sets,
-		std::vector<std::uint32_t> const& dynamic_offsets)
+		::VkPipelineBindPoint                 pipeline_bind_point,
+		::VkPipelineLayout                    layout,
+		std::uint32_t                         first_set,
+		vulkan::ArrayProxy<::VkDescriptorSet> descriptor_sets,
+		vulkan::ArrayProxy<std::uint32_t>     dynamic_offsets)
 	{
 		::vkCmdBindDescriptorSets(
 			m_command_buffer,
 			pipeline_bind_point,
 			layout,
 			first_set,
-			static_cast<std::uint32_t>(descriptor_sets.size()),
-			descriptor_sets.empty() ? nullptr : descriptor_sets.data(),
-			static_cast<std::uint32_t>(dynamic_offsets.size()),
-			dynamic_offsets.empty() ? nullptr : dynamic_offsets.data());
+			descriptor_sets.GetSize(),
+			descriptor_sets.GetData(),
+			dynamic_offsets.GetSize(),
+			dynamic_offsets.GetData());
 	}
 
 	void Draw(
@@ -150,59 +151,53 @@ public:
 	}
 
 	void SetViewport(
-		std::uint32_t       first_viewport,
-		std::uint32_t       viewport_count,
-		::VkViewport const* viewports)
+		std::uint32_t                    first_viewport,
+		vulkan::ArrayProxy<::VkViewport> viewports)
 	{
-		::vkCmdSetViewport(m_command_buffer, first_viewport, viewport_count, viewports);
+		::vkCmdSetViewport(m_command_buffer, first_viewport, viewports.GetSize(), viewports.GetData());
 	}
 
 	void SetScissor(
-		std::uint32_t     first_scissor,
-		std::uint32_t     scissor_count,
-		::VkRect2D const* scissors)
+		std::uint32_t                  first_scissor,
+		vulkan::ArrayProxy<::VkRect2D> scissors)
 	{
-		::vkCmdSetScissor(m_command_buffer, first_scissor, scissor_count, scissors);
+		::vkCmdSetScissor(m_command_buffer, first_scissor, scissors.GetSize(), scissors.GetData());
 	}
 
 	void PipelineBarrier(
-		::VkPipelineStageFlags         src_stage_mask,
-		::VkPipelineStageFlags         dst_stage_mask,
-		::VkDependencyFlags            dependency_flags,
-		std::uint32_t                  memory_barrier_count,
-		::VkMemoryBarrier const*       memory_barriers,
-		std::uint32_t                  buffer_memory_barrier_count,
-		::VkBufferMemoryBarrier const* buffer_memory_barriers,
-		std::uint32_t                  image_memory_barrier_count,
-		::VkImageMemoryBarrier const*  image_memory_barriers)
+		::VkPipelineStageFlags                      src_stage_mask,
+		::VkPipelineStageFlags                      dst_stage_mask,
+		::VkDependencyFlags                         dependency_flags,
+		vulkan::ArrayProxy<::VkMemoryBarrier>       memory_barriers,
+		vulkan::ArrayProxy<::VkBufferMemoryBarrier> buffer_memory_barriers,
+		vulkan::ArrayProxy<::VkImageMemoryBarrier>  image_memory_barriers)
 	{	
 		::vkCmdPipelineBarrier(
 			m_command_buffer,
 			src_stage_mask,
 			dst_stage_mask,
 			dependency_flags,
-			memory_barrier_count,
-			memory_barriers,
-			buffer_memory_barrier_count,
-			buffer_memory_barriers,
-			image_memory_barrier_count,
-			image_memory_barriers);
+			memory_barriers.GetSize(),
+			memory_barriers.GetData(),
+			buffer_memory_barriers.GetSize(),
+			buffer_memory_barriers.GetData(),
+			image_memory_barriers.GetSize(),
+			image_memory_barriers.GetData());
 	}
 
 	void CopyBufferToImage(
-		::VkBuffer                 src_buffer,
-		::VkImage                  dst_image,
-		::VkImageLayout            dst_image_layout,
-		std::uint32_t              region_count,
-		::VkBufferImageCopy const* regions)
+		::VkBuffer                              src_buffer,
+		::VkImage                               dst_image,
+		::VkImageLayout                         dst_image_layout,
+		vulkan::ArrayProxy<::VkBufferImageCopy> regions)
 	{
 		::vkCmdCopyBufferToImage(
 			m_command_buffer,
 			src_buffer,
 			dst_image,
 			dst_image_layout,
-			region_count,
-			regions);
+			regions.GetSize(),
+			regions.GetData());
 	}
 
 	::VkCommandBuffer const& Get(void) const
@@ -211,8 +206,8 @@ public:
 	}
 
 private:
-	::VkCommandBuffer		m_command_buffer;
-	vulkan::CommandPool*	m_command_pool;
+	::VkCommandBuffer    m_command_buffer;
+	vulkan::CommandPool* m_command_pool;
 };
 
 }	// namespace vulkan
