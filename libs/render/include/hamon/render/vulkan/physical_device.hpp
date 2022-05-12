@@ -44,7 +44,49 @@ public:
 	{
 		vkDestroyDevice(device, nullptr);
 	}
-	
+
+	std::uint32_t GetGraphicsQueueFamilyIndex(::VkSurfaceKHR surface) const
+	{
+		std::uint32_t result = UINT32_MAX;
+		auto const queue_props = this->GetQueueFamilyProperties();
+		for (uint32_t i = 0; i < queue_props.size(); ++i)
+		{
+			if ((queue_props[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0)
+			{
+				// Graphics かつ Present な QueueFamily が見つかったらそれを返す
+				if (this->GetSurfaceSupport(i, surface))
+				{
+					return i;
+				}
+
+				// Presentでない場合はひとまず候補とする
+				result = i;
+			}
+		}
+		return result;
+	}
+
+	std::uint32_t GetPresentQueueFamilyIndex(::VkSurfaceKHR surface) const
+	{
+		std::uint32_t result = UINT32_MAX;
+		auto const queue_props = this->GetQueueFamilyProperties();
+		for (uint32_t i = 0; i < queue_props.size(); ++i)
+		{
+			if (this->GetSurfaceSupport(i, surface))
+			{
+				// Graphics かつ Present な QueueFamily が見つかったらそれを返す
+				if ((queue_props[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0)
+				{
+					return i;
+				}
+
+				// Graphicsでない場合はひとまず候補とする
+				result = i;
+			}
+		}
+		return result;
+	}
+
 	std::vector<::VkLayerProperties>
 	EnumerateDeviceLayerProperties(void)
 	{

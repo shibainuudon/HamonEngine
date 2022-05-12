@@ -133,18 +133,6 @@ public:
 
 		m_physical_device = std::make_unique<vulkan::PhysicalDevice>(gpus[0]);	// TODO 一番良いPhysicalDeviceを選ぶ
 
-		auto const queue_props = m_physical_device->GetQueueFamilyProperties();
-
-		std::uint32_t graphics_queue_family_index = 0;
-		for (std::uint32_t i = 0; i < queue_props.size(); ++i)
-		{
-			if (queue_props[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
-			{
-				graphics_queue_family_index = i;
-				break;
-			}
-		}
-
 		std::vector<const char*> const device_layer_names =
 		{
 #if defined(_DEBUG)
@@ -162,6 +150,15 @@ public:
 			device_layer_names,
 			device_extension_names);
 
+		m_surface = std::make_unique<vulkan::Surface>(
+			m_instance.get(), window.GetNativeHandle());
+
+		auto const graphics_queue_family_index =
+			m_physical_device->GetGraphicsQueueFamilyIndex(m_surface->Get());
+
+		auto const present_queue_family_index =
+			m_physical_device->GetPresentQueueFamilyIndex(m_surface->Get());
+
 		m_command_pool = std::make_unique<vulkan::CommandPool>(
 			m_device.get(),
 			graphics_queue_family_index);
@@ -171,52 +168,6 @@ public:
 
 		m_descriptor_pool = std::make_unique<vulkan::DescriptorPool>(
 			m_device.get());
-
-		m_surface = std::make_unique<vulkan::Surface>(
-			m_instance.get(), window.GetNativeHandle());
-
-		std::vector<::VkBool32> supports_present;
-		for (std::uint32_t i = 0; i < queue_props.size(); i++)
-		{
-			supports_present.push_back(
-				m_physical_device->GetSurfaceSupport(i, m_surface->Get()));
-		}
-
-		// Graphics かつ Present な QueueFamily が見つかったら、
-		// それをgraphics_queue_family_indexとpresent_queue_family_indexにする
-		graphics_queue_family_index = UINT32_MAX;
-		std::uint32_t present_queue_family_index = UINT32_MAX;
-		for (uint32_t i = 0; i < queue_props.size(); ++i)
-		{
-			if ((queue_props[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0)
-			{
-				if (graphics_queue_family_index == UINT32_MAX)
-				{
-					graphics_queue_family_index = i;
-				}
-
-				if (supports_present[i] == VK_TRUE)
-				{
-					graphics_queue_family_index = i;
-					present_queue_family_index = i;
-					break;
-				}
-			}
-		}
-
-		// Graphics かつ Present な QueueFamily が見つからなかったら、
-		// GraphicsとPresentそれぞれのIndexを設定する
-		if (present_queue_family_index == UINT32_MAX)
-		{
-			for (std::size_t i = 0; i < queue_props.size(); ++i)
-			{
-				if (supports_present[i] == VK_TRUE)
-				{
-					present_queue_family_index = static_cast<std::uint32_t>(i);
-					break;
-				}
-			}
-		}
 
 		m_graphics_queue = std::make_unique<vulkan::Queue>(
 			m_device->GetDeviceQueue(graphics_queue_family_index, 0));
