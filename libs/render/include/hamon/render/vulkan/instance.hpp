@@ -13,6 +13,7 @@
 #include <hamon/render/vulkan/array_proxy.hpp>
 #include <vector>
 #include <cstdint>
+#include <algorithm>
 
 namespace hamon
 {
@@ -27,6 +28,88 @@ class Instance
 {
 public:
 	Instance(
+		const char* app_name,
+		std::vector<const char*> const& required_layer_names,
+		std::vector<const char*> const& required_extension_names)
+	{
+		std::vector<const char*> layer_names;
+		auto const available_layer_names = EnumerateInstanceLayerNames();
+		for (auto const& required_layer_name : required_layer_names)
+		{
+			if (std::ranges::find(
+				available_layer_names,
+				required_layer_name) != available_layer_names.end())
+			{
+				layer_names.push_back(required_layer_name);
+			}
+		}
+
+		std::vector<const char*> extension_names;
+		auto const available_extension_names = EnumerateInstanceExtensionNames();
+		for (auto const& required_extension_name : required_extension_names)
+		{
+			if (std::ranges::find(
+				available_extension_names,
+				required_extension_name) != available_extension_names.end())
+			{
+				extension_names.push_back(required_extension_name);
+			}
+		}
+
+		Create(app_name, layer_names, extension_names);
+	}
+
+private:
+	static std::vector<std::string>
+	EnumerateInstanceLayerNames()
+	{
+		std::vector<std::string> layer_names;
+		for (auto const& layer_property : EnumerateInstanceLayerProperties())
+		{
+			layer_names.push_back(layer_property.layerName);
+		}
+		return layer_names;
+	}
+
+	static std::vector<std::string>
+	EnumerateInstanceExtensionNames()
+	{
+		std::vector<std::string> extension_names;
+		for (auto const& extension_property : EnumerateInstanceExtensionProperties(nullptr))
+		{
+			extension_names.push_back(extension_property.extensionName);
+		}
+		for (auto const& layer_names : EnumerateInstanceLayerNames())
+		{
+			for (auto const& extension_property : EnumerateInstanceExtensionProperties(layer_names.c_str()))
+			{
+				extension_names.push_back(extension_property.extensionName);
+			}
+		}
+		return extension_names;
+	}
+
+	static std::vector<::VkLayerProperties>
+	EnumerateInstanceLayerProperties()
+	{
+		std::uint32_t property_count;
+		ThrowIfFailed(::vkEnumerateInstanceLayerProperties(&property_count, nullptr));
+		std::vector<::VkLayerProperties> properties(property_count);
+		ThrowIfFailed(::vkEnumerateInstanceLayerProperties(&property_count, properties.data()));
+		return properties;
+	}
+
+	static std::vector<::VkExtensionProperties>
+	EnumerateInstanceExtensionProperties(const char* layer_name)
+	{
+		std::uint32_t property_count;
+		ThrowIfFailed(::vkEnumerateInstanceExtensionProperties(layer_name, &property_count, nullptr));
+		std::vector<::VkExtensionProperties> properties(property_count);
+		ThrowIfFailed(::vkEnumerateInstanceExtensionProperties(layer_name, &property_count, properties.data()));
+		return properties;
+	}
+
+	void Create(
 		const char* app_name,
 		vulkan::ArrayProxy<const char*> layer_names,
 		vulkan::ArrayProxy<const char*> extension_names)
@@ -50,12 +133,13 @@ public:
 		inst_info.enabledLayerCount       = layer_names.GetSize();
 		inst_info.ppEnabledLayerNames     = layer_names.GetData();
 
-		ThrowIfFailed(vkCreateInstance(&inst_info, nullptr, &m_instance));
+		ThrowIfFailed(::vkCreateInstance(&inst_info, nullptr, &m_instance));
 	}
 
+public:
 	~Instance()
 	{
-		vkDestroyInstance(m_instance, nullptr);
+		::vkDestroyInstance(m_instance, nullptr);
 	}
 
 	std::vector<::VkPhysicalDevice> EnumeratePhysicalDevices()
