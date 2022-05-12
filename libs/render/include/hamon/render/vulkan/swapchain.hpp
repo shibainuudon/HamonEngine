@@ -12,6 +12,7 @@
 #include <hamon/render/vulkan/physical_device.hpp>
 #include <hamon/render/vulkan/surface.hpp>
 #include <hamon/render/vulkan/image_view.hpp>
+#include <hamon/render/vulkan/queue.hpp>
 #include <cstdint>
 #include <vector>
 
@@ -32,11 +33,13 @@ public:
 		vulkan::Surface* surface,
 		std::uint32_t width,
 		std::uint32_t height,
-		std::uint32_t graphics_queue_family_index,
-		std::uint32_t present_queue_family_index)
+		std::uint32_t graphics_queue_family_index)
 		: m_device(device)
 	{
 		auto physical_device = device->GetPhysicalDevice();
+
+		auto const present_queue_family_index =
+			physical_device->GetPresentQueueFamilyIndex(surface->Get());
 
 		auto const surface_capabilities = physical_device->GetSurfaceCapabilities(surface->Get());
 		
@@ -155,6 +158,9 @@ public:
 		{
 			m_image_views.emplace_back(m_device, image, m_format);
 		}
+
+		m_present_queue = std::make_unique<vulkan::Queue>(
+			m_device->GetDeviceQueue(present_queue_family_index, 0));
 	}
 
 	~Swapchain()
@@ -162,17 +168,24 @@ public:
 		m_device->DestroySwapchain(m_swapchain);
 	}
 	
-	std::vector<::VkImage> GetImages(void) const
-	{
-		return m_device->GetSwapchainImages(m_swapchain);
-	}
-
 	std::uint32_t AcquireNextImage(
 		std::uint64_t timeout,
 		::VkSemaphore semaphore,
 		::VkFence fence)
 	{
 		return m_device->AcquireNextImage(m_swapchain, timeout, semaphore, fence);
+	}
+	
+	void Present(
+		vulkan::ArrayProxy<::VkSemaphore> wait_semaphores,
+		std::uint32_t image_index)
+	{
+		m_present_queue->Present(wait_semaphores, m_swapchain, image_index);
+	}
+
+	std::vector<::VkImage> GetImages(void) const
+	{
+		return m_device->GetSwapchainImages(m_swapchain);
 	}
 
 	::VkExtent2D const& GetExtent(void) const
@@ -200,6 +213,7 @@ private:
 	::VkExtent2D                   m_extent;
 	::VkFormat                     m_format;
 	std::vector<vulkan::ImageView> m_image_views;
+	std::unique_ptr<vulkan::Queue> m_present_queue;
 	vulkan::Device*                m_device;
 };
 

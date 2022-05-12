@@ -156,9 +156,6 @@ public:
 		auto const graphics_queue_family_index =
 			m_physical_device->GetGraphicsQueueFamilyIndex(m_surface->Get());
 
-		auto const present_queue_family_index =
-			m_physical_device->GetPresentQueueFamilyIndex(m_surface->Get());
-
 		m_command_pool = std::make_unique<vulkan::CommandPool>(
 			m_device.get(),
 			graphics_queue_family_index);
@@ -171,16 +168,13 @@ public:
 
 		m_graphics_queue = std::make_unique<vulkan::Queue>(
 			m_device->GetDeviceQueue(graphics_queue_family_index, 0));
-		m_present_queue = std::make_unique<vulkan::Queue>(
-			m_device->GetDeviceQueue(present_queue_family_index, 0));
 
 		m_swapchain = std::make_unique<vulkan::Swapchain>(
 			m_device.get(),
 			m_surface.get(),
 			window.GetClientWidth(),
 			window.GetClientHeight(),
-			graphics_queue_family_index,
-			present_queue_family_index);
+			graphics_queue_family_index);
 
 		m_render_pass = std::make_unique<vulkan::RenderPass>(
 			m_device.get(), m_swapchain->GetFormat(), NUM_SAMPLES);
@@ -238,7 +232,7 @@ public:
 
 		m_draw_fence->Reset();
 
-		m_present_queue->Present({}, m_swapchain->Get(), m_frame_index);
+		m_swapchain->Present({}, m_frame_index);
 	}
 
 	void BeginRenderPass(RenderPassState const& render_pass_state) override
@@ -329,7 +323,6 @@ private:
 	std::unique_ptr<vulkan::RenderPass>					m_render_pass;
 	std::unique_ptr<vulkan::Fence>						m_draw_fence;
 	std::unique_ptr<vulkan::Queue>						m_graphics_queue;
-	std::unique_ptr<vulkan::Queue>						m_present_queue;
 	std::uint32_t										m_frame_index;
 	std::unique_ptr<vulkan::DescriptorPool>				m_descriptor_pool;
 	std::unique_ptr<vulkan::UniformBuffer>				m_uniform_buffer;
