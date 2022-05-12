@@ -44,6 +44,27 @@ public:
 	{
 		vkDestroyDevice(device, nullptr);
 	}
+	
+	std::vector<::VkLayerProperties>
+	EnumerateDeviceLayerProperties(void)
+	{
+		std::uint32_t property_count;
+		ThrowIfFailed(::vkEnumerateDeviceLayerProperties(m_physical_device, &property_count, nullptr));
+		std::vector<::VkLayerProperties> properties(property_count);
+		ThrowIfFailed(::vkEnumerateDeviceLayerProperties(m_physical_device, &property_count, properties.data()));
+		return properties;
+	}
+
+	std::vector<::VkExtensionProperties>
+	EnumerateDeviceExtensionProperties(const char* layer_name)
+	{
+		std::uint32_t property_count;
+		ThrowIfFailed(::vkEnumerateDeviceExtensionProperties(m_physical_device, layer_name, &property_count, nullptr));
+		std::vector<::VkExtensionProperties> properties(property_count);
+		ThrowIfFailed(::vkEnumerateDeviceExtensionProperties(m_physical_device, layer_name, &property_count, properties.data()));
+		return properties;
+	}
+
 
 	std::vector<::VkQueueFamilyProperties> GetQueueFamilyProperties(void) const
 	{
