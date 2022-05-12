@@ -47,8 +47,27 @@ public:
 
 	~ImageView()
 	{
-		m_device->DestroyImageView(m_image_view);
+		if (m_device && m_image_view != VK_NULL_HANDLE)
+		{
+			m_device->DestroyImageView(m_image_view);
+		}
 	}
+
+	// コピー不可
+	ImageView(ImageView const&) = delete;
+	ImageView& operator=(ImageView const&) = delete;
+
+	// ムーブコンストラクト可能
+	ImageView(ImageView && rhs)
+		: m_image_view(rhs.m_image_view)
+		, m_device(rhs.m_device)
+	{
+		rhs.m_image_view = VK_NULL_HANDLE;
+		rhs.m_device = nullptr;
+	}
+
+	// ムーブ代入不可
+	ImageView& operator=(ImageView &&) = delete;
 
 	::VkImageView const& Get(void) const
 	{
@@ -56,8 +75,8 @@ public:
 	}
 
 private:
-	::VkImageView	m_image_view;
-	vulkan::Device* m_device;
+	::VkImageView	m_image_view {VK_NULL_HANDLE};
+	vulkan::Device* m_device     {nullptr};
 };
 
 }	// namespace vulkan

@@ -182,27 +182,21 @@ public:
 			graphics_queue_family_index,
 			present_queue_family_index);
 
-		for (auto& swapchain_image : m_swapchain->GetImages())
-		{
-			m_swapchain_image_views.push_back(
-				std::make_unique<vulkan::ImageView>(
-					m_device.get(), swapchain_image, m_swapchain->GetFormat()));
-		}
-
-		m_image_acquired_semaphore = std::make_unique<vulkan::Semaphore>(m_device.get());
-
 		m_render_pass = std::make_unique<vulkan::RenderPass>(
 			m_device.get(), m_swapchain->GetFormat(), NUM_SAMPLES);
 
-		for (auto& swapchain_image_view : m_swapchain_image_views)
+		for (auto const& swapchain_image_view : m_swapchain->GetImageViews())
 		{
+			auto image_view = swapchain_image_view.Get();
 			m_framebuffers.push_back(
 				std::make_unique<vulkan::Framebuffer>(
 					m_device.get(),
 					m_render_pass->Get(),
-					swapchain_image_view->Get(),
+					image_view,
 					m_swapchain->GetExtent()));
 		}
+
+		m_image_acquired_semaphore = std::make_unique<vulkan::Semaphore>(m_device.get());
 
 		m_draw_fence = std::make_unique<vulkan::Fence>(m_device.get());
 
@@ -330,7 +324,6 @@ private:
 	std::vector<std::unique_ptr<vulkan::CommandBuffer>>	m_command_buffers;
 	std::unique_ptr<vulkan::Surface>					m_surface;
 	std::unique_ptr<vulkan::Swapchain>					m_swapchain;
-	std::vector<std::unique_ptr<vulkan::ImageView>>		m_swapchain_image_views;
 	std::vector<std::unique_ptr<vulkan::Framebuffer>>	m_framebuffers;
 	std::unique_ptr<vulkan::Semaphore>					m_image_acquired_semaphore;
 	std::unique_ptr<vulkan::RenderPass>					m_render_pass;

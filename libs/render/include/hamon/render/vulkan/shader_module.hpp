@@ -37,15 +37,17 @@ public:
 
 	~ShaderModule()
 	{
-		if (m_device)
+		if (m_device && m_shader_module != VK_NULL_HANDLE)
 		{
 			m_device->DestroyShaderModule(m_shader_module);
 		}
 	}
 
+	// コピー不可
 	ShaderModule(ShaderModule const&) = delete;
 	ShaderModule& operator=(ShaderModule const&) = delete;
 
+	// ムーブコンストラクト可能
 	ShaderModule(ShaderModule && rhs)
 		: m_shader_module(rhs.m_shader_module)
 		, m_device(rhs.m_device)
@@ -54,6 +56,7 @@ public:
 		rhs.m_device = nullptr;
 	}
 
+	// ムーブ代入不可
 	ShaderModule& operator=(ShaderModule &&) = delete;
 
 	::VkShaderModule Get(void) const
@@ -62,8 +65,8 @@ public:
 	}
 
 private:
-	::VkShaderModule		m_shader_module = VK_NULL_HANDLE;
-	vulkan::Device*			m_device;
+	::VkShaderModule  m_shader_module { VK_NULL_HANDLE };
+	vulkan::Device*   m_device        { nullptr };
 };
 
 }	// namespace vulkan

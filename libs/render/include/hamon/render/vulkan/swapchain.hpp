@@ -4,13 +4,14 @@
  *	@brief	Swapchain
  */
 
-#ifndef HAMON_RENDER_VULKAN_swapchain_HPP
-#define HAMON_RENDER_VULKAN_swapchain_HPP
+#ifndef HAMON_RENDER_VULKAN_SWAPCHAIN_HPP
+#define HAMON_RENDER_VULKAN_SWAPCHAIN_HPP
 
 #include <hamon/render/vulkan/vulkan.hpp>
 #include <hamon/render/vulkan/device.hpp>
 #include <hamon/render/vulkan/physical_device.hpp>
 #include <hamon/render/vulkan/surface.hpp>
+#include <hamon/render/vulkan/image_view.hpp>
 #include <cstdint>
 #include <vector>
 
@@ -149,6 +150,11 @@ public:
 		}
 
 		m_swapchain = m_device->CreateSwapchain(info);
+
+		for (auto const& image : this->GetImages())
+		{
+			m_image_views.emplace_back(m_device, image, m_format);
+		}
 	}
 
 	~Swapchain()
@@ -169,17 +175,32 @@ public:
 		return m_device->AcquireNextImage(m_swapchain, timeout, semaphore, fence);
 	}
 
-	::VkExtent2D const& GetExtent(void) const { return m_extent; }
+	::VkExtent2D const& GetExtent(void) const
+	{
+		return m_extent;
+	}
 
-	::VkFormat const& GetFormat(void) const { return m_format; }
+	::VkFormat const& GetFormat(void) const
+	{
+		return m_format;
+	}
 
-	::VkSwapchainKHR const& Get(void) const { return m_swapchain; }
+	std::vector<vulkan::ImageView> const& GetImageViews(void) const
+	{
+		return m_image_views;
+	}
+
+	::VkSwapchainKHR const& Get(void) const
+	{
+		return m_swapchain;
+	}
 
 private:
-	::VkSwapchainKHR	m_swapchain;
-	::VkExtent2D		m_extent;
-	::VkFormat			m_format;
-	vulkan::Device*		m_device;
+	::VkSwapchainKHR               m_swapchain;
+	::VkExtent2D                   m_extent;
+	::VkFormat                     m_format;
+	std::vector<vulkan::ImageView> m_image_views;
+	vulkan::Device*                m_device;
 };
 
 }	// namespace vulkan
@@ -188,4 +209,4 @@ private:
 
 }	// namespace hamon
 
-#endif // HAMON_RENDER_VULKAN_swapchain_HPP
+#endif // HAMON_RENDER_VULKAN_SWAPCHAIN_HPP
