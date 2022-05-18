@@ -102,14 +102,34 @@ public:
 			m_render_target_view->Get(),
 			clear_color);
 
-		::D3D11_VIEWPORT vp;
-		vp.Width    = render_pass_state.viewport.width;
-		vp.Height   = render_pass_state.viewport.height;
-		vp.MinDepth = render_pass_state.viewport.min_depth;
-		vp.MaxDepth = render_pass_state.viewport.max_depth;
-		vp.TopLeftX = render_pass_state.viewport.left;
-		vp.TopLeftY = render_pass_state.viewport.top;
-		m_device_context->RSSetViewports(1, &vp);
+		{
+			::D3D11_VIEWPORT vp;
+			vp.Width    = render_pass_state.viewport.width;
+			vp.Height   = render_pass_state.viewport.height;
+			vp.MinDepth = render_pass_state.viewport.min_depth;
+			vp.MaxDepth = render_pass_state.viewport.max_depth;
+			vp.TopLeftX = render_pass_state.viewport.left;
+			vp.TopLeftY = render_pass_state.viewport.top;
+			m_device_context->RSSetViewports(1, &vp);
+		}
+		{
+			::D3D11_RECT rect;
+			if (render_pass_state.scissor.enable)
+			{
+				rect.left   = static_cast<::LONG>(render_pass_state.scissor.left);
+				rect.top    = static_cast<::LONG>(render_pass_state.scissor.top);
+				rect.right  = static_cast<::LONG>(render_pass_state.scissor.left + render_pass_state.scissor.width);
+				rect.bottom = static_cast<::LONG>(render_pass_state.scissor.top  + render_pass_state.scissor.height);
+			}
+			else
+			{
+				rect.left   = 0;
+				rect.top    = 0;
+				rect.right  = static_cast<::LONG>(render_pass_state.viewport.width);
+				rect.bottom = static_cast<::LONG>(render_pass_state.viewport.height);
+			}
+			m_device_context->RSSetScissorRects(1, &rect);
+		}
 	}
 
 	void EndRenderPass(void) override

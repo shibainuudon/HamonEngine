@@ -9,6 +9,7 @@
 
 #include <hamon/render/clear_value.hpp>
 #include <hamon/render/viewport.hpp>
+#include <hamon/render/scissor_state.hpp>
 
 namespace hamon
 {
@@ -18,8 +19,9 @@ inline namespace render
 
 struct RenderPassState
 {
-	ClearValue	clear_value;
-	Viewport	viewport;
+	ClearValue   clear_value;
+	Viewport     viewport;
+	ScissorState scissor;
 };
 
 }	// inline namespace render

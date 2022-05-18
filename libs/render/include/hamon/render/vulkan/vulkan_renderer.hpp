@@ -255,9 +255,19 @@ public:
 		}
 		{
 			::VkRect2D scissor;
-			scissor.offset = {0, 0};
-			scissor.extent.width  = static_cast<std::uint32_t>(render_pass_state.viewport.width);
-			scissor.extent.height = static_cast<std::uint32_t>(render_pass_state.viewport.height);
+			if (render_pass_state.scissor.enable)
+			{
+				scissor.offset.x = static_cast<std::int32_t>(render_pass_state.scissor.left);
+				scissor.offset.y = static_cast<std::int32_t>(render_pass_state.scissor.top);
+				scissor.extent.width  = render_pass_state.scissor.width;
+				scissor.extent.height = render_pass_state.scissor.height;
+			}
+			else
+			{
+				scissor.offset = {0, 0};
+				scissor.extent.width  = static_cast<std::uint32_t>(render_pass_state.viewport.width);
+				scissor.extent.height = static_cast<std::uint32_t>(render_pass_state.viewport.height);
+			}
 			m_command_buffers[0]->SetScissor(0, scissor);
 		}
 	}

@@ -181,12 +181,22 @@ public:
 		}
 
 		{
-			::D3D12_RECT scissor_rect;
-			scissor_rect.left   = static_cast<::LONG>(render_pass_state.viewport.left);
-			scissor_rect.top    = static_cast<::LONG>(render_pass_state.viewport.top);
-			scissor_rect.right  = static_cast<::LONG>(render_pass_state.viewport.left + render_pass_state.viewport.width);
-			scissor_rect.bottom = static_cast<::LONG>(render_pass_state.viewport.top  + render_pass_state.viewport.height);
-			m_command_list->RSSetScissorRects(1, &scissor_rect);
+			::D3D12_RECT rect;
+			if (render_pass_state.scissor.enable)
+			{
+				rect.left   = static_cast<::LONG>(render_pass_state.scissor.left);
+				rect.top    = static_cast<::LONG>(render_pass_state.scissor.top);
+				rect.right  = static_cast<::LONG>(render_pass_state.scissor.left + render_pass_state.scissor.width);
+				rect.bottom = static_cast<::LONG>(render_pass_state.scissor.top  + render_pass_state.scissor.height);
+			}
+			else
+			{
+				rect.left   = 0;
+				rect.top    = 0;
+				rect.right  = static_cast<::LONG>(render_pass_state.viewport.width);
+				rect.bottom = static_cast<::LONG>(render_pass_state.viewport.height);
+			}
+			m_command_list->RSSetScissorRects(1, &rect);
 		}
 	}
 

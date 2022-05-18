@@ -108,6 +108,13 @@ public:
 	{
 		m_device_context->RSSetViewports(num_viewports, viewports);
 	}
+	
+	void RSSetScissorRects(
+		::UINT              num_rects,
+		::D3D11_RECT const* rects)
+	{
+		m_device_context->RSSetScissorRects(num_rects, rects);
+	}
 
 	void OMSetRenderTargets(
 		::UINT                           num_views,

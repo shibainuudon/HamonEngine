@@ -28,6 +28,7 @@ public:
 		::glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 		::glDepthMask(GL_TRUE);
 		::glStencilMask(~0u);
+		::glDisable(GL_SCISSOR_TEST);
 		::glClearColor(
 			value.color.r,
 			value.color.g,

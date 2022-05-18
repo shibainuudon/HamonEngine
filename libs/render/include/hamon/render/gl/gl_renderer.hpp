@@ -17,6 +17,7 @@
 #include <hamon/render/gl/depth_stencil_state.hpp>
 #include <hamon/render/gl/clear_value.hpp>
 #include <hamon/render/gl/viewport.hpp>
+#include <hamon/render/gl/scissor_state.hpp>
 #include <hamon/render/gl/sampler.hpp>
 #include <hamon/render/gl/resource_map.hpp>
 #include <hamon/render/renderer.hpp>
@@ -73,6 +74,7 @@ public:
 	{
 		gl::ClearValue::Apply(render_pass_state.clear_value);
 		gl::Viewport::Apply(render_pass_state.viewport);
+		gl::ScissorState::Apply(render_pass_state.scissor);
 	}
 
 	void EndRenderPass(void) override
